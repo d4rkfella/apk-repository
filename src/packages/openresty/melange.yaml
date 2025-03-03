@@ -99,8 +99,6 @@ pipeline:
     runs: |
       mkdir -p ${{targets.destdir}}/var/run/openresty/
       mkdir -p ${{targets.destdir}}/etc/nginx/conf.d
-      install -m644 -D nginx.conf ${{targets.destdir}}/etc/nginx/
-      install -m644 -D default.conf ${{targets.destdir}}/etc/nginx/conf.d
       mkdir -p ${{targets.destdir}}/var/log/openresty
       ln -sf /dev/stdout ${{targets.destdir}}/var/log/openresty/access.log
       ln -sf /dev/stderr ${{targets.destdir}}/var/log/openresty/error.log
