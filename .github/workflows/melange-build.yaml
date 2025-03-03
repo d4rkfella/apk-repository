@@ -9,6 +9,9 @@ jobs:
       contents: write
     
     steps:
+      - name: Setup Qemu Action
+        uses: docker/setup-qemu-action@3.6.0
+        
       - name: Generate snapshot date
         id: snapshot-date
         run: |
@@ -33,10 +36,9 @@ jobs:
 
       - name: Build APKs
         run: |
-          sudo apt-get install bubblewrap
           for yaml_file in $(find ./src/packages -name "melange.yaml" | sort); do
             echo "Building package with $yaml_file"
-            melange build --debug --namespace wolfi --runner bubblewrap --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "$yaml_file"
+            melange build --debug --namespace wolfi --runner quemu --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "$yaml_file"
           done
 
       - name: Commit and Push APK files
