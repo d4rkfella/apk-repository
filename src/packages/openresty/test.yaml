@@ -42,11 +42,6 @@ pipeline:
       expected-sha256: 79b071e27bdc143d5f401d0dbf504de4420070d867538c5edc2546d0351fd5c0
 
   - runs: |
-      export LUAJIT_LIB=/usr/lib
-      export LUA_LIB_DIR="$LUAJIT_LIB/lua"
-      export LUAJIT_INC=/usr/include/luajit-2.1
-  
-  - runs: |
       ./configure \
         --build=${{host.triplet.gnu}} \
         --prefix=/usr \
@@ -91,7 +86,8 @@ pipeline:
         --with-stream_ssl_module \
         --with-threads \
         --with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT' \
-        --with-pcre-jit \
+        --with-luajit=/usr \
+        --with-pcre-jit
 
   - uses: autoconf/make
 
@@ -104,8 +100,6 @@ pipeline:
       mkdir -p ${{targets.destdir}}/var/log/openresty
       ln -sf /dev/stdout ${{targets.destdir}}/var/log/openresty/access.log
       ln -sf /dev/stderr ${{targets.destdir}}/var/log/openresty/error.log
-      ln -s luajit ${{targets.destdir}}/usr/bin/lua
-      ln -s "$LUAJIT_INC" ${{targets.destdir}}/usr/include/lua
 
   - uses: strip
 
@@ -131,9 +125,6 @@ test:
         restydoc -h
         nginx -v
         nginx -h
-        lua -v
-        luajit -v
-        luajit-2.1.0 -v
     - name: Run a simple Lua script
       runs: |
         resty -e 'print("hello")' | grep "hello" || exit 1
