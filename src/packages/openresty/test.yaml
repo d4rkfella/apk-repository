@@ -133,6 +133,9 @@ test:
         restydoc -h
         nginx -v
         nginx -h
+        lua -v
+        luajit -v
+        luajit-2.1.0 -v
     - name: Run a simple Lua script
       runs: |
         resty -e 'print("hello")' | grep "hello" || exit 1
