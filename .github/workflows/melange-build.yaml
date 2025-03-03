@@ -39,5 +39,4 @@ jobs:
 
       - name: Build
         run: |
-          sudo apt-get install bubblewrap
-          melange build --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg ./packages/catatonit/melange.yaml
+          melange build --runner docker --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg --source-dir ./packages
