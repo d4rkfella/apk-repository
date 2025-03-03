@@ -39,4 +39,5 @@ jobs:
 
       - name: Build
         run: |
+          ls -la
           melange build --signing-key /tmp/melange.rsa --arch amd64 --source-dir /packages/catatonit --out-dir ./pkg
