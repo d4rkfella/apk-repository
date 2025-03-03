@@ -28,7 +28,6 @@ pipeline:
 
   - runs: |
       ./configure \
-        --build=${{host.triplet.gnu}} \
         --prefix=/usr \
         --with-lua-include=/usr/luajit/include
 
