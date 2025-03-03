@@ -102,24 +102,16 @@ pipeline:
   - uses: strip
 
 subpackages:
-  - name: openresty-dev-custom
+  - name: luajit-dev-custom
     pipeline:
       - uses: split/dev
     dependencies:
       runtime:
         - openresty
-    description: openresty dev
+    description: luajit dev
     test:
       pipeline:
         - uses: test/pkgconf
-
-  - name: openresty-docs-custom
-    description: luajit docs
-    pipeline:
-      - uses: split/manpages
-    test:
-      pipeline:
-        - uses: test/docs
 
 test:
   environment:
