@@ -39,4 +39,4 @@ jobs:
 
       - name: Build
         run: |
-          melange build --runner docker --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg --source-dir ./packages
+          melange build --runner docker --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg ./packages/**/melange.yaml
