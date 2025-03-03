@@ -10,7 +10,7 @@ jobs:
     
     steps:
       - name: Setup Qemu Action
-        uses: docker/setup-qemu-action@3.6.0
+        uses: docker/setup-qemu-action@3
         
       - name: Generate snapshot date
         id: snapshot-date
