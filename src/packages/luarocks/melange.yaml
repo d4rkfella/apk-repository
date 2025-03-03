@@ -32,9 +32,6 @@ pipeline:
         --with-lua-include=/usr/luajit/include
 
   - uses: autoconf/make
-    with:
-      opts: |
-        linux test
  
   - uses: autoconf/make-install
 
