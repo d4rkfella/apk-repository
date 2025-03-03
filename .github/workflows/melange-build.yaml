@@ -49,3 +49,11 @@ jobs:
           git add pkg/
           git commit -m "Add built APKs from workflow run ${{ github.run_id }}"
           git push origin main
+
+      - name: Upload to S3
+        run: |
+          aws s3 cp --recursive pkg/ s3://packages/ --endpoint-url $ENDPOINT_URL
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
