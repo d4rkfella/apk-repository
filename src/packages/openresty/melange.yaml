@@ -13,7 +13,6 @@ package:
       - pcre
       - perl
       - zlib
-      - luajit>2.1-20250117
 
 environment:
   contents:
@@ -35,8 +34,6 @@ environment:
       - perl-dev
       - readline-dev
       - zlib-dev
-      - luajit-dev>2.1-20250117
-
 pipeline:
   - uses: fetch
     with:
@@ -88,7 +85,6 @@ pipeline:
         --with-stream_ssl_module \
         --with-threads \
         --with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT' \
-        --with-luajit=/usr \
         --with-pcre-jit
 
   - uses: autoconf/make
@@ -104,6 +100,26 @@ pipeline:
       ln -sf /dev/stderr ${{targets.destdir}}/var/log/openresty/error.log
 
   - uses: strip
+
+subpackages:
+  - name: openresty-dev-custom
+    pipeline:
+      - uses: split/dev
+    dependencies:
+      runtime:
+        - openresty
+    description: openresty dev
+    test:
+      pipeline:
+        - uses: test/pkgconf
+
+  - name: openresty-docs-custom
+    description: luajit docs
+    pipeline:
+      - uses: split/manpages
+    test:
+      pipeline:
+        - uses: test/docs
 
 test:
   environment:
