@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     permissions:
-      contents: read
+      contents: write
     
     steps:
       - name: Generate snapshot date
@@ -33,7 +33,7 @@ jobs:
 
       - name: Build
         run: |
-          melange build --runner docker --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg ./packages/**/melange.yaml
+          melange build --runner docker --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg ./src/packages/**/melange.yaml
 
       - name: Commit and Push APK files
         run: |
