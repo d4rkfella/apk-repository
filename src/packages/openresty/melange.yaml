@@ -90,17 +90,4 @@ pipeline:
 
   - uses: autoconf/make-install
 
-  - name: Move binaries to /usr/bin
-    runs: |
-      mkdir -p ${{targets.destdir}}/usr/bin
-      mv ${{targets.destdir}}/usr/local/openresty/bin/* ${{targets.destdir}}/usr/bin/
-
-  - name: Setup default config files
-    runs: |
-      mkdir -p ${{targets.destdir}}/var/run/openresty/
-      mkdir -p ${{targets.destdir}}/etc/nginx/conf.d
-      mkdir -p ${{targets.destdir}}/var/log/openresty
-      ln -sf /dev/stdout ${{targets.destdir}}/var/log/openresty/access.log
-      ln -sf /dev/stderr ${{targets.destdir}}/var/log/openresty/error.log
-
   - uses: strip
