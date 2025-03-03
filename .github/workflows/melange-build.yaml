@@ -20,7 +20,14 @@ jobs:
         run: |
           echo "epoch=$(date -u +%s)" >> $GITHUB_OUTPUT
         shell: bash
-            
+      
+      - name: Save private key
+        run: |
+          set +x
+          echo -n "${{ secrets.MELANGE_PRIVATE_KEY }}" > melange.rsa
+          chmod 600 melange.rsa
+          set -x
+      
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
   
