@@ -24,7 +24,7 @@ jobs:
       - name: Save private key
         run: |
           set +x
-          echo -n "${{ secrets.MELANGE_PRIVATE_KEY }}" > melange.rsa
+          echo -n "${{ secrets.MELANGE_PRIVATE_KEY }}" > /tmp/melange.rsa
           chmod 600 melange.rsa
           set -x
       
@@ -39,4 +39,4 @@ jobs:
 
       - name: Build
         run: |
-          melange build --signing-key melange.rsa --arch amd64 --source-dir /packages --out-dir ./pkg
+          melange build --signing-key /tmp/melange.rsa --arch amd64 --source-dir /packages --out-dir ./pkg
