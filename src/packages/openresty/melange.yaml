@@ -97,14 +97,6 @@ pipeline:
 
   - uses: autoconf/make-install
 
-  - name: Move binaries to /usr/bin
-    runs: |
-      export LUAJIT_LIB=/usr/lib
-      export LUA_LIB_DIR="$LUAJIT_LIB/lua"
-      export LUAJIT_INC=/usr/include/luajit-2.1
-      ln -s luajit ${{targets.destdir}}/usr/bin/lua
-      ln -s "$LUAJIT_INC" ${{targets.destdir}}/usr/include/lua
-
   - name: Setup default config files
     runs: |
       mkdir -p ${{targets.destdir}}/var/run/openresty/
@@ -112,6 +104,8 @@ pipeline:
       mkdir -p ${{targets.destdir}}/var/log/openresty
       ln -sf /dev/stdout ${{targets.destdir}}/var/log/openresty/access.log
       ln -sf /dev/stderr ${{targets.destdir}}/var/log/openresty/error.log
+      ln -s luajit ${{targets.destdir}}/usr/bin/lua
+      ln -s "$LUAJIT_INC" ${{targets.destdir}}/usr/include/lua
 
   - uses: strip
 
