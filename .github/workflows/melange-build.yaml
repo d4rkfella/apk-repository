@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: Build Packages
 
 on: 
   workflow_dispatch:
@@ -6,13 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     permissions:
-      id-token: write
-      packages: write
       contents: read
-      attestations: write
-    env:
-      REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ github.repository }}
     
     steps:
       - name: Generate snapshot date
@@ -40,3 +34,15 @@ jobs:
       - name: Build
         run: |
           melange build --runner docker --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg ./packages/**/melange.yaml
+
+      - name: Commit and Push APK files
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout main
+          git pull origin main
+
+          git add pkg/
+          git commit -m "Add built APKs from workflow run ${{ github.run_id }}"
+          git push origin main
