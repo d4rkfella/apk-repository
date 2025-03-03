@@ -40,4 +40,4 @@ jobs:
       - name: Build
         run: |
           ls -la
-          melange build --signing-key /tmp/melange.rsa --arch amd64 --out-dir /pkg /packages/catatonit/melange.yaml
+          melange build --signing-key /tmp/melange.rsa --arch amd64 --out-dir /pkg ./packages/catatonit/melange.yaml
