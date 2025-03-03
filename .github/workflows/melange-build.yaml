@@ -34,7 +34,7 @@ jobs:
       - name: Build APKs
         run: |
           for yaml_file in $(find ./src/packages -name "melange.yaml" | sort); do
-            sudo /home/linuxbrew/.linuxbrew/bin/melange build --namespace wolfi --runner docker --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "$yaml_file"
+            sudo /home/linuxbrew/.linuxbrew/bin/melange build --keyring-append https://packages.darkfellanetwork.com/melange.rsa.pub --repository-append https://packages.darkfellanetwork.com --namespace wolfi --runner docker --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "$yaml_file"
           done
 
       - name: Upload to S3 bucket
