@@ -1,0 +1,35 @@
+name: Build Docker Image
+
+on: 
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+      packages: write
+      contents: read
+      attestations: write
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
+    
+    steps:
+      - name: Generate snapshot date
+        id: snapshot-date
+        run: |
+          echo "epoch=$(date -u +%s)" >> $GITHUB_OUTPUT
+        shell: bash
+            
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+  
+      - name: Setup Homebrew
+        uses: Homebrew/actions/setup-homebrew@a13eda877cb779461da1de25f0991398d655b35c
+
+      - name: Install Melange
+        run: brew install melange
+
+      - name: Build
+        run: |
+          melange build --signing-key melange.rsa --arch amd64 --source-dir /packages --out-dir ./pkg
