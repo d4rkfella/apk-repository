@@ -13,15 +13,12 @@ package:
       - pcre
       - perl
       - zlib
-      - luajit2
 
 environment:
   contents:
     keyring:
-      - https://packages.darkfellanetwork.com/melange.rsa.pub
       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     repositories:
-      - https://packages.darkfellanetwork.com
       - https://packages.wolfi.dev/os
     packages:
       - build-base
@@ -37,7 +34,6 @@ environment:
       - perl-dev
       - readline-dev
       - zlib-dev
-      - luajit2-dev
 
 pipeline:
   - uses: fetch
@@ -48,6 +44,7 @@ pipeline:
   - runs: |
       ./configure \
         --build=${{host.triplet.gnu}} \
+        --prefix=/usr \
         --with-pcre \
         --with-cc-opt='-DNGX_LUA_ABORT_AT_PANIC -I/usr/include' \
         --with-ld-opt='-L/usr/lib -Wl,-rpath,/usr/lib' \
@@ -88,7 +85,6 @@ pipeline:
         --with-stream \
         --with-stream_ssl_module \
         --with-threads \
-        --with-luajit=/usr \
         --with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT' \
         --with-pcre-jit
 
@@ -98,8 +94,11 @@ pipeline:
 
   - name: Move binaries to /usr/bin
     runs: |
-      mkdir -p ${{targets.destdir}}/usr/bin
-      mv ${{targets.destdir}}/usr/local/openresty/bin/* ${{targets.destdir}}/usr/bin/
+      export LUAJIT_LIB=/usr/lib
+      export LUA_LIB_DIR="$LUAJIT_LIB/lua"
+      export LUAJIT_INC=/usr/include/luajit-2.1
+      ln -s luajit ${{targets.destdir}}/usr/bin/lua
+      ln -s "$LUAJIT_INC" ${{targets.destdir}}/usr/include/lua
 
   - name: Setup default config files
     runs: |
