@@ -107,7 +107,7 @@ subpackages:
       - uses: split/dev
     dependencies:
       runtime:
-        - openresty
+        - openresty-custom
     description: luajit dev
     test:
       pipeline:
