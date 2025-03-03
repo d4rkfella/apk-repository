@@ -1,5 +1,5 @@
 package:
-  name: luajit
+  name: luajit2
   version: 2.1-20250117
   epoch: 15
   description: OpenResty's branch of LuaJIT
@@ -38,18 +38,18 @@ pipeline:
       ln -s "$LUAJIT_INC" ${{targets.destdir}}/usr/include/lua
 
 subpackages:
-  - name: luajit-dev
+  - name: luajit2-dev
     pipeline:
       - uses: split/dev
     dependencies:
       runtime:
-        - luajit
+        - luajit2
     description: luajit dev
     test:
       pipeline:
         - uses: test/pkgconf
 
-  - name: luajit-doc
+  - name: luajit2-doc
     description: luajit docs
     pipeline:
       - uses: split/manpages
