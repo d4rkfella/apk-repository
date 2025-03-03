@@ -31,9 +31,12 @@ jobs:
       - name: Install Melange
         run: brew install melange
 
-      - name: Build
+      - name: Build APKs
         run: |
-          melange build --runner docker --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg ./src/packages/**/melange.yaml
+          for yaml_file in $(find ./src/packages -name "melange.yaml" | sort); do
+            echo "Building package with $yaml_file"
+            melange build --runner docker --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "$yaml_file"
+          done
 
       - name: Commit and Push APK files
         run: |
