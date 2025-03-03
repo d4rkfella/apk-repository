@@ -13,7 +13,7 @@ package:
       - pcre
       - perl
       - zlib
-      - luajit@darkfella
+      - luajit
 
 environment:
   contents:
@@ -21,7 +21,7 @@ environment:
       - https://packages.darkfellanetwork.com/melange.rsa.pub
       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     repositories:
-      - '@darkfella https://packages.darkfellanetwork.com'
+      - https://packages.darkfellanetwork.com
       - https://packages.wolfi.dev/os
     packages:
       - build-base
