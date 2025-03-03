@@ -1,6 +1,6 @@
 package:
   name: luajit-custom
-  version: 2.1-20250117
+  version: 2.1_p20250117
   epoch: 0
   description: OpenResty's branch of LuaJIT
   copyright:
