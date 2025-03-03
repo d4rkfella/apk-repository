@@ -15,10 +15,6 @@ package:
 
 environment:
   contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
     packages:
       - build-base
       - busybox
@@ -40,9 +36,9 @@ pipeline:
       uri: https://openresty.org/download/openresty-${{package.version}}.tar.gz
       expected-sha256: 79b071e27bdc143d5f401d0dbf504de4420070d867538c5edc2546d0351fd5c0
   
-  - uses: autoconf/configure
-    with:
-      opts: |
+  - runs: |
+      ./configure \
+        --build=${{host.triplet.gnu}} \
         --with-pcre \
         --with-cc-opt='-DNGX_LUA_ABORT_AT_PANIC -I/usr/include' \
         --with-ld-opt='-L/usr/lib -Wl,-rpath,/usr/lib' \
