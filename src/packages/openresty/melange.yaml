@@ -40,8 +40,7 @@ pipeline:
     with:
       uri: https://openresty.org/download/openresty-${{package.version}}.tar.gz
       expected-sha256: 79b071e27bdc143d5f401d0dbf504de4420070d867538c5edc2546d0351fd5c0
-  - runs: |
-      apk add --no-cache --allow-untrusted luajit https://packages.darkfellanetwork.com
+
   - runs: |
       ./configure \
         --build=${{host.triplet.gnu}} \
