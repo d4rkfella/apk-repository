@@ -1,0 +1,43 @@
+package:
+  name: luarocks
+  version: 3.11.1
+  epoch: 0
+  description: A package manager for Lua modules
+  dependencies:
+    runtime:
+      - openresty-custom
+
+environment:
+  contents:
+    keyring:
+      - https://packages.darkfellanetwork.com/melange.rsa.pub
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.darkfellanetwork.com
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - busybox
+      - luajit-dev-custom
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/luarocks/luarocks
+      tag: v3.11.1
+      expected-commit: fa2736e7c68094710643577b0153dac72ce4bcdc
+
+  - runs: |
+      ./configure \
+        --build=${{host.triplet.gnu}} \
+        --prefix=/usr \
+        --with-lua-include=/usr/luajit/include
+
+  - uses: autoconf/make
+    with:
+      opts: |
+        linux test
+ 
+  - uses: autoconf/make-install
+
+
+  - uses: strip
