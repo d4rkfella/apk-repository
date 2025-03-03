@@ -23,6 +23,7 @@ jobs:
       
       - name: Save private key
         run: |
+          touch /tmp/melange.rsa
           set +x
           echo -n "${{ secrets.MELANGE_PRIVATE_KEY }}" > /tmp/melange.rsa
           chmod 600 melange.rsa
