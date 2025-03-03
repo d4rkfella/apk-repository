@@ -5,7 +5,7 @@ package:
   description: A package manager for Lua modules
   dependencies:
     runtime:
-      - openresty-custom
+      - luajit-custom
 
 environment:
   contents:
@@ -29,11 +29,10 @@ pipeline:
   - runs: |
       ./configure \
         --prefix=/usr \
-        --with-lua-include=/usr/luajit/include
+        --with-lua-include=/usr/include
 
   - uses: autoconf/make
  
   - uses: autoconf/make-install
-
 
   - uses: strip
