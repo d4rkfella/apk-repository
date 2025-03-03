@@ -13,7 +13,7 @@ package:
       - pcre
       - perl
       - zlib
-      - luajit
+      - luajit2
 
 environment:
   contents:
@@ -37,7 +37,7 @@ environment:
       - perl-dev
       - readline-dev
       - zlib-dev
-      - luajit-dev@darkfella
+      - luajit2-dev
 
 pipeline:
   - uses: fetch
