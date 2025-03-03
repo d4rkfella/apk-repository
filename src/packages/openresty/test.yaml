@@ -13,12 +13,15 @@ package:
       - pcre
       - perl
       - zlib
+      - luajit-custom
 
 environment:
   contents:
     keyring:
+      - https://packages.darkfellanetwork.com/melange.rsa.pub
       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     repositories:
+      - https://packages.darkfellanetwork.com
       - https://packages.wolfi.dev/os
     packages:
       - build-base
@@ -34,6 +37,7 @@ environment:
       - perl-dev
       - readline-dev
       - zlib-dev
+      - luajit-dev-custom
 pipeline:
   - uses: fetch
     with:
@@ -84,6 +88,7 @@ pipeline:
         --with-stream \
         --with-stream_ssl_module \
         --with-threads \
+        --with-luajit=/usr \
         --with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT' \
         --with-pcre-jit
 
