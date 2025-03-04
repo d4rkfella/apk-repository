@@ -8,6 +8,8 @@ on:
 jobs:
   check-updates:
     runs-on: ubuntu-latest
+    outputs:
+      identifiers: ${{ steps.extract-ids.outputs.identifiers }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,7 +23,7 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
           yq --version
 
-      - name: Find and extract identifiers
+      - name: Extract identifiers
         id: extract-ids
         run: |
           echo "Extracting identifiers..."
@@ -29,12 +31,12 @@ jobs:
           identifiers=$(find . -name "melange.yaml" -exec yq '.update.release-monitor.identifier' {} \;)
           echo "Found identifiers: $identifiers"
           
-          # Remove 'null' entries and store valid identifiers in a file
-          identifiers=$(echo "$identifiers" | grep -v "null")
-          echo "Valid identifiers: $identifiers"
-
-          # Save identifiers as a comma-separated list and export it to be used later
-          echo "identifiers=$identifiers" >> $GITHUB_ENV
+          # Filter out 'null' and empty values, then store in the output variable
+          filtered_identifiers=$(echo "$identifiers" | grep -v 'null' | grep -v '^$')
+          echo "Valid identifiers: $filtered_identifiers"
+          
+          # Set the filtered identifiers as an output for this step
+          echo "::set-output name=identifiers::${filtered_identifiers}"
 
   release-monitoring:
     runs-on: ubuntu-latest
@@ -43,6 +45,9 @@ jobs:
       matrix:
         project_id: ${{ fromJson(needs.check-updates.outputs.identifiers) }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Run release-monitoring for each identifier
         uses: chainguard-images/actions/release-monitoring@main
         with:
