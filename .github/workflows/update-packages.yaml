@@ -17,8 +17,4 @@ jobs:
 
       - name: Print wolfictl version
         run: |
-          wolfictl --version
-
-      - name: Print wolfictl help
-        run: |
-          wolfictl --help
+          wolfictl update
