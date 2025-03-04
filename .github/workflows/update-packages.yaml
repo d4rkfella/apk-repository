@@ -36,17 +36,12 @@ jobs:
       - name: Set identifiers as environment variable
         id: set-ids
         run: |
-          # Set identifiers to be used in the matrix
+          # Read identifiers from file and format them correctly for GitHub Actions matrix
           identifiers=$(cat identifiers.txt)
-          echo "identifiers=$identifiers" >> $GITHUB_ENV
-
-      - name: Prepare matrix for release-monitoring action
-        id: prepare-matrix
-        run: |
-          # Prepare matrix for dynamic use in the next job
-          identifiers=$(cat identifiers.txt)
-          echo "::set-output name=matrix::$(echo $identifiers | tr '\n' ' ')"  # Output identifiers as space-separated values
-
+          # Convert identifiers to a space-separated list and store it as an output
+          matrix_ids=$(echo "$identifiers" | tr '\n' ' ')
+          echo "::set-output name=matrix::$matrix_ids"
+          
   release-monitoring:
     runs-on: ubuntu-latest
     needs: check-updates
