@@ -35,8 +35,12 @@ jobs:
           filtered_identifiers=$(echo "$identifiers" | grep -v 'null' | grep -v '^$')
           echo "Valid identifiers: $filtered_identifiers"
           
+          # Convert to an array format for matrix job
+          identifiers_array=$(echo "$filtered_identifiers" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "Array of identifiers: $identifiers_array"
+          
           # Set the filtered identifiers as an output for this step
-          echo "::set-output name=identifiers::${filtered_identifiers}"
+          echo "::set-output name=identifiers::${identifiers_array}"
 
   release-monitoring:
     runs-on: ubuntu-latest
