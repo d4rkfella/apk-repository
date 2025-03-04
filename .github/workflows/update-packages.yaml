@@ -18,28 +18,18 @@ jobs:
 
       - name: Find and update melange.yaml files
         run: |
-          find . -name "melange.yaml" | while read -r file; do
-            echo "Processing $file"
-
-            # Extract the project-id from the melange.yaml file
-            PROJECT_ID=$(yq e '.update.release-monitoring.project-id' "$file")
-
-            # Skip if project-id is not found
-            if [[ -z "$PROJECT_ID" || "$PROJECT_ID" == "null" ]]; then
-              echo "No project-id found in $file, skipping..."
-              continue
+          PROJECT_IDS=()
+          for file in $(find . -name "melange.yaml"); do
+            ID=$(yq e '.update.release-monitor.identifier' "$file")
+            if [[ -n "$ID" && "$ID" != "null" ]]; then
+              PROJECT_IDS+=("$ID")
             fi
-
-            echo "Fetching latest version for project-id: $PROJECT_ID"
-
-            # Call the GitHub Action dynamically using composite run steps
-            echo "::group::Running version fetch action for project $PROJECT_ID"
-            echo "project_id=$PROJECT_ID" >> "$GITHUB_ENV"
           done
+          echo "PROJECT_IDS=${PROJECT_IDS[*]}" >> $GITHUB_ENV
 
       - name: Run Fetch Versions Action
         id: fetch-version
         uses: chainguard-images/actions/release-monitoring@main
         with:
-          project-id: "${{ env.project_id }}"
-          api-token: "${{ secrets.RELEASE_MONITORING_TOKEN }}"
+          project-id: "${{ env.PROJECT_IDS }}"
+          api-token: ""
