@@ -12,11 +12,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Run wolfictl-update-rm
-        uses: wolfi-dev/actions/wolfictl-update-rm@main  # Replace with the correct path to the action
-        with:
-          repository: ${{ github.repository }}  # Current repository (org/repo)
-          token: ${{ secrets.GITHUB_TOKEN }}  # GitHub token (automatically provided by GitHub Actions)
-          release_monitor_token: ${{ secrets.RELEASE_MONITOR_TOKEN }}  # Release Monitor token (stored in GitHub Secrets)
-          git_author_name: "test"  # Author name for Git commits
-          git_author_email: "wolfi-bot@users.noreply.github.com>"  # Author email for Git commits
+      - name: Print wolfictl version
+        run: |
+          docker run --rm ghcr.io/wolfi-dev/sdk:latest@sha256:091a98bee85f4dcad72c56f2c7536e2373b814c80d9aed78901ff632781ca629 wolfictl --version
+
+      - name: Print wolfictl help
+        run: |
+          docker run --rm ghcr.io/wolfi-dev/sdk:latest@sha256:091a98bee85f4dcad72c56f2c7536e2373b814c80d9aed78901ff632781ca629 wolfictl --help
