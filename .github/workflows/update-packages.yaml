@@ -6,30 +6,33 @@ on:
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
-  update-melange:
+  check-updates:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install yq (for YAML processing)
-        run: sudo apt-get update && sudo apt-get install -y jq
-
-      - name: Find and update melange.yaml files
+      - name: Find and extract identifiers
+        id: extract-ids
         run: |
-          PROJECT_IDS=()
-          for file in $(find . -name "melange.yaml"); do
-            ID=$(yq e '.update.release-monitor.identifier' "$file")
-            if [[ -n "$ID" && "$ID" != "null" ]]; then
-              PROJECT_IDS+=("$ID")
-            fi
+          echo "Extracting identifiers..."
+          # Find and extract all identifiers from melange.yaml files
+          identifiers=$(find . -name "melange.yaml" -exec yq '.update.release-monitor.identifier' {} \;)
+          echo "Found identifiers: $identifiers"
+          # Set each identifier into the GitHub environment variable and run the update check
+          for id in $identifiers; do
+            echo "identifier=$id" >> "$GITHUB_ENV"
+            echo "::group::Processing identifier: $id"
+            
+            # Run release-monitoring action to fetch updates for each identifier
+            uses: chainguard-images/actions/release-monitoring@main
+            with:
+              project-id: $id  # Pass the identifier of each project
+            echo "::endgroup::"
           done
-          echo "PROJECT_IDS=${PROJECT_IDS[*]}" >> $GITHUB_ENV
 
-      - name: Run Fetch Versions Action
-        id: fetch-version
-        uses: chainguard-images/actions/release-monitoring@main
-        with:
-          project-id: "${{ env.PROJECT_IDS }}"
-          api-token: ""
+      # Optional: Check update status (debugging/logging purposes)
+      - name: Debug - Check update status
+        run: |
+          echo "Identifier ${{ env.identifier }}: Update check completed."
+
