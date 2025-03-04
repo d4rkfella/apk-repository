@@ -29,17 +29,14 @@ jobs:
           identifiers=$(find . -name "melange.yaml" -exec yq '.update.release-monitor.identifier' {} \;)
           echo "Found identifiers: $identifiers"
           
-          # Remove 'null' entries and store valid identifiers in an array
-          identifiers=$(echo "$identifiers" | grep -v "null")
-          echo "Valid identifiers: $identifiers"
-
-          # Save identifiers as a comma-separated list
-          echo "identifiers=$identifiers" >> $GITHUB_ENV
+          # Remove 'null' entries and store valid identifiers in a file
+          echo "$identifiers" | grep -v "null" > identifiers.txt
+          echo "Valid identifiers saved to identifiers.txt"
 
       - name: Run release-monitoring for each identifier
         run: |
-          # Loop through each identifier and trigger the release-monitoring action
-          for id in $(echo ${{ env.identifiers }} | tr "," "\n"); do
+          # Read identifiers from the file and loop over them
+          while IFS= read -r id; do
             echo "Processing identifier: $id"
             # Trigger the release-monitoring action with the project-id for each identifier
             echo "Fetching versions for project id: $id"
@@ -49,3 +46,4 @@ jobs:
               uses: chainguard-images/actions/release-monitoring@main
               with:
                 project-id: $id
+          done < identifiers.txt
