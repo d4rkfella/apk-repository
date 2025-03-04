@@ -34,5 +34,5 @@ pipeline:
       npm run build
       
   - runs: |
-      mkdir -p "${{targets.destdir}}"
+      mkdir -p ${{targets.destdir}}/usr/openresty/nginx/html/
       cp -R /home/build/kubevirt-manager/usr/src/app/dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
