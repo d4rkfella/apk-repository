@@ -1,10 +1,3 @@
-name: Update Melange Packages
-
-on:
-  schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight
-  workflow_dispatch:  # Allows manual trigger
-
 jobs:
   check-updates:
     runs-on: ubuntu-latest
@@ -28,19 +21,25 @@ jobs:
           # Find and extract all identifiers from melange.yaml files
           identifiers=$(find . -name "melange.yaml" -exec yq '.update.release-monitor.identifier' {} \;)
           echo "Found identifiers: $identifiers"
-          # Set each identifier into the GitHub environment variable and run the update check
+          
+          # Remove 'null' entries and loop over valid identifiers
+          identifiers=$(echo "$identifiers" | grep -v "null")
+          
+          # Iterate over valid identifiers and trigger release-monitoring action
           for id in $identifiers; do
+            echo "Processing identifier: $id"
             echo "identifier=$id" >> "$GITHUB_ENV"
-            echo "::group::Processing identifier: $id"
+            echo "::group::Running release-monitoring for identifier: $id"
             
-            # Run release-monitoring action to fetch updates for each identifier
-            uses: chainguard-images/actions/release-monitoring@main
-            with:
-              project-id: $id  # Pass the identifier of each project
+            # Run the release-monitoring action for each identifier
+            - name: Fetch versions for $id from release-monitoring.org
+              uses: chainguard-images/actions/release-monitoring@main
+              with:
+                project-id: $id
+            
             echo "::endgroup::"
           done
 
-      # Optional: Check update status (debugging/logging purposes)
       - name: Debug - Check update status
         run: |
-          echo "Identifier ${{ env.identifier }}: Update check completed."
+          echo "Identifiers checked: ${{ env.identifier }}."
