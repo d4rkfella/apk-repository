@@ -1,3 +1,10 @@
+name: Update Melange Packages
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight
+  workflow_dispatch:  # Allows manual trigger
+
 jobs:
   check-updates:
     runs-on: ubuntu-latest
