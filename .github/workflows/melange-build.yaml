@@ -25,16 +25,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
   
-      - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@a13eda877cb779461da1de25f0991398d655b35c
-
-      - name: Install Melange
-        run: brew install melange
+      - name: Setup melange
+        uses: chainguard-dev/actions/setup-melange@main
 
       - name: Build APKs
         run: |
           for yaml_file in $(find ./src/packages -name "melange.yaml" | sort); do
-            sudo /home/linuxbrew/.linuxbrew/bin/melange build --namespace wolfi --runner docker --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "$yaml_file"
+           melange build --namespace wolfi --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "$yaml_file"
           done
 
       - name: Upload to S3 bucket
