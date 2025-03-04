@@ -12,6 +12,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: install wolfictl
+        uses : wolfi-dev/actions/install-wolfictl@main
+
       - name: Print wolfictl version
         run: |
           docker run --rm ghcr.io/wolfi-dev/sdk:latest@sha256:091a98bee85f4dcad72c56f2c7536e2373b814c80d9aed78901ff632781ca629 wolfictl --version
