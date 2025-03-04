@@ -1,0 +1,38 @@
+package:
+  name: kubevirt-manager
+  version: 1.5.0
+  epoch: 0
+  description: Simple Angular Frontend Web UI Interface to operate Kubevirt
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - npm
+      - git
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kubevirt-manager/kubevirt-manager
+      branch: main
+
+  - working-directory: /home/build/kubevirt-manager/usr/src/app/src/assets
+    runs: |
+      git clone https://github.com/novnc/noVNC.git
+
+  - working-directory: /home/build/kubevirt-manager/usr/src/app
+    runs: |
+      npm run clean
+      npm install -g @angular/cli@18.1.1
+      npm install
+      npm run build
+      
+  - runs: |
+      mkdir -p "${{targets.destdir}}"
+      cp -R /home/build/kubevirt-manager/usr/src/app/dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
