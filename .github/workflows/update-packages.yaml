@@ -40,12 +40,21 @@ jobs:
           identifiers=$(cat identifiers.txt)
           echo "identifiers=$identifiers" >> $GITHUB_ENV
 
+      - name: Prepare matrix for release-monitoring action
+        id: prepare-matrix
+        run: |
+          # Prepare matrix for dynamic use in the next job
+          identifiers=$(cat identifiers.txt)
+          echo "::set-output name=matrix::$(echo $identifiers | tr '\n' ' ')"  # Output identifiers as space-separated values
+
+  release-monitoring:
+    runs-on: ubuntu-latest
+    needs: check-updates
+    strategy:
+      matrix:
+        project_id: ${{fromJson(needs.check-updates.outputs.matrix)}}
+    steps:
       - name: Run release-monitoring for each identifier
         uses: chainguard-images/actions/release-monitoring@main
         with:
           project-id: ${{ matrix.project_id }}
-
-    strategy:
-      matrix:
-        project_id: ${{fromJson(needs.extract-ids.outputs.identifiers)}}
-        fail-fast: false
