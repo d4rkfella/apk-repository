@@ -17,17 +17,17 @@ environment:
       - git
 
 pipeline:
-  - uses: git-checkout
-    with:
-      repository: https://github.com/kubevirt-manager/kubevirt-manager
-      branch: main
-
-  - working-directory: /home/build/kubevirt-manager/usr/src/app/src/assets
-    runs: |
+  - runs: |
+      git clone https://github.com/kubevirt-manager/kubevirt-manager
+  
+  - runs: |
+      mkdir -p ${{targets.destdir}}/usr/src/app/src/assets
+      cd ${{targets.destdir}}/usr/src/app/src/assets
       git clone https://github.com/novnc/noVNC.git
 
-  - working-directory: /home/build/kubevirt-manager/usr/src/app
-    runs: |
+  - runs: |
+      mkdir -p ${{targets.destdir}}/usr/src/app
+      cp -R /home/build/kubevirt-manager/usr/src/app/* ${{targets.destdir}}/usr/src/app
       npm run clean
       npm install -g @angular/cli@18.1.1
       npm install
