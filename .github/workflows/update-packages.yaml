@@ -12,6 +12,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install yq
+        run: |
+          echo "Installing yq..."
+          sudo apt-get update
+          sudo apt-get install -y jq
+          wget https://github.com/mikefarah/yq/releases/download/v4.18.1/yq_linux_amd64 -O /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+          yq --version
+
       - name: Find and extract identifiers
         id: extract-ids
         run: |
@@ -35,4 +44,3 @@ jobs:
       - name: Debug - Check update status
         run: |
           echo "Identifier ${{ env.identifier }}: Update check completed."
-
