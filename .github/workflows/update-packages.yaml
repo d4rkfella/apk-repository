@@ -33,17 +33,19 @@ jobs:
           echo "$identifiers" | grep -v "null" > identifiers.txt
           echo "Valid identifiers saved to identifiers.txt"
 
-      - name: Run release-monitoring for each identifier
+      - name: Set identifiers as environment variable
+        id: set-ids
         run: |
-          # Read identifiers from the file and loop over them
-          while IFS= read -r id; do
-            echo "Processing identifier: $id"
-            # Trigger the release-monitoring action with the project-id for each identifier
-            echo "Fetching versions for project id: $id"
-            
-            # Run the release-monitoring action for each identifier
-            - name: Fetch versions for $id from release-monitoring.org
-              uses: chainguard-images/actions/release-monitoring@main
-              with:
-                project-id: $id
-          done < identifiers.txt
+          # Set identifiers to be used in the matrix
+          identifiers=$(cat identifiers.txt)
+          echo "identifiers=$identifiers" >> $GITHUB_ENV
+
+      - name: Run release-monitoring for each identifier
+        uses: chainguard-images/actions/release-monitoring@main
+        with:
+          project-id: ${{ matrix.project_id }}
+
+    strategy:
+      matrix:
+        project_id: ${{fromJson(needs.extract-ids.outputs.identifiers)}}
+        fail-fast: false
