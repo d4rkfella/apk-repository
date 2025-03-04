@@ -1,20 +1,45 @@
-name: Update Dependencies with wolfictl
+name: Update Melange Packages
 
 on:
   schedule:
     - cron: '0 0 * * *'  # Runs daily at midnight
-  workflow_dispatch:  # Allows manual triggering
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
-  update:
+  update-melange:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: install wolfictl
-        uses : wolfi-dev/actions/install-wolfictl@main
+      - name: Install yq (for YAML processing)
+        run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Print wolfictl version
+      - name: Find and update melange.yaml files
         run: |
-          wolfictl --help
+          find . -name "melange.yaml" | while read -r file; do
+            echo "Processing $file"
+
+            # Extract the project-id from the melange.yaml file
+            PROJECT_ID=$(yq e '.update.release-monitoring.project-id' "$file")
+
+            # Skip if project-id is not found
+            if [[ -z "$PROJECT_ID" || "$PROJECT_ID" == "null" ]]; then
+              echo "No project-id found in $file, skipping..."
+              continue
+            fi
+
+            echo "Fetching latest version for project-id: $PROJECT_ID"
+
+            # Call the GitHub Action dynamically using composite run steps
+            echo "::group::Running version fetch action for project $PROJECT_ID"
+            echo "project_id=$PROJECT_ID" >> "$GITHUB_ENV"
+          done
+
+      - name: Run Fetch Versions Action
+        id: fetch-version
+        uses: chainguard-images/actions/release-monitoring@main
+        with:
+          project-id: "${{ env.project_id }}"
+          api-token: "${{ secrets.RELEASE_MONITORING_TOKEN }}"
