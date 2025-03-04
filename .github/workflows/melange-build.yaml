@@ -11,6 +11,35 @@ jobs:
     steps:
       - name: Setup melange
         uses: chainguard-dev/actions/setup-melange@main
+
+      - name: Configure AppArmor for bubblewrap
+        run: |
+          echo 'kernel.apparmor_restrict_unprivileged_userns = 0' | sudo tee /etc/sysctl.d/60-apparmor-namespace.conf
+          sudo sysctl --system
+
+      - name: Configure AppArmor for bubblewrap and melange
+        run: |
+          sudo tee /etc/apparmor.d/local-bwrap <<EOF
+          abi <abi/4.0>,
+          include <tunables/global>
+      
+          profile local-bwrap /usr/bin/bwrap flags=(unconfined) {
+            userns,
+            include if exists <local/bwrap>
+          }
+          EOF
+      
+          sudo tee /etc/apparmor.d/local-melange <<EOF
+          abi <abi/4.0>,
+          include <tunables/global>
+      
+          profile local-melange /home/runner/go/bin/melange flags=(unconfined) {
+            userns,
+            include if exists <local/melange>
+          }
+          EOF
+      
+          sudo systemctl reload apparmor
         
       - name: Generate snapshot date
         id: snapshot-date
