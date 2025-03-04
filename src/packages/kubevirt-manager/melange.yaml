@@ -13,21 +13,22 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
+      - nodejs-22
       - npm
       - git
+      - busybox
 
 pipeline:
   - runs: |
       git clone https://github.com/kubevirt-manager/kubevirt-manager
   
   - runs: |
-      mkdir -p ${{targets.destdir}}/usr/src/app/src/assets
-      cd ${{targets.destdir}}/usr/src/app/src/assets
+      mkdir -p kubevirt-manager/src/app/src/assets
+      cd kubevirt-manager/src/app/src/assets
       git clone https://github.com/novnc/noVNC.git
 
   - runs: |
-      mkdir -p ${{targets.destdir}}/usr/src/app
-      cp -R /home/build/kubevirt-manager/usr/src/app/* ${{targets.destdir}}/usr/src/app
+      cd kubevirt-manager
       npm run clean
       npm install -g @angular/cli@18.1.1
       npm install
@@ -35,4 +36,4 @@ pipeline:
       
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/openresty/nginx/html/
-      cp -R /home/build/kubevirt-manager/usr/src/app/dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
+      cp -R kubevirt-manager/dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
