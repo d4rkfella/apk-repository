@@ -43,6 +43,7 @@ jobs:
               uses: chainguard-images/actions/release-monitoring@main
               with:
                 project-id: $id
+                api-token: ""
             
             echo "::endgroup::"
           done
