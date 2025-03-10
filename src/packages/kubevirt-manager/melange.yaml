@@ -25,6 +25,7 @@ environment:
       - git
       - busybox
       - luarocks
+      - luajit-custom
 
 pipeline:
   - runs: |
