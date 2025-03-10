@@ -43,6 +43,8 @@ pipeline:
       npm run build
       
   - runs: |
+      luarocks install lua-resty-openidc && \
+      luarocks install lua-resty-redis-connector
       mkdir -p ${{targets.destdir}}/usr/openresty/nginx/html/
       mkdir ${{targets.destdir}}/docker-entrypoint.d/
       cp -R kubevirt-manager/dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
