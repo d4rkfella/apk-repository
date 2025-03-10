@@ -6,7 +6,6 @@ package:
   dependencies:
     runtime:
       - bash
-      - openresty-custom
       - kubectl
   copyright:
     - license: Apache-2.0
@@ -25,7 +24,6 @@ environment:
       - git
       - busybox
       - luarocks
-      - luajit-custom
 
 pipeline:
   - runs: |
