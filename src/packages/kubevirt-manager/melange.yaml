@@ -25,6 +25,8 @@ environment:
       - git
       - busybox
       - luarocks
+      - curl
+      - wget
 pipeline:
   - runs: |
       git clone https://github.com/kubevirt-manager/kubevirt-manager
@@ -42,6 +44,7 @@ pipeline:
       npm run build
       
   - runs: |
+      ls -la /
       luarocks install lua-resty-openidc && \
       luarocks install lua-resty-redis-connector
       mkdir -p ${{targets.destdir}}/usr/openresty/nginx/html/
