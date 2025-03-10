@@ -16,6 +16,8 @@ package:
       - luajit-custom
 
 environment:
+  UID: 0
+  GID: 0
   contents:
     keyring:
       - https://packages.darkfellanetwork.com/melange.rsa.pub
