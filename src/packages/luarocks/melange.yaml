@@ -3,9 +3,6 @@ package:
   version: 3.11.1
   epoch: 0
   description: A package manager for Lua modules
-  dependencies:
-    runtime:
-      - luajit-dev-custom
 
 environment:
   contents:
@@ -29,7 +26,7 @@ pipeline:
   - runs: |
       ./configure \
         --prefix=/usr \
-        --with-lua-include=/usr/include
+        --with-lua-include=/usr/include/lua
 
   - uses: autoconf/make
  
