@@ -3,6 +3,9 @@ package:
   version: 3.11.1
   epoch: 0
   description: A package manager for Lua modules
+  dependencies:
+    runtime:
+      - curl
 
 environment:
   contents:
