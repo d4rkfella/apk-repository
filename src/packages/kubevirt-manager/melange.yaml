@@ -7,6 +7,7 @@ package:
     runtime:
       - bash
       - kubectl
+      - openresty-custom
   copyright:
     - license: Apache-2.0
 
@@ -23,7 +24,7 @@ environment:
       - npm
       - git
       - busybox
-
+      - luarocks
 pipeline:
   - runs: |
       git clone https://github.com/kubevirt-manager/kubevirt-manager
@@ -46,7 +47,7 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/openresty/nginx/html/
       mkdir ${{targets.destdir}}/docker-entrypoint.d/
       cp -R kubevirt-manager/dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
-      install -m440 -D nginx.conf ${{targets.destdir}}/etc/nginx/
-      install -m440 -D default.conf ${{targets.destdir}}/etc/nginx/conf.d
-      install -m550 -D 30-tune-worker-processes.sh 45-create-bundle-ca.sh 91-startkubectl.sh ${{targets.destdir}}/docker-entrypoint.d/
-      install -m550 -D docker-entrypoint.sh ${{targets.destdir}}/
+      install -m440 -D ./resources/nginx.conf ${{targets.destdir}}/etc/nginx/
+      install -m440 -D ./resources/default.conf ${{targets.destdir}}/etc/nginx/conf.d
+      install -m550 -D ./resources/30-tune-worker-processes.sh ./resources/45-create-bundle-ca.sh ./resources/91-startkubectl.sh ${{targets.destdir}}/docker-entrypoint.d/
+      install -m550 -D ./resources/docker-entrypoint.sh ${{targets.destdir}}/
