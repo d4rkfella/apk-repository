@@ -53,5 +53,5 @@ pipeline:
       cd apk-repository
       install -m440 -D src/packages/kubevirt-manager/resources/nginx.conf ${{targets.destdir}}/etc/nginx/nginx.conf
       install -m440 -D src/packages/kubevirt-manager/resources/default.conf ${{targets.destdir}}/etc/nginx/conf.d/default.conf
-      install -m550 -D src/packages/kubevirt-manager/resources/30-tune-worker-processes.sh /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/45-create-bundle-ca.sh /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/91-startkubectl.sh ${{targets.destdir}}/docker-entrypoint.d/
+      install -m550 -D src/packages/kubevirt-manager/resources/30-tune-worker-processes.sh src/packages/kubevirt-manager/resources/45-create-bundle-ca.sh src/packages/kubevirt-manager/resources/91-startkubectl.sh ${{targets.destdir}}/docker-entrypoint.d/
       install -m550 -D src/packages/kubevirt-manager/resources/docker-entrypoint.sh ${{targets.destdir}}/
