@@ -50,6 +50,7 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/openresty/nginx/html/
       mkdir ${{targets.destdir}}/docker-entrypoint.d/
       cp -R kubevirt-manager/dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
+      ls -la /home/runner/work/
       install -m440 -D /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/nginx.conf ${{targets.destdir}}/etc/nginx/
       install -m440 -D /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/default.conf ${{targets.destdir}}/etc/nginx/conf.d
       install -m550 -D /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/30-tune-worker-processes.sh /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/45-create-bundle-ca.sh /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/91-startkubectl.sh ${{targets.destdir}}/docker-entrypoint.d/
