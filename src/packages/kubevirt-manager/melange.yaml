@@ -29,8 +29,8 @@ environment:
       - wget
 pipeline:
   - runs: |
-      ls -R .
       git clone https://github.com/kubevirt-manager/kubevirt-manager
+      git clone https://github.com/d4rkfella/apk-repository
   
   - runs: |
       mkdir -p kubevirt-manager/src/app/src/assets
@@ -51,8 +51,8 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/openresty/nginx/html/
       mkdir ${{targets.destdir}}/docker-entrypoint.d/
       cp -R kubevirt-manager/dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
-      ls -la /var/build/sources
-      install -m440 -D /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/nginx.conf ${{targets.destdir}}/etc/nginx/
-      install -m440 -D /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/default.conf ${{targets.destdir}}/etc/nginx/conf.d
-      install -m550 -D /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/30-tune-worker-processes.sh /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/45-create-bundle-ca.sh /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/91-startkubectl.sh ${{targets.destdir}}/docker-entrypoint.d/
-      install -m550 -D /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/docker-entrypoint.sh ${{targets.destdir}}/
+      cd apk-repository
+      install -m440 -D src/packages/kubevirt-manager/resources/nginx.conf ${{targets.destdir}}/etc/nginx/
+      install -m440 -D src/packages/kubevirt-manager/resources/default.conf ${{targets.destdir}}/etc/nginx/conf.d
+      install -m550 -D src/packages/kubevirt-manager/resources/30-tune-worker-processes.sh /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/45-create-bundle-ca.sh /home/runner/work/apk-repository/apk-repository/src/packages/kubevirt-manager/resources/91-startkubectl.sh ${{targets.destdir}}/docker-entrypoint.d/
+      install -m550 -D src/packages/kubevirt-manager/resources/docker-entrypoint.sh ${{targets.destdir}}/
