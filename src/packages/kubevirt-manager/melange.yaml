@@ -29,7 +29,7 @@ environment:
       - wget
 pipeline:
   - runs: |
-      ls -R "${{ .Env.SOURCE_DATE_EPOCH }}"
+      ls -la ./src/packages
       git clone https://github.com/kubevirt-manager/kubevirt-manager
   
   - runs: |
