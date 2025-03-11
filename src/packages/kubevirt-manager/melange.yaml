@@ -29,6 +29,17 @@ environment:
       - wget
 pipeline:
   - runs: |
+      # Debug: Search for /src/packages in the entire filesystem
+      echo "Searching for /src/packages..."
+      find / -type d -name "packages" 2>/dev/null
+
+      # If found, list its contents
+      if found_path=$(find / -type d -path "*/src/packages" 2>/dev/null); then
+        echo "/src/packages found at: $found_path"
+        ls -R "$found_path"
+      else
+        echo "/src/packages not found!"
+      fi
       git clone https://github.com/kubevirt-manager/kubevirt-manager
   
   - runs: |
