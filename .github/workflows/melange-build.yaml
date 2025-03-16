@@ -12,7 +12,7 @@ jobs:
   changed-files:
     runs-on: ubuntu-24.04
     outputs:
-      changed-files: ${{ steps.changed-files.outputs.changed-files }}
+      changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
     permissions:
       contents: read
     
