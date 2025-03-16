@@ -102,7 +102,7 @@ jobs:
       
       - name: Merge Index
         run: |
-          melange index --source /tmp/APKINDEX.tar.gz --merge --output .pkg/x86_64/APKINDEX.tar.gz .pkg/x86_64/*.apk
+          melange index --source /tmp/APKINDEX.tar.gz --merge --output ./pkg/x86_64/APKINDEX.tar.gz ./pkg/x86_64/*.apk
       
       - name: Upload to S3 bucket
         run: |
