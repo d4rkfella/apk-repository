@@ -33,7 +33,7 @@ jobs:
         run: |
           echo "Extracting identifiers and file paths..."
       
-          identifiers_and_paths=$(find . -name "melange.yaml" -exec sh -c '
+          identifiers_and_paths=$(find . -name "melange.yaml" -exec bash -c '
             file="{}"
             identifier=$(yq ".update.release-monitor.identifier" "$file")
             if [[ "$identifier" != "null" && -n "$identifier" ]]; then
@@ -45,16 +45,14 @@ jobs:
           echo "$identifiers_and_paths"
       
           identifiers_array=()
-          for entry in $identifiers_and_paths; do
-            path=$(echo $entry | cut -d ',' -f 1)
-            identifier=$(echo $entry | cut -d ',' -f 2)
       
+          while IFS=, read -r path identifier; do
             identifiers_array+=("{\"path\":\"$path\",\"identifier\":\"$identifier\"}")
-          done
+          done <<< "$identifiers_and_paths"
       
           identifiers_json="[${identifiers_array[*]}]"
           echo "Array of identifiers and paths: $identifiers_json"
-          echo "::set-output name=identifiers::${identifiers_json}"
+          "identifiers=$identifiers_json" >> $GITHUB_OUTPUT
 
   release-monitoring:
     runs-on: ubuntu-latest
