@@ -12,7 +12,7 @@ jobs:
   changed-files:
     runs-on: ubuntu-24.04
     outputs:
-      changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
+      packages: ${{ steps.changed-files.outputs.all_changed_files }}
     permissions:
       contents: read
     
@@ -35,7 +35,7 @@ jobs:
   build:
     needs: changed-files
     runs-on: ubuntu-24.04
-    if: ${{ needs.changed-files.outputs.changed-files != '[]' }}
+    if: ${{ needs.changed-files.outputs.packages != '[]' }}
     strategy:
       matrix:
         packages: ${{ needs.changed-files.outputs.packages }}
@@ -93,7 +93,7 @@ jobs:
       - name: Build APKs
         run: |
               echo "Building package: "${{ matrix.package }}""
-              melange build --source-dir "$GITHUB_WORKSPACE" --namespace wolfi --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "${{ matrix.package }}"
+              melange build --source-dir "$GITHUB_WORKSPACE" --namespace wolfi --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "${{ matrix.packages }}"
 
       - name: Upload to S3 bucket
         run: |
