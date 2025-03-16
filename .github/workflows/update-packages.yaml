@@ -50,17 +50,14 @@ jobs:
           # Initialize the array
           identifiers_array=()
       
-          # Process each extracted entry
+          # Process each extracted entry and create the necessary JSON structure
           while IFS=, read -r path identifier; do
             # Add the file path and identifier to the array in the format needed
             identifiers_array+=("{\"path\":\"$path\",\"identifier\":\"$identifier\"}")
           done <<< "$identifiers_and_paths"
       
-          # Ensure the array is comma-separated and properly formatted
-          identifiers_json="[${identifiers_array[*]}]"
-      
-          # Remove spaces between elements in the JSON array
-          identifiers_json=$(echo "$identifiers_json" | sed 's/},{/}, {/g')
+          # Join array elements into a single string with commas
+          identifiers_json="[$(printf "%s," "${identifiers_array[@]}" | sed 's/,$//')]"
       
           echo "Array of identifiers and paths: $identifiers_json"
       
