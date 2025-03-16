@@ -38,7 +38,7 @@ jobs:
     if: ${{ needs.changed-files.outputs.packages != '[]' }}
     strategy:
       matrix:
-        packages: ${{ needs.changed-files.outputs.packages }}
+        packages: ${{ fromJSON(needs.changed-files.outputs.packages) }}
       max-parallel: 4
       fail-fast: false
     steps:
