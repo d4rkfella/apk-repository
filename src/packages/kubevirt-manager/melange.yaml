@@ -12,12 +12,6 @@ package:
     - license: teste
 
 environment:
-  accounts:
-    runas:  
-      users:
-        - uid=0
-      groups:
-        - gid=0
   contents:
     keyring:
       - https://packages.darkfellanetwork.com/melange.rsa.pub
