@@ -1,7 +1,7 @@
 package:
   name: kubevirt-manager
   version: 1.5.0
-  epoch: 0
+  epoch: 1
   description: Simple Angular Frontend Web UI Interface to operate Kubevirt
   dependencies:
     runtime:
