@@ -5,6 +5,7 @@ on:
   push:
     branches: ["main"]
     paths: ["src/packages/**/melange.yaml"]
+
 permissions:
   contents: read
 
@@ -12,10 +13,7 @@ jobs:
   changed-files:
     runs-on: ubuntu-24.04
     outputs:
-      packages: ${{ steps.changed-files.outputs.all_changed_files }}
-    permissions:
-      contents: read
-    
+      packages: ${{ steps.changed-files.outputs.all_changed_files }}   
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
@@ -92,9 +90,21 @@ jobs:
       
       - name: Build APKs
         run: |
-              echo "Building package: "${{ matrix.package }}""
-              melange build --source-dir "$GITHUB_WORKSPACE" --namespace wolfi --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "${{ matrix.packages }}"
-
+              echo "Building package: "${{ matrix.packages }}""
+              melange build --source-dir "$GITHUB_WORKSPACE" --generate-index false --namespace wolfi --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "${{ matrix.packages }}"
+      
+      - name: Download the latest index file
+        run: |
+          aws s3 cp s3://packages/x86_64/APKINDEX.tar.gz /tmp --endpoint-url=$AWS_ENDPOINT_URL
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}   
+      
+      - name: Merge Index
+        run: |
+          melange index --source /tmp/APKINDEX.tar.gz --merge --output .pkg/x86_64/APKINDEX.tar.gz .pkg/x86_64/*.apk
+      
       - name: Upload to S3 bucket
         run: |
           aws s3 cp --recursive pkg/ s3://packages/ --endpoint-url $ENDPOINT_URL --checksum-algorithm CRC32
