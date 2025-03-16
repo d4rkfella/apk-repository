@@ -97,7 +97,7 @@ jobs:
       - name: Check if an update is available
         run: |
           latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
-          current_version=$(yq ".packages.version" "${{ matrix.identifier.path }}")
+          current_version=$(yq ".package.version" "${{ matrix.identifier.path }}")
           echo $current_version
           
           if [[ "$latest_version" > "$current_version" ]]; then
