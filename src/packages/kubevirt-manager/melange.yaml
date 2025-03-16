@@ -9,7 +9,7 @@ package:
       - kubectl
       - openresty-custom
   copyright:
-    - license: Apache-2.0
+    - license: test
 
 environment:
   accounts:
