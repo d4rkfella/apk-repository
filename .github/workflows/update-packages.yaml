@@ -52,7 +52,7 @@ jobs:
       
           identifiers_json="[${identifiers_array[*]}]"
           echo "Array of identifiers and paths: $identifiers_json"
-          "identifiers=$identifiers_json" >> $GITHUB_OUTPUT
+          echo "identifiers=$identifiers_json" >> $GITHUB_OUTPUT
 
   release-monitoring:
     runs-on: ubuntu-latest
