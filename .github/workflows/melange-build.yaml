@@ -36,10 +36,10 @@ jobs:
   build:
     needs: changed-files
     runs-on: ubuntu-24.04
-    if: ${{ needs.changed-files.outputs.changed_files != '[]' }}
+    if: ${{ needs.changed-files.outputs.packages != '[]' }}
     strategy:
       matrix:
-        package: ${{ needs.changed-files.outputs.packages }}
+        packages: ${{ needs.changed-files.outputs.packages }}
       max-parallel: 4
       fail-fast: false
     steps:
