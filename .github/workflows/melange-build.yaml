@@ -12,7 +12,7 @@ jobs:
   changed-files:
     runs-on: ubuntu-24.04
     outputs:
-      packages: ${{ steps.packages.outputs.packages }}
+      changed-files: ${{ steps.changed-files.outputs.changed-files }}
     permissions:
       contents: read
     
@@ -30,16 +30,12 @@ jobs:
         uses: JJGadgets/tj-actions-changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
         with:
           files: src/packages/**/melange.yaml
-      
-      - name: Set changed files output
-        id: packages
-        run: |
-          echo "packages=${{ steps.changed-files.outputs.all_changed_and_modified_files }}" >> $GITHUB_OUTPUT
+          matrix: true      
   
   build:
     needs: changed-files
     runs-on: ubuntu-24.04
-    if: ${{ needs.changed-files.outputs.packages != '' }}
+    if: ${{ needs.changed-files.outputs.changed-files != '[]' }}
     strategy:
       matrix:
         packages: ${{ needs.changed-files.outputs.packages }}
