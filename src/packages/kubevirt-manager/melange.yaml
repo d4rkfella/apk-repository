@@ -9,7 +9,7 @@ package:
       - kubectl
       - openresty-custom
   copyright:
-    - license: teste
+    - license: testf
 
 environment:
   contents:
