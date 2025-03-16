@@ -36,7 +36,7 @@ jobs:
   build:
     needs: changed-files
     runs-on: ubuntu-24.04
-    if: ${{ needs.changed-files.outputs.packages != '[]' }}
+    if: ${{ needs.changed-files.outputs.packages != '' }}
     strategy:
       matrix:
         packages: ${{ needs.changed-files.outputs.packages }}
