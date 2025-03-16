@@ -80,6 +80,19 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Run release-monitoring for each identifier
+        id: release-monitoring
         uses: chainguard-images/actions/release-monitoring@0c41b080c7a4d6f7caf510a1c6f67d593f687789 # main
         with:
           project-id: ${{ matrix.identifier.identifier }}
+
+      - name: Check if an update is available
+        run: |
+          latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
+          current_version=$(grep 'version:' "$melange_file" | awk '{print $2}')
+          
+          if [[ "$latest_version" > "$current_version" ]]; then
+            echo "New version available: $latest_version. Proceeding with version bump."
+            melange bump --file "${{ matrix.identifier.path }}"
+          else
+            echo "No new version available or the version is not newer. Skipping version bump."
+          fi
