@@ -56,8 +56,11 @@ jobs:
             identifiers_array+=("{\"path\":\"$path\",\"identifier\":\"$identifier\"}")
           done <<< "$identifiers_and_paths"
       
-          # Join the array with commas between elements and ensure it's formatted as a proper JSON array
+          # Ensure the array is comma-separated and properly formatted
           identifiers_json="[${identifiers_array[*]}]"
+      
+          # Remove spaces between elements in the JSON array
+          identifiers_json=$(echo "$identifiers_json" | sed 's/},{/}, {/g')
       
           echo "Array of identifiers and paths: $identifiers_json"
       
