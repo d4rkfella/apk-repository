@@ -90,7 +90,7 @@ jobs:
       - name: Build APKs
         run: |
               echo "Building package: "${{ matrix.packages }}""
-              melange build --source-dir "$GITHUB_WORKSPACE" --namespace wolfi --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "${{ matrix.packages }}"
+              melange build --source-dir "$GITHUB_WORKSPACE" --generate-index=false --namespace wolfi --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "${{ matrix.packages }}"
       
       - name: Download the latest index file
         run: |
@@ -102,9 +102,9 @@ jobs:
       
       - name: Merge Index
         run: |
-          melange index --source /tmp/APKINDEX.tar.gz --merge --output ./pkg/x86_64/APKINDEX.tar.gz ./pkg/x86_64/*.apk
+          melange index --signing-key /tmp/melange.rsa --source /tmp/APKINDEX.tar.gz --merge --output ./pkg/x86_64/APKINDEX.tar.gz ./pkg/x86_64/*.apk
       
-      - name: Upload to S3 bucket
+      - name: Upload packages to S3 bucket
         run: |
           aws s3 cp --recursive pkg/ s3://packages/ --endpoint-url $ENDPOINT_URL --checksum-algorithm CRC32
         env:
