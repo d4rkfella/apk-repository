@@ -66,6 +66,9 @@ jobs:
 
   release-monitoring:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     needs: check-updates
     strategy:
       matrix:
@@ -95,6 +98,7 @@ jobs:
           project-id: ${{ matrix.identifier.identifier }}
 
       - name: Check if an update is available
+        id: check-bump
         run: |
           latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
           current_version=$(yq ".package.version" "${{ matrix.identifier.path }}")
@@ -103,6 +107,28 @@ jobs:
           if [[ "$latest_version" > "$current_version" ]]; then
             echo "New version available: $latest_version. Proceeding with version bump."
             melange bump --file "${{ matrix.identifier.path }}"
+            echo "bumped=true" >> $GITHUB_ENV
           else
             echo "No new version available or the version is not newer. Skipping version bump."
+            echo "bumped=false" >> $GITHUB_ENV
           fi
+        
+      - name: Commit and open a PR if version was bumped
+        if: env.bumped == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: |
+            ${matrix.identifier.path}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Bump package versions for ${matrix.identifier.path}"
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
+          signoff: true
+          branch: "bump-${matrix.identifier.path}"
+          title: "Bump ${matrix.identifier.path} versions"
+          body: |
+            This PR bumps the versions of the ${matrix.identifier.path} package using melange.
+          base: main
+          labels: |
+            version-bump
+          delete-branch: true
