@@ -94,11 +94,11 @@ jobs:
       
       - name: Download the latest index file
         run: |
-          aws s3 cp s3://packages/x86_64/APKINDEX.tar.gz /tmp --endpoint-url=$AWS_ENDPOINT_URL
+          aws s3 cp s3://packages/x86_64/APKINDEX.tar.gz /tmp --endpoint-url=$ENDPOINT_URL
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}   
+          ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
       
       - name: Merge Index
         run: |
