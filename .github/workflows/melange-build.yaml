@@ -1,7 +1,6 @@
 name: Build Packages
 
 on: 
-  workflow_dispatch:
   push:
     branches: ["main"]
     paths: ["src/packages/**/melange.yaml"]
