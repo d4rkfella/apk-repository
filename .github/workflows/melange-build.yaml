@@ -90,7 +90,7 @@ jobs:
       - name: Build APKs
         run: |
               echo "Building package: "${{ matrix.packages }}""
-              melange build --source-dir "$GITHUB_WORKSPACE" --generate-index false --namespace wolfi --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "${{ matrix.packages }}"
+              melange build --source-dir "$GITHUB_WORKSPACE" --namespace wolfi --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "${{ matrix.packages }}"
       
       - name: Download the latest index file
         run: |
