@@ -1,0 +1,19 @@
+name: Update Melange Packages
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    outputs:
+      identifiers: ${{ steps.extract-ids.outputs.identifiers }}
+    steps:
+      - uses: wolfi-dev/actions/wolfictl-update-rm@117317a80d8d1e32227a90838672b34f04fa65b3 # main
+        with:
+          repository: https://github.com/d4rkfella/apk-repository.git
+          token: 12345
+          git_author_name: test
+          git_author_email: test
