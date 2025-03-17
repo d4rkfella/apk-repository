@@ -124,19 +124,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Set up Git configuration
+          package_name=$(yq ".package.name" "${{ matrix.identifier.path }}")
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
           git add ${{ matrix.identifier.path }}
-          git commit -m "Bump package versions for ${{ matrix.identifier.path }}"
-          git push origin HEAD:bump-${{ matrix.identifier.path }}
+          git commit -m "Bump $package_name version to "${{ steps.release-monitoring.outputs.latest-version }}""
+          git push origin HEAD:bump-$package-name
       
           gh pr create \
             --base main \
-            --head bump-${{ matrix.identifier.path }} \
-            --title "Bump ${{ matrix.identifier.path }} versions" \
-            --body "This PR bumps the versions of the ${{ matrix.identifier.path }} package using melange." \
+            --head update-$package-name \
+            --title "Update $package-name version to "${{ steps.release-monitoring.outputs.latest-version }}"" \
+            --body "This Automated PR updates the version of $package-name to "${{ steps.release-monitoring.outputs.latest-version }}"" \
             --label version-bump \
             --assignee ${{ github.actor }} \
             --reviewer ${{ github.actor }}
