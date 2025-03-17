@@ -120,7 +120,7 @@ jobs:
             git fetch origin $branch_name
             git stash
             git checkout $branch_name
-            git pull
+            git pull --rebase origin $branch_name
             git stash pop
             if git diff --quiet origin/$branch_name -- ${{ matrix.identifier.path }}; then
                 echo "No changes detected in ${{ matrix.identifier.path }}. Skipping commit and push."
