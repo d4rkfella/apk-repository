@@ -1,6 +1,6 @@
 package:
   name: openresty-custom
-  version: 1.27.1.1
+  version: v1.25.3.2
   epoch: 0
   description: High Performance Web Platform Based on Nginx and LuaJIT
   dependencies:
