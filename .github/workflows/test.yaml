@@ -9,9 +9,18 @@ jobs:
   check-updates:
     runs-on: ubuntu-latest
     steps:
-      - uses: wolfi-dev/actions/wolfictl-update-rm@117317a80d8d1e32227a90838672b34f04fa65b3 # main
-        with:
-          repository: https://github.com/d4rkfella/apk-repository.git
-          token: 12345
-          git_author_name: test
-          git_author_email: test
+    - name: Get changed files
+      id: files
+      uses: tj-actions/changed-files@716b1e13042866565e00e85fd4ec490e186c4a2f #tj-actions/changed-files@v41.0.1
+      with:
+        separator: ' '
+        files: "*.yaml"
+        files_ignore: ".yam.yaml"
+
+    - name: Check
+      id: check
+      uses: wolfi-dev/actions/wolfictl-check-updates@main
+      if: ${{ steps.files.outputs.all_changed_files != '' }}
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        changed_files: ${{ steps.files.outputs.all_changed_files }}
