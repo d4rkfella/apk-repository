@@ -4,6 +4,7 @@ needs:
   packages:
     - gnupg
     - curl
+    - ca-certificates-bundle
 
 inputs:
   signature-uri:
