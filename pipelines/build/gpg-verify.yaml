@@ -15,7 +15,7 @@ inputs:
     description: |
       The URI where the `.asc` file (GPG signature) is located.
     required: true
-  public-key:
+  public-key-uri:
     description: |
       The public key used for verification.
     required: true
@@ -32,7 +32,7 @@ pipeline:
       error() { echo "ERROR[gpg-verify]:" "$@"; exit 1; }
 
       SIGNATURE_URI="${{inputs.signature-uri}}"
-      PUBLIC_KEY="${{inputs.public-key}}"
+      PUBLIC_KEY="${{inputs.public-key-uri}}"
       FILENAME="${{inputs.filename}}"
 
       [ -n "$SIGNATURE_URI" ] || error "SIGNATURE_URI is required!"
@@ -45,6 +45,12 @@ pipeline:
         info "Downloaded signature file: $SIGNATURE_FILENAME"
       else
         error "Failed to download signature file from $SIGNATURE_URI"
+      fi
+
+      if curl -fsSL "$PUBLIC_KEY" | gpg --import; then
+        info "Public key imported successfully."
+      else
+        error "Failed to import public key."
       fi
 
       if gpg --verify "$(basename "$SIGNATURE_URI")" "$FILENAME"; then
