@@ -111,7 +111,7 @@ jobs:
           # Compare versions using sort
           if [[ $(echo -e "$latest_version\n$current_version" | sort -V | head -n 1) != "$current_version" ]]; then
             echo "New version available: $latest_version. Proceeding with version bump."
-            melange bump --file "${{ matrix.identifier.path }}"
+            melange bump "${{ matrix.identifier.path }}" $latest_version
             echo "bumped=true" >> $GITHUB_ENV
           else
             echo "No new version available or the version is not newer. Skipping version bump."
