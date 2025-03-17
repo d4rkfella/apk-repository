@@ -8,8 +8,6 @@ on:
 jobs:
   check-updates:
     runs-on: ubuntu-latest
-    outputs:
-      identifiers: ${{ steps.extract-ids.outputs.identifiers }}
     steps:
       - uses: wolfi-dev/actions/wolfictl-update-rm@117317a80d8d1e32227a90838672b34f04fa65b3 # main
         with:
