@@ -38,7 +38,7 @@ pipeline:
       [ -n "$PUBLIC_KEY" ] || error "PUBLIC_KEY is required!"
       [ -n "$FILENAME" ] || error "FILENAME is required!"
 
-      echo "$PUBLIC_KEY" > /tmp/temp_pubkey.asc | gpg --import /tmp/temp_pubkey.asc && info "Public key imported successfully" || error "Failed to import public key"
+      echo "$PUBLIC_KEY" > /tmp/temp_pubkey.asc | /usr/bin/gpg --import /tmp/temp_pubkey.asc && info "Public key imported successfully" || error "Failed to import public key"
 
       if curl -fsSLO "$SIGNATURE_URI"; then
         info "Downloaded signature file: $SIGNATURE_FILENAME"
