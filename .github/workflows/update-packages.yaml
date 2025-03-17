@@ -120,6 +120,7 @@ jobs:
             git fetch origin $branch_name
             git stash
             git checkout $branch_name
+            git pull
             git stash pop
             git add ${{ matrix.identifier.path }}
             git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
