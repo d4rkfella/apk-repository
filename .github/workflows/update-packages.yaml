@@ -114,7 +114,7 @@ jobs:
             melange bump "${{ matrix.identifier.path }}" $latest_version
             echo "bumped=true" >> $GITHUB_ENV
           else
-            echo "No new version available or the version is not newer. Skipping version bump."
+            echo "No new version available. Skipping version bump."
             echo "bumped=false" >> $GITHUB_ENV
           fi
           cat "${{ matrix.identifier.path }}"
