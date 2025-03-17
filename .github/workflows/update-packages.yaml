@@ -93,6 +93,8 @@ jobs:
           current_version=$(yq ".package.version" "${{ matrix.identifier.path }}")
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
+
+          git fetch --all
           
           if [[ $(echo -e "$latest_version\n$current_version" | sort -V | head -n 1) != "$current_version" ]]; then
             echo "New version available: $latest_version. Proceeding with version bump."
