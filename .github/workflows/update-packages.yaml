@@ -117,19 +117,16 @@ jobs:
 
           git fetch --all         
           
-          if git rev-parse --verify origin/$branch_name >/dev/null 2>&1; then
-            echo "Branch $branch_name already exists, force pushing changes."
-            git stash
-            git checkout $branch_name
-            
-            git checkout stash -- "${{ matrix.identifier.path }}"
-            
-            if git diff --quiet origin/$branch_name -- "${{ matrix.identifier.path }}"; then
+          if git diff --quiet origin/$branch_name -- "${{ matrix.identifier.path }}"; then
               echo "No changes detected in ${{ matrix.identifier.path }}. Skipping commit and push."
             else
               echo "Changes detected in ${{ matrix.identifier.path }}. Proceeding with commit and force push."
               git add "${{ matrix.identifier.path }}"
               git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
+              
+              git reset --soft $(git merge-base origin/$branch_name HEAD)
+              git commit --amend -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }} (squashed)"
+              
               git push --force origin $branch_name
             fi
           else
@@ -137,9 +134,7 @@ jobs:
             git checkout -b $branch_name
             git add "${{ matrix.identifier.path }}"
             git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
-            git reset --soft $(git merge-base origin/$branch_name HEAD)
-              git commit --amend -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }} (squashed)"
-              git push --force origin $branch_name
+            git push origin $branch_name
           fi
       
           pr_exists=$(gh pr list --base main --head "$branch_name" --json number --jq 'length')
