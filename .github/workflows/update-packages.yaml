@@ -118,6 +118,7 @@ jobs:
           if git rev-parse --verify origin/$branch_name >/dev/null 2>&1; then
             echo "Branch $branch_name already exists, force pushing changes."
             git stash
+            git fetch origin $branch_name
             git checkout $branch_name
             git pull --rebase origin $branch_name
             git stash pop
