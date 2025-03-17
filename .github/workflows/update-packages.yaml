@@ -122,9 +122,16 @@ jobs:
             git checkout $branch_name
             git pull
             git stash pop
-            git add ${{ matrix.identifier.path }}
-            git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
-            git push --force origin $branch_name
+            if git diff --quiet origin/$branch_name -- ${{ matrix.identifier.path }}; then
+                echo "No changes detected in ${{ matrix.identifier.path }}. Skipping commit and push."
+            else
+                echo "Changes detected in ${{ matrix.identifier.path }}. Proceeding with commit and force push."
+                git add ${{ matrix.identifier.path }}
+                git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
+                
+                # Force push the changes to the remote branch
+                git push --force origin $branch_name
+            fi
           else
             echo "Creating new branch $branch_name"
             git checkout -b $branch_name
