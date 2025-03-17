@@ -102,9 +102,11 @@ jobs:
         run: |
           latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
           current_version=$(yq ".package.version" "${{ matrix.identifier.path }}")
-          echo $current_version
+          echo "Current version: $current_version"
+          echo "Latest version: $latest_version"
           
-          if [[ "$latest_version" > "$current_version" ]]; then
+          # Compare versions using sort
+          if [[ $(echo -e "$latest_version\n$current_version" | sort -V | head -n 1) != "$current_version" ]]; then
             echo "New version available: $latest_version. Proceeding with version bump."
             melange bump --file "${{ matrix.identifier.path }}"
             echo "bumped=true" >> $GITHUB_ENV
