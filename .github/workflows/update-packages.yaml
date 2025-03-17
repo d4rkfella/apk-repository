@@ -137,7 +137,9 @@ jobs:
             git checkout -b $branch_name
             git add "${{ matrix.identifier.path }}"
             git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
-            git push origin $branch_name
+            git reset --soft $(git merge-base origin/$branch_name HEAD)
+              git commit --amend -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }} (squashed)"
+              git push --force origin $branch_name
           fi
       
           pr_exists=$(gh pr list --base main --head "$branch_name" --json number --jq 'length')
