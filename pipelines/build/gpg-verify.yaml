@@ -6,11 +6,11 @@ needs:
     - curl
 
 inputs:
-  signature_uri:
+  signature-uri:
     description: |
       The URI where the `.asc` file (GPG signature) is located.
     required: true
-  public_key:
+  public-key:
     description: |
       The public key used for verification.
     required: true
@@ -26,8 +26,8 @@ pipeline:
       info() { echo "INFO[gpg-verify]:" "$@"; }
       error() { echo "ERROR[gpg-verify]:" "$@"; exit 1; }
 
-      SIGNATURE_URI="${{inputs.signature_uri}}"
-      PUBLIC_KEY="${{inputs.public_key}}"
+      SIGNATURE_URI="${{inputs.signature-uri}}"
+      PUBLIC_KEY="${{inputs.public-key}}"
       FILENAME="${{inputs.filename}}"
 
       [ -n "$SIGNATURE_URI" ] || error "SIGNATURE_URI is required!"
