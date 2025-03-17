@@ -8,6 +8,7 @@ needs:
     - curl
     - ca-certificates-bundle
     - busybox
+    - wolfi-baselayout
 
 inputs:
   signature-uri:
