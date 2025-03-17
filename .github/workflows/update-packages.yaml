@@ -93,8 +93,6 @@ jobs:
           current_version=$(yq ".package.version" "${{ matrix.identifier.path }}")
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
-
-          git fetch --all
           
           if [[ $(echo -e "$latest_version\n$current_version" | sort -V | head -n 1) != "$current_version" ]]; then
             echo "New version available: $latest_version. Proceeding with version bump."
@@ -116,23 +114,30 @@ jobs:
           
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-                    
+
+          git fetch --all         
+          
           if git rev-parse --verify origin/$branch_name >/dev/null 2>&1; then
             echo "Branch $branch_name already exists, force pushing changes."
             git stash
-            git fetch origin $branch_name
             git checkout $branch_name
-            git pull --rebase origin $branch_name
             git stash pop
-            if git diff --quiet origin/$branch_name -- ${{ matrix.identifier.path }}; then
-                echo "No changes detected in ${{ matrix.identifier.path }}. Skipping commit and push."
+            if git diff --quiet origin/$branch_name -- "${{ matrix.identifier.path }}"; then
+              echo "No changes detected in ${{ matrix.identifier.path }}. Skipping commit and push."
             else
-                echo "Changes detected in ${{ matrix.identifier.path }}. Proceeding with commit and force push."
-                git add ${{ matrix.identifier.path }}
-                git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
-                
-                # Force push the changes to the remote branch
-                git push --force origin $branch_name
+              echo "Changes detected in ${{ matrix.identifier.path }}. Proceeding with rebase, commit, and force push."
+              
+              git pull --rebase origin $branch_name || {
+                echo "Conflict detected. Resolving by favoring local changes."
+                git rebase --abort
+                git checkout --ours "${{ matrix.identifier.path }}"
+                git add "${{ matrix.identifier.path }}"
+                git rebase --continue
+              }
+              
+              git add "${{ matrix.identifier.path }}"
+              git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
+              git push --force origin $branch_name
             fi
           else
             echo "Creating new branch $branch_name"
