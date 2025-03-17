@@ -122,7 +122,7 @@ jobs:
             git stash
             git checkout $branch_name
             
-            git stash pop
+            git checkout stash -- "${{ matrix.identifier.path }}"
             
             if git diff --quiet origin/$branch_name -- "${{ matrix.identifier.path }}"; then
               echo "No changes detected in ${{ matrix.identifier.path }}. Skipping commit and push."
