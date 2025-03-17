@@ -118,7 +118,14 @@ jobs:
             echo "bumped=false" >> $GITHUB_ENV
           fi
           cat "${{ matrix.identifier.path }}"
-        
+
+      - name: Commit changes
+        if: env.bumped == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git add ${{ matrix.identifier.path }}
+      
       - name: Commit and open a PR if version was bumped
         if: env.bumped == 'true'
         uses: peter-evans/create-pull-request@v7
