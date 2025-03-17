@@ -130,11 +130,11 @@ jobs:
           
           git add ${{ matrix.identifier.path }}
           git commit -m "Bump $package_name version to "${{ steps.release-monitoring.outputs.latest-version }}""
-          git push origin HEAD:bump-$package_name
+          git push origin HEAD:update-$package_name
       
           gh pr create \
             --base main \
-            --head update-{$package-name} \
+            --head update-$package-name \
             --title "Update $package_name version to "${{ steps.release-monitoring.outputs.latest-version }}"" \
             --body "This Automated PR updates the version of $package_name to "${{ steps.release-monitoring.outputs.latest-version }}"" \
             --label version-bump \
