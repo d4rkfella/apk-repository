@@ -134,7 +134,7 @@ jobs:
       
           gh pr create \
             --base main \
-            --head update-$package-name \
+            --head update-$package_name \
             --title "Update $package_name version to "${{ steps.release-monitoring.outputs.latest-version }}"" \
             --body "This Automated PR updates the version of $package_name to "${{ steps.release-monitoring.outputs.latest-version }}"" \
             --label version-bump \
