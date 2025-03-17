@@ -38,6 +38,8 @@ pipeline:
       [ -n "$PUBLIC_KEY" ] || error "PUBLIC_KEY is required!"
       [ -n "$FILENAME" ] || error "FILENAME is required!"
 
+      echo $(which gpg)
+      
       GNUPGHOME=$(mktemp -d)
       export GNUPGHOME
       info "Using temporary GNUPG home: $GNUPGHOME"
