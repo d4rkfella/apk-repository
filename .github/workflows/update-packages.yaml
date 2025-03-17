@@ -119,29 +119,22 @@ jobs:
           fi
           cat "${{ matrix.identifier.path }}"
 
-      - name: Commit changes
+      - name: Commit, push, and create a PR
         if: env.bumped == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Set up Git configuration
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
           git add ${{ matrix.identifier.path }}
+          git commit -m "Bump package versions for ${{ matrix.identifier.path }}" --gpg-sign="${{ secrets.GPG_KEY_ID }}"
+          git push origin HEAD:bump-${{ matrix.identifier.path }}
       
-      - name: Commit and open a PR if version was bumped
-        if: env.bumped == 'true'
-        uses: peter-evans/create-pull-request@v7
-        with:
-          add-paths: |
-            ${matrix.identifier.path}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Bump package versions for ${matrix.identifier.path}"
-          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
-          signoff: true
-          branch: "bump-${matrix.identifier.path}"
-          title: "Bump ${matrix.identifier.path} versions"
-          body: |
-            This PR bumps the versions of the ${matrix.identifier.path} package using melange.
-          base: main
-          labels: |
-            version-bump
-          delete-branch: true
+          gh pr create \
+            --base main \
+            --head bump-${{ matrix.identifier.path }} \
+            --title "Bump ${{ matrix.identifier.path }} versions" \
+            --body "This PR bumps the versions of the ${{ matrix.identifier.path }} package using melange." \
+            --label version-bump \
+            --assignee ${{ github.actor }} \
+            --reviewer ${{ github.actor }}
