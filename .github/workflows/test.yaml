@@ -9,18 +9,13 @@ jobs:
   check-updates:
     runs-on: ubuntu-latest
     steps:
-    - name: Get changed files
-      id: files
-      uses: tj-actions/changed-files@716b1e13042866565e00e85fd4ec490e186c4a2f #tj-actions/changed-files@v41.0.1
-      with:
-        separator: ' '
-        files: "*.yaml"
-        files_ignore: ".yam.yaml"
-
+    
+    - name: Checkout code
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+    
     - name: Check
       id: check
       uses: wolfi-dev/actions/wolfictl-check-updates@main
-      if: ${{ steps.files.outputs.all_changed_files != '' }}
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        changed_files: ${{ steps.files.outputs.all_changed_files }}
+        changed_files: src/packages/catatonit/melange.yaml
