@@ -114,9 +114,7 @@ jobs:
           
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          git fetch origin $branch_name || true
-          
+                    
           if git rev-parse --verify origin/$branch_name >/dev/null 2>&1; then
             echo "Branch $branch_name already exists, force pushing changes."
             git checkout $branch_name
