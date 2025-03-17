@@ -8,6 +8,8 @@ on:
 jobs:
   check-updates:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       identifiers: ${{ steps.extract-ids.outputs.identifiers }}
     steps:
@@ -33,36 +35,19 @@ jobs:
         run: |
           echo "Extracting identifiers and file paths..."
       
-          # Find all melange.yaml files and extract the identifier and their paths
           identifiers_and_paths=$(find . -name "melange.yaml" -exec bash -c '
             file="{}"
-            # Extract the identifier from the file
             identifier=$(yq ".update.release-monitor.identifier" "$file")
-            # Ensure the identifier is valid (not null or empty)
             if [[ "$identifier" != "null" && -n "$identifier" ]]; then
               echo "$file,$identifier"
             fi
-          ' \;)
-      
-          echo "Found identifiers and paths:"
-          echo "$identifiers_and_paths"
-      
-          # Initialize the array
-          identifiers_array=()
-      
-          # Process each extracted entry and create the necessary JSON structure
+          ' \;)      
+          identifiers_array=()      
           while IFS=, read -r path identifier; do
-            # Add the file path and identifier to the array in the format needed
             identifiers_array+=("{\"path\":\"$path\",\"identifier\":\"$identifier\"}")
-          done <<< "$identifiers_and_paths"
-      
-          # Join array elements into a single string with commas
-          identifiers_json="[$(printf "%s," "${identifiers_array[@]}" | sed 's/,$//')]"
-      
-          echo "Array of identifiers and paths: $identifiers_json"
-      
-          # Set the result as an output using GITHUB_OUTPUT
-          echo "identifiers=$identifiers_json" >> $GITHUB_OUTPUT
+          done <<< "$identifiers_and_paths" 
+          identifiers="[$(printf "%s," "${identifiers_array[@]}" | sed 's/,$//')]"
+          echo "identifiers=$identifiers" >> $GITHUB_OUTPUT
 
   release-monitoring:
     runs-on: ubuntu-latest
@@ -99,8 +84,9 @@ jobs:
         uses: chainguard-images/actions/release-monitoring@0c41b080c7a4d6f7caf510a1c6f67d593f687789 # main
         with:
           project-id: ${{ matrix.identifier.identifier }}
+          api-token: ${{ secrets.RELEASE_MONITORING_TOKEN }}
 
-      - name: Check if an update is available
+      - name: Bump the version if a newer release is available
         id: check-bump
         run: |
           latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
@@ -108,7 +94,6 @@ jobs:
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
           
-          # Compare versions using sort
           if [[ $(echo -e "$latest_version\n$current_version" | sort -V | head -n 1) != "$current_version" ]]; then
             echo "New version available: $latest_version. Proceeding with version bump."
             melange bump "${{ matrix.identifier.path }}" $latest_version
@@ -119,24 +104,45 @@ jobs:
           fi
           cat "${{ matrix.identifier.path }}"
 
-      - name: Commit, push, and create a PR
+      - name: Create a PR
         if: env.bumped == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           package_name=$(yq ".package.name" "${{ matrix.identifier.path }}")
+          branch_name="update-$package_name"
+          
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          git add ${{ matrix.identifier.path }}
-          git commit -m "Bump $package_name version to "${{ steps.release-monitoring.outputs.latest-version }}""
-          git push origin HEAD:update-$package_name
+          git fetch origin $branch_name || true
+          
+          if git rev-parse --verify origin/$branch_name >/dev/null 2>&1; then
+            echo "Branch $branch_name already exists, force pushing changes."
+            git checkout $branch_name
+            git add ${{ matrix.identifier.path }}
+            git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
+            git push --force origin $branch_name
+          else
+            echo "Creating new branch $branch_name"
+            git checkout -b $branch_name
+            git add ${{ matrix.identifier.path }}
+            git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
+            git push origin $branch_name
+          fi
       
-          gh pr create \
-            --base main \
-            --head update-$package_name \
-            --title "Update $package_name version to "${{ steps.release-monitoring.outputs.latest-version }}"" \
-            --body "This Automated PR updates the version of $package_name to "${{ steps.release-monitoring.outputs.latest-version }}"" \
-            --label version-bump \
-            --assignee ${{ github.actor }} \
-            --reviewer ${{ github.actor }}
+          pr_exists=$(gh pr list --base main --head "$branch_name" --json number --jq 'length')
+      
+          if [ "$pr_exists" -eq 0 ]; then
+            echo "Creating new PR..."
+            gh pr create \
+              --base main \
+              --head "$branch_name" \
+              --title "Update $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}" \
+              --body "This Automated PR updates the version of $package_name to ${{ steps.release-monitoring.outputs.latest-version }}" \
+              --label version-bump \
+              --assignee ${{ github.actor }} \
+              --reviewer ${{ github.actor }}
+          else
+            echo "PR already exists, force-pushed latest changes."
+          fi
