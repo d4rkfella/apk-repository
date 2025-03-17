@@ -5,6 +5,7 @@ needs:
     - gnupg
     - curl
     - ca-certificates-bundle
+    - busybox
 
 inputs:
   signature-uri:
