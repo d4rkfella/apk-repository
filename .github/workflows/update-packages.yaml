@@ -130,9 +130,8 @@ jobs:
             else
               echo "Changes detected in ${{ matrix.identifier.path }}. Proceeding with commit and force push."
               git add "${{ matrix.identifier.path }}"
-              git reset --soft $(git merge-base origin/$branch_name HEAD)
               git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
-              git push --force origin $branch_name
+              git push origin $branch_name
             fi
           else
             echo "Creating new branch $branch_name"
