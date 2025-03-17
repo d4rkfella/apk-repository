@@ -117,6 +117,7 @@ jobs:
             echo "No new version available or the version is not newer. Skipping version bump."
             echo "bumped=false" >> $GITHUB_ENV
           fi
+          cat "${{ matrix.identifier.path }}"
         
       - name: Commit and open a PR if version was bumped
         if: env.bumped == 'true'
