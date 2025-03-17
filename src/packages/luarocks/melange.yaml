@@ -1,11 +1,8 @@
 package:
   name: luarocks
   version: 3.11.1
-  epoch: 0
+  epoch: 1
   description: A package manager for Lua modules
-  dependencies:
-    runtime:
-      - curl
 
 environment:
   contents:
@@ -17,20 +14,22 @@ environment:
       - https://packages.wolfi.dev/os
     packages:
       - build-base
-      - busybox
       - luajit-dev-custom
-pipeline:
-  - uses: git-checkout
-    with:
-      repository: https://github.com/luarocks/luarocks
-      tag: v3.11.1
-      expected-commit: fa2736e7c68094710643577b0153dac72ce4bcdc
 
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://luarocks.github.io/luarocks/releases/luarocks-${{package.version}}.tar.gz
+      expected-sha256: 9950425501af862e12f618bdc930ea755c46db6a16072a1462b4fc93b2bd59bc
+  
   - runs: |
       ./configure \
         --prefix=/usr \
-        --with-lua-include=/usr/include/lua
-
+        --with-lua-include=/usr/include/lua \
+        --with-downloader=wget \
+        --with-md5-checker=openssl \
+        --force-config
+  
   - uses: autoconf/make
  
   - uses: autoconf/make-install
