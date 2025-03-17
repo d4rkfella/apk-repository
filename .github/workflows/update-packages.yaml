@@ -121,6 +121,8 @@ jobs:
 
       - name: Commit, push, and create a PR
         if: env.bumped == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Set up Git configuration
           git config --global user.name "github-actions[bot]"
