@@ -153,5 +153,5 @@ jobs:
               --assignee ${{ github.actor }} \
               --reviewer ${{ github.actor }}
           else
-            echo "PR already exists, force-pushed latest changes."
+            echo "PR already exists."
           fi
