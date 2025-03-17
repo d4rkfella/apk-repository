@@ -18,7 +18,7 @@ environment:
       - bash
 
 pipeline:
-  - name: Download release tarballa
+  - name: Download release tarball
     uses: fetch
     with:
       uri: https://github.com/openSUSE/catatonit/releases/download/v${{package.version}}/catatonit.tar.xz
