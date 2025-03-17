@@ -121,7 +121,7 @@ jobs:
             echo "Branch $branch_name already exists, force pushing changes."
             git stash
             git checkout -b $branch_name
-            git pull origin $branch_name
+            git pull --rebase origin $branch_name
             git stash pop || true
             git add ${{ matrix.identifier.path }}
             git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
