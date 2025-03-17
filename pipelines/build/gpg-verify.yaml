@@ -1,0 +1,55 @@
+name: gpg-verify
+
+needs:
+  packages:
+    - gnupg
+    - curl
+
+inputs:
+  signature_uri:
+    description: |
+      The URI where the `.asc` file (GPG signature) is located.
+    required: true
+  public_key:
+    description: |
+      The public key used for verification.
+    required: true
+  filename:
+    description: |
+      The name of file to verify.
+    required: true
+
+pipeline:
+  - name: "Download and verify GPG signature"
+    runs: |
+      set -e
+      info() { echo "INFO[gpg-verify]:" "$@"; }
+      error() { echo "ERROR[gpg-verify]:" "$@"; exit 1; }
+
+      SIGNATURE_URI="${{inputs.signature_uri}}"
+      PUBLIC_KEY="${{inputs.public_key}}"
+      FILENAME="${{inputs.filename}}"
+
+      [ -n "$SIGNATURE_URI" ] || error "SIGNATURE_URI is required!"
+      [ -n "$PUBLIC_KEY" ] || error "PUBLIC_KEY is required!"
+      [ -n "$FILENAME" ] || error "FILENAME is required!"
+
+      GNUPGHOME=$(mktemp -d)
+      export GNUPGHOME
+      info "Using temporary GNUPG home: $GNUPGHOME"
+
+      echo "$PUBLIC_KEY" | gpg --import && info "Public key imported successfully" || error "Failed to import public key"
+
+      if curl -fsSLO "$SIGNATURE_URI"; then
+        info "Downloaded signature file: $SIGNATURE_FILENAME"
+      else
+        error "Failed to download signature file from $SIGNATURE_URI"
+      fi
+
+      if gpg --verify "$(basename "$SIGNATURE_URI")" "$FILENAME"; then
+        info "✅ Signature verification successful!"
+      else
+        error "❌ Signature verification FAILED! The file might be tampered with."
+      fi
+
+      rm -rf "$GNUPGHOME"
