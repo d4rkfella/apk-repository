@@ -42,6 +42,8 @@ pipeline:
       export GNUPGHOME
       info "Using temporary GNUPG home: $GNUPGHOME"
 
+      which gpg
+
       echo "$PUBLIC_KEY" > /tmp/temp_pubkey.asc | gpg --import /tmp/temp_pubkey.asc && info "Public key imported successfully" || error "Failed to import public key"
 
       if curl -fsSLO "$SIGNATURE_URI"; then
