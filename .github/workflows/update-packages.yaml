@@ -121,20 +121,13 @@ jobs:
             echo "Branch $branch_name already exists, force pushing changes."
             git stash
             git checkout $branch_name
+            
             git stash pop
+            
             if git diff --quiet origin/$branch_name -- "${{ matrix.identifier.path }}"; then
               echo "No changes detected in ${{ matrix.identifier.path }}. Skipping commit and push."
             else
-              echo "Changes detected in ${{ matrix.identifier.path }}. Proceeding with rebase, commit, and force push."
-              
-              git pull --rebase origin $branch_name || {
-                echo "Conflict detected. Resolving by favoring local changes."
-                git rebase --abort
-                git checkout --ours "${{ matrix.identifier.path }}"
-                git add "${{ matrix.identifier.path }}"
-                git rebase --continue
-              }
-              
+              echo "Changes detected in ${{ matrix.identifier.path }}. Proceeding with commit and force push."
               git add "${{ matrix.identifier.path }}"
               git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
               git push --force origin $branch_name
@@ -142,7 +135,7 @@ jobs:
           else
             echo "Creating new branch $branch_name"
             git checkout -b $branch_name
-            git add ${{ matrix.identifier.path }}
+            git add "${{ matrix.identifier.path }}"
             git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
             git push origin $branch_name
           fi
