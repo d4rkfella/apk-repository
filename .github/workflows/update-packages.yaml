@@ -130,18 +130,15 @@ jobs:
             else
               echo "Changes detected in ${{ matrix.identifier.path }}. Proceeding with commit and force push."
               git add "${{ matrix.identifier.path }}"
-              git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
-              
-              git fetch origin $branch_name
-              git rebase -i origin/$branch_name              
-              GIT_SEQUENCE_EDITOR="sed -i '2,\$s/^pick/squash/'" git rebase --continue
+              git reset --soft $(git merge-base origin/$branch_name HEAD)
+              git commit --amend -m "Bump $package_name version to 1.27.1.1"
               git push --force origin $branch_name
             fi
           else
             echo "Creating new branch $branch_name"
             git checkout -b $branch_name
             git add "${{ matrix.identifier.path }}"
-            git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
+            git commit --amend -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
             git push origin $branch_name
           fi
       
