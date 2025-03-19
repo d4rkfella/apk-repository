@@ -26,16 +26,22 @@ environment:
       - busybox
       - luarocks
 pipeline:
-  - runs: |
-      git clone https://github.com/kubevirt-manager/kubevirt-manager
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kubevirt-manager/kubevirt-manager
+      branch: main
+      expected-commit: 1dd1bbbcfcc8712b285c996586f5634841e1011f
   
-  - runs: |
-      mkdir -p kubevirt-manager/src/app/src/assets
-      cd kubevirt-manager/src/app/src/assets
-      git clone https://github.com/novnc/noVNC.git
+  - runs: mkdir -p kubevirt-manager/src/app/src/assets
+
+  - uses: git-checkout
+    with:
+      repository: https://github.com/novnc/noVNC
+      tag: v1.6.0
+      expected-commit: a8dfd6a3ea3c74244f5ebdaa5a7f1023007a7820
+      destination: kubevirt-manager/src/app/src/assets
 
   - runs: |
-      cd kubevirt-manager
       npm run clean
       npm install -g @angular/cli@18.1.1
       npm install
