@@ -51,8 +51,8 @@ jobs:
       - name: Save private key
         run: |
           set +x
-          echo -n "${{ secrets.MELANGE_PRIVATE_KEY }}" > /tmp/melange.rsa
-          chmod 400 /tmp/melange.rsa
+          echo -n "${{ secrets.MELANGE_PRIVATE_KEY }}" > ${{ github.workspace }}/melange.rsa
+          chmod 400 ${{ github.workspace }}/melange.rsa
           set -x
       
       - name: Build Packages
@@ -60,7 +60,8 @@ jobs:
         with:
           config: ${{ matrix.packages }}
           archs: amd64
-          signing-key-path: /tmp/melange.rsa
+          sign-with-key: true
+          signing-key-path: ${{ github.workspace }}/melange.rsa
           namespace: wolfi
           build-date: ${{ steps.snapshot-date.output.epoch }}
 
