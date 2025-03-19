@@ -68,7 +68,7 @@ jobs:
       - name: Merge Index and Upload output files to S3 bucket
         run: |
           aws s3 cp s3://packages/x86_64/APKINDEX.tar.gz /tmp --endpoint-url=$ENDPOINT_URL
-          melange index --signing-key /tmp/melange.rsa --source /tmp/APKINDEX.tar.gz --merge --output packages/x86_64/APKINDEX.tar.gz packages/x86_64/*.apk
+          melange index --signing-key ${{ github.workspace }}/melange.rsa --source /tmp/APKINDEX.tar.gz --merge --output packages/x86_64/APKINDEX.tar.gz packages/x86_64/*.apk
           aws s3 cp --recursive packages/ s3://packages/ --endpoint-url $ENDPOINT_URL --checksum-algorithm CRC32
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
