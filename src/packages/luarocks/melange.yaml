@@ -3,6 +3,8 @@ package:
   version: 3.11.1
   epoch: 0
   description: A package manager for Lua modules
+  copyright:
+    - license: MIT
   dependencies:
     runtime:
       - wget
@@ -31,7 +33,6 @@ pipeline:
       ./configure \
         --prefix=/usr \
         --with-lua-include=/usr/include/lua \
-        --with-downloader=wget \
         --force-config
   
   - uses: autoconf/make
