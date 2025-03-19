@@ -7,7 +7,7 @@ package:
     runtime:
       - bash
       - kubectl
-      - openresty
+      - openresty-custom
   copyright:
     - license: Apache-2.0
 
