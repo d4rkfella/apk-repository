@@ -52,7 +52,7 @@ jobs:
         run: |
           set +x
           echo -n "${{ secrets.MELANGE_PRIVATE_KEY }}" > /tmp/melange.rsa
-          chmod 400 /tmp/melange.rsa
+          chmod 444 /tmp/melange.rsa
           set -x
       
       - name: Build Packages
