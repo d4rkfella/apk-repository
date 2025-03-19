@@ -30,7 +30,7 @@ pipeline:
       repository: https://github.com/kubevirt-manager/kubevirt-manager
       branch: main
       expected-commit: 1dd1bbbcfcc8712b285c996586f5634841e1011f
-  
+  - runs: ls -la src/app
   - runs: mkdir -p src/app/src/assets/noVNC
 
   - uses: git-checkout
