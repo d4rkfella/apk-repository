@@ -6,6 +6,7 @@ package:
   dependencies:
     runtime:
       - busybox
+      - bash
       - kubectl
       - openresty-custom
   copyright:
@@ -30,17 +31,13 @@ pipeline:
       repository: https://github.com/kubevirt-manager/kubevirt-manager
       branch: main
       expected-commit: 1dd1bbbcfcc8712b285c996586f5634841e1011f
-  - runs: ls -la src/app
-  - runs: mkdir -p src/app/src/assets/noVNC
 
   - uses: git-checkout
     with:
       repository: https://github.com/novnc/noVNC
       tag: v1.6.0
       expected-commit: a8dfd6a3ea3c74244f5ebdaa5a7f1023007a7820
-      destination: src/app/src/assets/noVNC
-  - runs: ls -la src/app/src/assets/noVNC
-  - runs: ls -la src/app
+      destination: src/assets/noVNC
   - runs: |
       npm run clean
       npm install -g @angular/cli@18.1.1
