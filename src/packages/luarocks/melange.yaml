@@ -1,8 +1,12 @@
 package:
   name: luarocks
   version: 3.11.1
-  epoch: 1
+  epoch: 0
   description: A package manager for Lua modules
+  dependencies:
+    runtime:
+      - wget
+      - luajit-dev
 
 environment:
   contents:
@@ -14,7 +18,7 @@ environment:
       - https://packages.wolfi.dev/os
     packages:
       - build-base
-      - luajit-dev-custom
+      - busybox
 
 pipeline:
   - uses: fetch
@@ -27,7 +31,6 @@ pipeline:
         --prefix=/usr \
         --with-lua-include=/usr/include/lua \
         --with-downloader=wget \
-        --with-md5-checker=openssl \
         --force-config
   
   - uses: autoconf/make
