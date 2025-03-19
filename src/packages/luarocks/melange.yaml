@@ -8,7 +8,7 @@ package:
   dependencies:
     runtime:
       - wget
-      - luajit-dev
+      - luajit-dev-custom
 
 environment:
   contents:
@@ -21,7 +21,7 @@ environment:
     packages:
       - build-base
       - busybox
-      - luajit-dev
+      - luajit-dev-custom
 
 pipeline:
   - uses: fetch
