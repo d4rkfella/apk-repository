@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 set -euo pipefail
 # Point to the internal API server hostname
@@ -17,4 +17,4 @@ export TOKEN=$(cat ${SERVICEACCOUNT}/token)
 export CACERT=${SERVICEACCOUNT}/ca.crt
 
 # Forward requests to kubernetes-api
-/usr/local/bin/kubectl proxy --www=/usr/local/openresty/nginx/html --accept-hosts=^.*$ --address=[::] --api-prefix=/k8s/ --www-prefix= &
+/bin/env kubectl proxy --www=/usr/openresty/nginx/html --accept-hosts=^.*$ --address=[::] --api-prefix=/k8s/ --www-prefix= &
