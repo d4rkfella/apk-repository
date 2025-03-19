@@ -24,12 +24,6 @@ pipeline:
       uri: https://github.com/openSUSE/catatonit/releases/download/v${{package.version}}/catatonit.tar.xz
       expected-sha256: 9950425501af862e12f618bdc930ea755c46db6a16072a1462b4fc93b2bd59bc
   
-  - uses: build/gpg-verify
-    with:
-      signature-uri: https://github.com/openSUSE/catatonit/releases/download/v${{package.version}}/catatonit.tar.xz.asc
-      filename: catatonit.tar.xz
-      public-key-uri: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x5f36c6c61b5460124a75f5a69e18aa267ddb8db4
-
   - uses: autoconf/configure
 
   - uses: autoconf/make
