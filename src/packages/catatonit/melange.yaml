@@ -16,7 +16,6 @@ environment:
       - build-base
       - libtool
       - busybox
-      - bash
 
 pipeline:
   - name: Download release tarballa
