@@ -50,7 +50,6 @@ pipeline:
         --with-cc-opt='-DNGX_LUA_ABORT_AT_PANIC -I/usr/include' \
         --with-ld-opt='-L/usr/lib -Wl,-rpath,/usr/lib' \
         --with-compat \
-        --conf-path=/etc/nginx/nginx.conf \
         --sbin-path=/usr/sbin/nginx \
         --error-log-path=/var/log/openresty/error.log \
         --http-log-path=/var/log/openresty/access.log \
