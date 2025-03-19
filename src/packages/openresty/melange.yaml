@@ -13,7 +13,7 @@ package:
       - pcre
       - perl
       - zlib
-      - luajit-custom
+      - luajit
 environment:
   contents:
     keyring:
@@ -36,7 +36,7 @@ environment:
       - perl-dev
       - readline-dev
       - zlib-dev
-      - luajit-dev-custom
+      - luajit-dev
 pipeline:
   - uses: fetch
     with:
@@ -104,6 +104,9 @@ test:
       packages:
         - curl
   pipeline:
+    - uses: test/ldd-check
+      with:
+        packages: ${{package.name}}
     - name: Check if resty utility is available
       runs: |
         resty -h
