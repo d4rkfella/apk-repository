@@ -65,10 +65,26 @@ jobs:
           namespace: wolfi
           build-date: ${{ steps.snapshot-date.output.epoch }}
 
-      - name: Merge Index and Upload output files to S3 bucket
+      - name: Generate Index and Upload output files to S3 bucket
         run: |
-          aws s3 cp s3://packages/x86_64/APKINDEX.tar.gz /tmp --endpoint-url=$ENDPOINT_URL
-          melange index --signing-key ${{ github.workspace }}/melange.rsa --source /tmp/APKINDEX.tar.gz --merge --output packages/x86_64/APKINDEX.tar.gz packages/x86_64/*.apk
+          if aws s3 ls s3://packages/x86_64/APKINDEX.tar.gz --endpoint-url=$ENDPOINT_URL > /dev/null 2>&1; then
+            echo "APKINDEX.tar.gz found in S3 bucket. Downloading and adding --source and --merge flags."
+            aws s3 cp s3://packages/x86_64/APKINDEX.tar.gz /tmp/APKINDEX.tar.gz --endpoint-url=$ENDPOINT_URL
+            additional_flags="--source /tmp/APKINDEX.tar.gz --merge"
+          else
+            echo "APKINDEX.tar.gz not found in S3 bucket. Skipping --source and --merge flags."
+            additional_flags=""
+          fi
+      
+          melange_command="melange index --signing-key ${{ github.workspace }}/melange.rsa --output packages/x86_64/APKINDEX.tar.gz packages/x86_64/*.apk"
+      
+          if [[ -n "$additional_flags" ]]; then
+            melange_command+=" $additional_flags"
+          fi
+      
+          echo "Running command: $melange_command"
+          eval $melange_command
+      
           aws s3 cp --recursive packages/ s3://packages/ --endpoint-url $ENDPOINT_URL --checksum-algorithm CRC32
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
