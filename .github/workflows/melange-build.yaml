@@ -62,6 +62,7 @@ jobs:
           archs: amd64
           signing-key-path: /tmp/melange.rsa
           namespace: wolfi
+          build-date: ${{ steps.snapshot-date.output.epoch }}
 
       - name: Merge Index and Upload output files to S3 bucket
         run: |
