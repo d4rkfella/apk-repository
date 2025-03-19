@@ -63,7 +63,6 @@ jobs:
           sign-with-key: true
           signing-key-path: ${{ github.workspace }}/melange.rsa
           namespace: wolfi
-          build-date: ${{ steps.snapshot-date.output.date }}
 
       - name: Generate Index and Upload output files to S3 bucket
         run: |
