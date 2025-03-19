@@ -73,11 +73,11 @@ jobs:
       
       - name: Merge Index
         run: |
-          melange index --signing-key /tmp/melange.rsa --source /tmp/APKINDEX.tar.gz --merge --output ./pkg/x86_64/APKINDEX.tar.gz ./pkg/x86_64/*.apk
+          melange index --signing-key /tmp/melange.rsa --source /tmp/APKINDEX.tar.gz --merge --output packages/x86_64/APKINDEX.tar.gz packages/x86_64/*.apk
       
       - name: Upload packages to S3 bucket
         run: |
-          aws s3 cp --recursive pkg/ s3://packages/ --endpoint-url $ENDPOINT_URL --checksum-algorithm CRC32
+          aws s3 cp --recursive packages/ s3://packages/ --endpoint-url $ENDPOINT_URL --checksum-algorithm CRC32
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
