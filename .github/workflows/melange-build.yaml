@@ -41,39 +41,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
-      
-      - name: Setup melange
-        uses: chainguard-dev/actions/setup-melange@58b5d1b6769b7e88dfa5c85bbc81a5a02eaca5bc # main
-
-      - name: Configure AppArmor for bubblewrap
-        run: |
-          echo 'kernel.apparmor_restrict_unprivileged_userns = 0' | sudo tee /etc/sysctl.d/60-apparmor-namespace.conf
-          sudo sysctl --system
-
-      - name: Configure AppArmor for bubblewrap and melange
-        run: |
-          sudo tee /etc/apparmor.d/local-bwrap <<EOF
-          abi <abi/4.0>,
-          include <tunables/global>
-      
-          profile local-bwrap /usr/bin/bwrap flags=(unconfined) {
-            userns,
-            include if exists <local/bwrap>
-          }
-          EOF
-      
-          sudo tee /etc/apparmor.d/local-melange <<EOF
-          abi <abi/4.0>,
-          include <tunables/global>
-      
-          profile local-melange /home/runner/go/bin/melange flags=(unconfined) {
-            userns,
-            include if exists <local/melange>
-          }
-          EOF
-      
-          sudo systemctl reload apparmor
-        
+              
       - name: Generate snapshot date
         id: snapshot-date
         run: |
@@ -87,11 +55,14 @@ jobs:
           chmod 400 /tmp/melange.rsa
           set -x
       
-      - name: Build APKs
-        run: |
-              echo "Building package: "${{ matrix.packages }}""
-              melange build --source-dir "$GITHUB_WORKSPACE" --generate-index=false --namespace wolfi --pipeline-dir ./pipelines --empty-workspace --signing-key /tmp/melange.rsa --arch amd64 --out-dir ./pkg "${{ matrix.packages }}"
-      
+      - name: Build Packages
+        uses: d4rkfella/actions/melange-build@main
+        with:
+          config: ${{ matrix.packages }}
+          archs: amd64
+          signing-key-path: /tmp/melange.rsa
+          namespace: wolfi
+
       - name: Download the latest index file
         run: |
           aws s3 cp s3://packages/x86_64/APKINDEX.tar.gz /tmp --endpoint-url=$ENDPOINT_URL
