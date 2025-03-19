@@ -1,5 +1,5 @@
 package:
-  name: luajit-custom
+  name: luajit
   version: 2.1_p20250117
   epoch: 0
   description: OpenResty's branch of LuaJIT
@@ -48,7 +48,7 @@ subpackages:
     test:
       pipeline:
         - uses: test/pkgconf
-
+  
   - name: luajit-doc
     description: luajit docs
     pipeline:
