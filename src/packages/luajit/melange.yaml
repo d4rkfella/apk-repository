@@ -38,12 +38,12 @@ pipeline:
       ln -s "$LUAJIT_INC" ${{targets.destdir}}/usr/include/lua
 
 subpackages:
-  - name: luajit-dev-custom
+  - name: luajit-dev
     pipeline:
       - uses: split/dev
     dependencies:
       runtime:
-        - luajit-custom
+        - luajit
     description: luajit dev
     test:
       pipeline:
