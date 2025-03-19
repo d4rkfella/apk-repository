@@ -18,7 +18,6 @@ environment:
       - busybox
 
 pipeline:
-  - name: Download release tarballa
     uses: fetch
     with:
       uri: https://github.com/openSUSE/catatonit/releases/download/v${{package.version}}/catatonit.tar.xz
