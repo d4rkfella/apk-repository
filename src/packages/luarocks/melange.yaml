@@ -19,6 +19,7 @@ environment:
     packages:
       - build-base
       - busybox
+      - luajit-dev
 
 pipeline:
   - uses: fetch
