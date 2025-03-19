@@ -47,8 +47,7 @@ pipeline:
   - runs: |
       luarocks install lua-resty-openidc
       luarocks install lua-resty-redis-connector
-      mkdir -p ${{targets.destdir}}/usr/openresty/nginx/html/
-      mkdir ${{targets.destdir}}/docker-entrypoint.d/
+      mkdir -p ${{targets.destdir}}/usr/openresty/nginx/html/ ${{targets.destdir}}/docker-entrypoint.d/ ${{targets.destdir}}/usr/share/lua/5.1/
       cp -R /usr/share/lua/5.1/resty ${{targets.destdir}}/usr/share/lua/5.1/
       cp -R kubevirt-manager/dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
       cd apk-repository
