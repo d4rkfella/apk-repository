@@ -43,8 +43,7 @@ pipeline:
 
 test:
   pipeline:
-    - name: Check catatonit version
-      runs: |
+    - runs: |
         catatonit --version
 
 update:
