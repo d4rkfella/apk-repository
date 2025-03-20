@@ -65,6 +65,10 @@ jobs:
           namespace: wolfi
           pipeline-dir: ${{ github.workspace }}/pipelines
 
+      - name: Run Tests
+        run: |
+          melange test ${{ matrix.packages }} --source-dir ${{ github.workspace }} --pipeline-dirs ${{ github.workspace }}/pipelines
+
       - name: Generate Index and Upload output files to S3 bucket
         run: |
           if aws s3 ls s3://packages/x86_64/APKINDEX.tar.gz --endpoint-url=$ENDPOINT_URL > /dev/null 2>&1; then
