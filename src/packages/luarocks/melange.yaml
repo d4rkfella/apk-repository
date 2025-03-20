@@ -7,9 +7,10 @@ package:
     - license: MIT
   dependencies:
     runtime:
-      - wget
-      - luajit-dev-custom
+      - gcc
       - glibc-dev
+      - luajit-dev-custom
+      - wget
 
 environment:
   contents:
@@ -46,11 +47,10 @@ test:
   environment:
     contents:
       packages:
-        - wget
-        - luajit-dev-custom
         - gcc
         - glibc-dev
-  
+        - luajit-dev-custom
+        - wget
   pipeline:
     - uses: test/ldd-check
       with:
