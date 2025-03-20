@@ -2,13 +2,11 @@ name: gpg-verify
 
 needs:
   packages:
+    - wolfi-base
     - gnupg
     - gpg-agent
     - gnupg-dirmngr
     - curl
-    - ca-certificates-bundle
-    - busybox
-
 inputs:
   signature-uri:
     description: |
