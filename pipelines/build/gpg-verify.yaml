@@ -17,41 +17,72 @@ inputs:
   public-key-uri:
     description: |
       The public key used for verification.
-    required: true
+    required: false
+  keyserver:
+    description: |
+      Keyserver to use for searching the public key.
+    required: false
+  receiver-key:
+    description: |
+      Fingerprint to use when searching the keyserver for the public key.
+    required: false
   filename:
     description: |
       The name of file to verify.
     required: true
 
 pipeline:
-  - name: "Download and verify GPG signature"
-    runs: |
-      set -e
-      info() { echo "INFO[gpg-verify]:" "$@"; }
-      error() { echo "ERROR[gpg-verify]:" "$@"; exit 1; }
+  runs: |
+    set -e
+    info() { echo "INFO[gpg-verify]:" "$@"; }
+    error() { echo "ERROR[gpg-verify]:" "$@"; exit 1; }
 
-      SIGNATURE_URI="${{inputs.signature-uri}}"
-      PUBLIC_KEY="${{inputs.public-key-uri}}"
-      FILENAME="${{inputs.filename}}"
+    SIGNATURE_URI="${{inputs.signature-uri}}"
+    PUBLIC_KEY_URI="${{inputs.public-key-uri}}"
+    KEYSERVER="${{inputs.keyserver}}"
+    RECEIVER_KEY="${{inputs.receiver-key}}"
+    FILENAME="${{inputs.filename}}"
 
-      [ -n "$SIGNATURE_URI" ] || error "SIGNATURE_URI is required!"
-      [ -n "$PUBLIC_KEY" ] || error "PUBLIC_KEY is required!"
-      [ -n "$FILENAME" ] || error "FILENAME is required!"
+    [ -n "$SIGNATURE_URI" ] || error "SIGNATURE_URI is required!"
+    [ -n "$FILENAME" ] || error "FILENAME is required!"
 
-      if curl -fsSLO "$SIGNATURE_URI"; then
-        info "Downloaded signature file: $SIGNATURE_FILENAME"
+    if [ -n "$PUBLIC_KEY_URI" ] && { [ -n "$KEYSERVER" ] || [ -n "$RECEIVER_KEY" ]; }; then
+      error "Both PUBLIC_KEY_URI and keyserver/receiver-key are provided. Please provide only one."
+    elif [ -z "$PUBLIC_KEY_URI" ] && { [ -z "$KEYSERVER" ] || [ -z "$RECEIVER_KEY" ]; }; then
+      error "Either PUBLIC_KEY_URI or both KEYSERVER and RECEIVER_KEY are required!"
+    fi
+
+    if curl -fsSLO "$SIGNATURE_URI"; then
+      info "Downloaded signature file: $(basename "$SIGNATURE_URI")"
+    else
+      error "Failed to download signature file from $SIGNATURE_URI"
+    fi
+
+    if [ -n "$PUBLIC_KEY_URI" ]; then
+      info "Downloading public key from direct URI..."
+      if curl -fsSL "$PUBLIC_KEY_URI" > public_key.asc; then
+        info "Downloaded public key."
+        if gpg --import public_key.asc; then
+          info "Public key imported successfully."
+        else
+          error "Failed to import public key."
+        fi
       else
-        error "Failed to download signature file from $SIGNATURE_URI"
+        error "Failed to download public key from $PUBLIC_KEY_URI"
       fi
-
-      if curl -fsSL "$PUBLIC_KEY" | gpg --import; then
-        info "Public key imported successfully."
+    else
+      # Handle keyserver and receiver key
+      info "Fetching public key from keyserver..."
+      if gpg --keyserver "$KEYSERVER" --recv-keys "$RECEIVER_KEY"; then
+        info "Public key imported successfully from keyserver."
       else
-        error "Failed to import public key."
+        error "Failed to import public key from keyserver."
       fi
+    fi
 
-      if gpg --verify "$(basename "$SIGNATURE_URI")" "$FILENAME"; then
-        info "✅ Signature verification successful!"
-      else
-        error "❌ Signature verification FAILED! The file might be tampered with."
-      fi
+    # Verify the signature
+    if gpg --verify "$(basename "$SIGNATURE_URI")" "$FILENAME"; then
+      info "✅ Signature verification successful!"
+    else
+      error "❌ Signature verification FAILED! The file might be tampered with."
+    fi
