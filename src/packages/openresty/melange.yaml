@@ -152,23 +152,16 @@ test:
         cd tests
         openresty -p `pwd`/ -c conf/nginx.conf
         for i in {1..10}; do
-          if curl -s http://localhost:8888 >/dev/null; then
+          if curl -s http://localhost:8888 | grep "hello, world"; then
             echo "Server is up!"
             break
           fi
           echo "Waiting for server to start..."
           sleep 2
         done
-    - name: Print logs
-      runs: |
-        echo "=== Access Log ==="
-        cat tests/logs/access.log || echo "No access log found"
-        echo "=== Error Log ==="
-        cat tests/logs/error.log || echo "No error log found"
     - name: Access web service
       runs: |
         echo "Testing web service..."
-        curl -v http://localhost:8888
         curl -s http://localhost:8888 | grep "hello, world" || { echo "Failed to find 'hello, world' in response"; exit 1; }
 
 update:
