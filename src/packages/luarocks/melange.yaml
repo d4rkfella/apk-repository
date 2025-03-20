@@ -42,8 +42,8 @@ pipeline:
   - uses: strip
   
   - uses: test/ldd-check
-      with:
-        packages: ${{package.name}}
+    with:
+      packages: ${{package.name}}
 test:
   environment:
     contents:
