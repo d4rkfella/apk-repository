@@ -141,7 +141,7 @@ test:
                 location / {
                     default_type text/html;
                     content_by_lua_block {
-                        ngx.say("<p>hello, world</p>")
+                        ngx.say("hello, world")
                     }
                 }
             }
@@ -153,7 +153,7 @@ test:
         openresty -p `pwd`/ -c conf/nginx.conf
     - name: Access web service
       runs: |
-        curl -s http://localhost:8080 | grep "hello, world"
+        curl -s http://localhost:8080 | grep "hello, world" || exit 1
 
 update:
   enabled: true
