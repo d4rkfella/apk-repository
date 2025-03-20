@@ -26,7 +26,8 @@ pipeline:
   - uses: build/gpg-verify
     with:
       signature-uri: https://github.com/openSUSE/catatonit/releases/download/v${{package.version}}/catatonit.tar.xz.asc
-      public-key-uri: https://keyserver.ubuntu.com/pks/lookup?op=get\&search=0x5f36c6c61b5460124a75f5a69e18aa267ddb8db4
+      keyserver: keyserver.ubuntu.com
+      receiver-key: 5F36C6C61B5460124A75F5A69E18AA267DDB8DB4
       filename: catatonit.tar.xz
   
   - uses: autoconf/configure
