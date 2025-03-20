@@ -147,6 +147,22 @@ test:
             }
         }
         EOF
+        cat <<EOF > etc/nginx/conf.d/default.conf
+        server {
+            listen       80;
+            server_name  localhost;
+                
+            location / {
+                root   /usr/local/openresty/nginx/html;
+                index  index.html index.htm;
+            }
+        
+            error_page   500 502 503 504  /50x.html;
+            location = /50x.html {
+                root   /usr/local/openresty/nginx/html;
+            }
+        }
+        EOF
     - name: Start nginx server
       runs: |
         cd tests
