@@ -3,7 +3,7 @@ name: gpg-verify
 needs:
   packages:
     - wolfi-base
-    - gnupg
+    - gpg
     - gpg-agent
     - gnupg-dirmngr
     - curl
