@@ -47,6 +47,8 @@ test:
     contents:
       packages:
         - wget
+        - luajit-dev-custom
+        - glibc-dev
   pipeline:
     - uses: test/ldd-check
       with:
