@@ -129,7 +129,7 @@ test:
         resty -e 'print("hello")' | grep "hello" || exit 1
     - name: Setup configuration
       runs: |
-        mkdir -p tests/conf
+        mkdir -p tests/conf etc/nginx/conf.d
         cat <<EOF > tests/conf/nginx.conf
         worker_processes  1;
         events {
