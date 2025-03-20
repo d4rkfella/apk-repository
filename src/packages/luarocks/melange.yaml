@@ -30,6 +30,12 @@ pipeline:
     with:
       uri: https://luarocks.github.io/luarocks/releases/luarocks-${{package.version}}.tar.gz
       expected-sha256: c3fb3d960dffb2b2fe9de7e3cb004dc4d0b34bb3d342578af84f84325c669102
+
+  - uses: build/gpg-verify
+    with:
+      signature-uri: https://luarocks.github.io/luarocks/releases/luarocks-${{package.version}}.tar.gz.asc
+      public-key-uri: https://hisham.hm/public_key
+      filename: luarocks-${{package.version}}.tar.gz
   
   - runs: |
       ./configure \
