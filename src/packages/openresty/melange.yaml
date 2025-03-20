@@ -137,7 +137,7 @@ test:
         }
         http {
             server {
-                listen 8888;
+                listen 8080;
                 location / {
                     default_type text/html;
                     content_by_lua_block {
@@ -147,22 +147,12 @@ test:
             }
         }
         EOF
-    - name: Start nginx server
+    - name: Start nginx server and test
       runs: |
         cd tests
         openresty -p `pwd`/ -c conf/nginx.conf
-        for i in {1..10}; do
-          if curl -s http://localhost:8888 | grep "hello, world"; then
-            echo "Server is up!"
-            break
-          fi
-          echo "Waiting for server to start..."
-          sleep 2
-        done
-    - name: Access web service
-      runs: |
         echo "Testing web service..."
-        curl -s http://localhost:8888 | grep "hello, world" || { echo "Failed to find 'hello, world' in response"; exit 1; }
+        curl -s http://localhost:8080 | grep "hello, world" || { echo "Failed to find 'hello, world' in response"; exit 1; }
 
 update:
   enabled: true
