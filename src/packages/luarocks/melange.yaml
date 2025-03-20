@@ -55,7 +55,7 @@ test:
         luarocks --version
     - name: Test if installing a luarock works
       runs: |
-         luarocks install lua-cjson
+         luarocks install lua-cjsonasd
 
 update:
   enabled: true
