@@ -41,6 +41,22 @@ pipeline:
 
   - uses: strip
 
+test:
+  environment:
+    contents:
+      packages:
+        - wget
+  pipeline:
+    - uses: test/ldd-check
+      with:
+        packages: ${{package.name}}
+    - name: Check if luarocks utility is available
+      runs: |
+        luarocks --version
+    - name: Test if installing a luarock works
+      runs: |
+         luarocks install lua-cjson
+
 update:
   enabled: true
   release-monitor:
