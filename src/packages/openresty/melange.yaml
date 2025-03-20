@@ -1,6 +1,6 @@
 package:
   name: openresty-custom
-  version: "1.27.1.1"
+  version: "1.27.1.2"
   epoch: 0
   description: High Performance Web Platform Based on Nginx and LuaJIT
   copyright:
@@ -43,15 +43,13 @@ pipeline:
   - uses: fetch
     with:
       uri: https://openresty.org/download/openresty-${{package.version}}.tar.gz
-      expected-sha256: 79b071e27bdc143d5f401d0dbf504de4420070d867538c5edc2546d0351fd5c0
-  
+      expected-sha256: 74f076f7e364b2a99a6c5f9bb531c27610c78985abe956b442b192a2295f7548
   - uses: build/gpg-verify
     with:
       signature-uri: https://openresty.org/download/openresty-${{package.version}}.tar.gz.asc
       keyserver: keyserver.ubuntu.com
       receiver-key: 25451EB088460026195BD62CB550E09EA0E98066
       filename: openresty-${{package.version}}.tar.gz
-  
   - runs: |
       ./configure \
         --build=${{host.triplet.gnu}} \
@@ -99,11 +97,8 @@ pipeline:
         --with-luajit=/usr \
         --with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT' \
         --with-pcre-jit
-  
   - uses: autoconf/make
-  
   - uses: autoconf/make-install
-  
   - name: Setup default config files
     runs: |
       mkdir -p ${{targets.destdir}}/var/run/openresty/
@@ -112,9 +107,7 @@ pipeline:
       rm ${{targets.destdir}}/etc/nginx/nginx.conf
       ln -sf /dev/stdout ${{targets.destdir}}/var/log/openresty/access.log
       ln -sf /dev/stderr ${{targets.destdir}}/var/log/openresty/error.log
-  
   - uses: strip
-
 test:
   environment:
     contents:
@@ -160,14 +153,12 @@ test:
             }
         }
         EOF
-    
     - name: Start nginx server and test
       runs: |
         cd tests
         openresty -p `pwd`/ -c conf/nginx.conf
         echo "Testing web service..."
         curl -s http://localhost:8080 | grep "hello, world" || { echo "Failed to find 'hello, world' in response"; exit 1; }
-
 update:
   enabled: true
   release-monitor:
