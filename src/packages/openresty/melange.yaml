@@ -129,7 +129,7 @@ test:
         resty -e 'print("hello")' | grep "hello" || exit 1
     - name: Setup configuration
       runs: |
-        mkdir -p tests/conf etc/nginx/conf.d
+        mkdir -p tests/conf
         cat <<EOF > tests/conf/nginx.conf
         worker_processes  1;
         events {
@@ -144,22 +144,6 @@ test:
                         ngx.say("<p>hello, world</p>")
                     }
                 }
-            }
-        }
-        EOF
-        cat <<EOF > etc/nginx/conf.d/default.conf
-        server {
-            listen       80;
-            server_name  localhost;
-                
-            location / {
-                root   /usr/openresty/nginx/html;
-                index  index.html index.htm;
-            }
-        
-            error_page   500 502 503 504  /50x.html;
-            location = /50x.html {
-                root   /usr/openresty/nginx/html;
             }
         }
         EOF
