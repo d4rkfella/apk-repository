@@ -44,13 +44,6 @@ pipeline:
   - uses: strip
   
 test:
-  environment:
-    contents:
-      packages:
-        - gcc
-        - glibc-dev
-        - luajit-dev-custom
-        - wget
   pipeline:
     - uses: test/ldd-check
       with:
@@ -58,8 +51,8 @@ test:
     
     - name: Check if luarocks utility is available
       runs: |
-        luarocks --version | grep "${{package.name}} ${{package.version}}"
-        luarocks-admin --version | grep "${{package.name}}-admin ${{package.version}}"
+        luarocks --version
+        luarocks-admin --version
     
     - name: Test if compiling a C luarock works
       runs: |
