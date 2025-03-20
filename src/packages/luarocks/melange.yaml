@@ -40,7 +40,10 @@ pipeline:
   - uses: autoconf/make-install
 
   - uses: strip
-
+  
+  - uses: test/ldd-check
+      with:
+        packages: ${{package.name}}
 test:
   environment:
     contents:
