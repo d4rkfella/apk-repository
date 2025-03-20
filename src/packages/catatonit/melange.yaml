@@ -4,11 +4,6 @@ package:
   epoch: 0
   description: minimal init system for Linux containers
   copyright:
-    - paths:
-      - "*"
-      attestation:
-        license: GPL-2.0-or-later
-        copyright: "Copyright (C) 2018-2023 SUSE LLC"
     - license: GPL-2.0-or-later
 
 environment:
