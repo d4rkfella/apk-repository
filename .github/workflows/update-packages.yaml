@@ -94,15 +94,19 @@ jobs:
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
           
-          if [[ $(echo -e "$latest_version\n$current_version" | sort -V | head -n 1) != "$current_version" ]]; then
+          function version_gt() {
+            test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"
+          }
+          
+          # Compare versions
+          if version_gt "$latest_version" "$current_version"; then
             echo "New version available: $latest_version. Proceeding with version bump."
-            melange bump "${{ matrix.identifier.path }}" $latest_version
+            melange bump "./src/packages/openresty/melange.yaml" "$latest_version"
             echo "bumped=true" >> $GITHUB_ENV
           else
             echo "No new version available. Skipping version bump."
             echo "bumped=false" >> $GITHUB_ENV
           fi
-          cat "${{ matrix.identifier.path }}"
 
       - name: Create a PR
         if: env.bumped == 'true'
