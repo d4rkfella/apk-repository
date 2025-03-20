@@ -44,6 +44,14 @@ pipeline:
     with:
       uri: https://openresty.org/download/openresty-${{package.version}}.tar.gz
       expected-sha256: 79b071e27bdc143d5f401d0dbf504de4420070d867538c5edc2546d0351fd5c0
+  
+  - uses: build/gpg-verify
+    with:
+      signature-uri: https://openresty.org/download/openresty-${{package.version}}.tar.gz.asc
+      keyserver: keyserver.ubuntu.com
+      receiver-key: 25451EB088460026195BD62CB550E09EA0E98066
+      filename: openresty-${{package.version}}.tar.gz
+  
   - runs: |
       ./configure \
         --build=${{host.triplet.gnu}} \
@@ -91,8 +99,11 @@ pipeline:
         --with-luajit=/usr \
         --with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT' \
         --with-pcre-jit
+  
   - uses: autoconf/make
+  
   - uses: autoconf/make-install
+  
   - name: Setup default config files
     runs: |
       mkdir -p ${{targets.destdir}}/var/run/openresty/
@@ -101,7 +112,9 @@ pipeline:
       rm ${{targets.destdir}}/etc/nginx/nginx.conf
       ln -sf /dev/stdout ${{targets.destdir}}/var/log/openresty/access.log
       ln -sf /dev/stderr ${{targets.destdir}}/var/log/openresty/error.log
+  
   - uses: strip
+
 test:
   environment:
     contents:
@@ -147,6 +160,7 @@ test:
             }
         }
         EOF
+    
     - name: Start nginx server and test
       runs: |
         cd tests
