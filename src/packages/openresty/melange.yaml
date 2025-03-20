@@ -154,6 +154,7 @@ test:
     - name: Access web service
       runs: |
         curl -s http://localhost:8080 | grep "hello, world" || exit 1
+
 update:
   enabled: true
   release-monitor:
