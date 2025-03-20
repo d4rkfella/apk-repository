@@ -68,6 +68,7 @@ jobs:
       - name: Run Tests
         run: |
           sudo melange test ${{ matrix.packages }} \
+          --arch amd64
           --source-dir ${{ github.workspace }} \
           --pipeline-dirs ${{ github.workspace }}/pipelines \
           --repository-append ${{ github.workspace }}/packages \
