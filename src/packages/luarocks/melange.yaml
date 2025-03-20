@@ -9,6 +9,7 @@ package:
     runtime:
       - wget
       - luajit-dev-custom
+      - glibc-dev
 
 environment:
   contents:
@@ -41,9 +42,6 @@ pipeline:
 
   - uses: strip
   
-  - uses: test/ldd-check
-    with:
-      packages: ${{package.name}}
 test:
   environment:
     contents:
@@ -55,10 +53,11 @@ test:
         packages: ${{package.name}}
     - name: Check if luarocks utility is available
       runs: |
-        luarocks --version
-    - name: Test if installing a luarock works
+        luarocks --version | grep "${{package.name}} ${{package.version}}"
+        luarocks-admin --version | grep "${{package.name}}-admin ${{package.version}}"
+    - name: Test if compiling a C luarock works
       runs: |
-         luarocks install lua-cjsonasd
+         luarocks install lua-cjson
 
 update:
   enabled: true
