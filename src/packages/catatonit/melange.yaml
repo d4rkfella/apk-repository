@@ -4,6 +4,9 @@ package:
   epoch: 0
   description: minimal init system for Linux containers
   copyright:
+    - paths:
+      - "*"
+      attestation: GPL-2.0-or-later
     - license: GPL-2.0-or-later
 
 environment:
@@ -23,8 +26,7 @@ pipeline:
       uri: https://github.com/openSUSE/catatonit/releases/download/v${{package.version}}/catatonit.tar.xz
       expected-sha256: 9950425501af862e12f618bdc930ea755c46db6a16072a1462b4fc93b2bd59bc
   
-  - name: Verify
-    uses: build/gpg-verify
+  - uses: build/gpg-verify
     with:
       signature-uri: https://github.com/openSUSE/catatonit/releases/download/v${{package.version}}/catatonit.tar.xz.asc
       keyserver: keyserver.ubuntu.com
@@ -38,3 +40,14 @@ pipeline:
   - uses: autoconf/make-install
 
   - uses: strip
+
+test:
+  pipeline:
+    - name: Check catatonit version
+      runs: |
+        catatonit --version
+
+update:
+  enabled: true
+  release-monitor:
+    identifier: 301804
