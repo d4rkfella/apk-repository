@@ -48,6 +48,7 @@ test:
       packages:
         - wget
         - luajit-dev-custom
+        - gcc
         - glibc-dev
   
   pipeline:
