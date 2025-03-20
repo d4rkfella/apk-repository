@@ -6,7 +6,9 @@ package:
   copyright:
     - paths:
       - "*"
-      attestation: GPL-2.0-or-later
+      attestation:
+        license: GPL-2.0-or-later
+        copyright: "Copyright (C) 2018-2023 SUSE LLC"
     - license: GPL-2.0-or-later
 
 environment:
