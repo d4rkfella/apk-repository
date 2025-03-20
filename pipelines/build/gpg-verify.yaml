@@ -5,6 +5,7 @@ needs:
     - ca-certificates-bundle
     - busybox
     - gpg
+    - gpg-agent
     - gnupg-dirmngr
     - curl
 inputs:
