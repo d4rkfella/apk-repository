@@ -2,9 +2,9 @@ name: gpg-verify
 
 needs:
   packages:
-    - wolfi-base
+    - ca-certificates-bundle
+    - busybox
     - gpg
-    - gpg-agent
     - gnupg-dirmngr
     - curl
 inputs:
@@ -31,7 +31,7 @@ inputs:
 
 pipeline:
 - runs: |
-    set -e
+    set -euo pipefail
     info() { echo "INFO[gpg-verify]:" "$@"; }
     error() { echo "ERROR[gpg-verify]:" "$@"; exit 1; }
 
@@ -69,7 +69,6 @@ pipeline:
         error "Failed to download public key from $PUBLIC_KEY_URI"
       fi
     else
-      # Handle keyserver and receiver key
       info "Fetching public key from keyserver..."
       if gpg --keyserver "$KEYSERVER" --recv-keys "$RECEIVER_KEY"; then
         info "Public key imported successfully from keyserver."
@@ -78,7 +77,6 @@ pipeline:
       fi
     fi
 
-    # Verify the signature
     if gpg --verify "$(basename "$SIGNATURE_URI")" "$FILENAME"; then
       info "✅ Signature verification successful!"
     else
