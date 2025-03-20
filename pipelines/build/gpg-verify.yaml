@@ -32,7 +32,7 @@ inputs:
     required: true
 
 pipeline:
-  runs: |
+- runs: |
     set -e
     info() { echo "INFO[gpg-verify]:" "$@"; }
     error() { echo "ERROR[gpg-verify]:" "$@"; exit 1; }
