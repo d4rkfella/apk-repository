@@ -171,4 +171,4 @@ test:
 update:
   enabled: true
   release-monitor:
-    identifier: 231952
+    identifier: 377253
