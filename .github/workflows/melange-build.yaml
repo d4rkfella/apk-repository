@@ -67,7 +67,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          melange test ${{ matrix.packages }} --source-dir ${{ github.workspace }} --pipeline-dirs ${{ github.workspace }}/pipelines
+          sudo melange test ${{ matrix.packages }} --source-dir ${{ github.workspace }} --pipeline-dirs ${{ github.workspace }}/pipelines
 
       - name: Generate Index and Upload output files to S3 bucket
         run: |
