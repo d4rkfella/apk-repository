@@ -12,6 +12,7 @@ environment:
       - alpine-baselayout-data
       - busybox
       - build-base
+      - ca-certificates-bundle
 
 pipeline:
   - uses: fetch
