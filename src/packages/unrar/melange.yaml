@@ -26,6 +26,5 @@ pipeline:
 
   - uses: autoconf/make
  
-  - uses: autoconf/make-install
-    with: 
-      opts: '-v -m755 unrar /usr/bin'
+  - runs: |
+      install -v -m755 unrar ${{targets.destdir}}/usr/bin
