@@ -44,7 +44,8 @@ pipeline:
       printf '%s\n' "qbt_optimise=no" >> env.custom
   - runs: |
       export $(cat env.custom) && /usr/bin/env bash ./qbt-nox-static.bash
-      export $(cat env.custom) && /usr/bin/env bash ./qbt-nox-static.bash update install_test
+      /usr/bin/env bash ./qbt-nox-static.bash update install_test
+      /usr/bin/env bash ./qbt-nox-static.bash update install_core
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       mv qbt-build/bin/qbittorrent-nox ${{targets.destdir}}/usr/bin/qbittorrent-nox
