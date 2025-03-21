@@ -1,0 +1,29 @@
+package:
+  name: unrar
+  version: 7.1.5
+  epoch: 0
+  description: UnRAR - free utility for RAR archives
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - busybox
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://www.rarlab.com/rar/unrarsrc-${{package.version}}.tar.gz
+      expected-sha256: c3fb3d960dffb2b2fe9de7e3cb004dc4d0b34bb3d342578af84f84325c669102
+  
+  - runs: |
+      sed -i 's|LDFLAGS=-pthread|LDFLAGS=-pthread -static|' makefile
+      sed -i 's|CXXFLAGS=-march=native |CXXFLAGS=|' makefile
+
+  - uses: autoconf/make
+ 
+  - uses: autoconf/make-install
