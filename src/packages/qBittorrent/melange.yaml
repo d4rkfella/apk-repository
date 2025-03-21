@@ -10,24 +10,8 @@ environment:
       - https://dl-cdn.alpinelinux.org/alpine/edge/community
     packages:
       - alpine-base
-      - build-base
       - ca-certificates-bundle
-      - bash
-      - git
-      - autoconf
-      - automake
-      - cmake
-      - curl
-      - graphviz
-      - libtool
-      - linux-headers
-      - perl
-      - pkgconf
-      - python3-dev
-      - py3-numpy-dev
-      - re2c
-      - ttf-freefont
-      - sudo
+      - apk-tools
 pipeline:
   - uses: fetch
     with:
@@ -38,7 +22,7 @@ pipeline:
       printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
       printf '%s\n' "qbt_qt_version=6" >> env.custom
       printf '%s\n' "qbt_build_tool=cmake" >> env.custom
-      printf '%s\n' "qbt_cross_name=default" >> env.custom
+      printf '%s\n' "qbt_cross_name=x86_64" >> env.custom
       printf '%s\n' "qbt_patches_url=userdocs/qbittorrent-nox-static" >> env.custom
       printf '%s\n' "qbt_skip_icu=yes" >> env.custom
       printf '%s\n' "qbt_boost_tag=boost-1.87.0" >> env.custom
@@ -55,3 +39,20 @@ pipeline:
       printf '%s\n' "qbt_optimise=no" >> env.custom
   - runs: |
       export $(cat env.custom) && /usr/bin/env bash ./qbt-nox-static.bash
+  - runs: |
+      apk update
+      apk install bash
+  - runs: |
+      /usr/bin/env bash ./qbt-nox-static.bash update install_test
+      /usr/bin/env bash ./qbt-nox-static.bash update install_core
+      /usr/bin/env bash ./qbt-nox-static.bash -bs-a
+      /usr/bin/env bash ./qbt-nox-static.bash zlib
+      /usr/bin/env bash ./qbt-nox-static.bash iconv
+      /usr/bin/env bash ./qbt-nox-static.bash icu
+      /usr/bin/env bash ./qbt-nox-static.bash openssl
+      /usr/bin/env bash ./qbt-nox-static.bash boost
+      /usr/bin/env bash ./qbt-nox-static.bash libtorrent
+      /usr/bin/env bash ./qbt-nox-static.bash double_conversion
+      /usr/bin/env bash ./qbt-nox-static.bash qtbase
+      /usr/bin/env bash ./qbt-nox-static.bash qttools
+      /usr/bin/env bash ./qbt-nox-static.bash qbittorrent
