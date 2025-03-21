@@ -28,4 +28,4 @@ pipeline:
  
   - uses: autoconf/make-install
     with: 
-      opts: -m755 unrar /usr/bin
+      opts: '-v -m755 unrar /usr/bin'
