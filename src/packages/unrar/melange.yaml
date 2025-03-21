@@ -18,7 +18,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://www.rarlab.com/rar/unrarsrc-${{package.version}}.tar.gz
-      expected-sha256: c3fb3d960dffb2b2fe9de7e3cb004dc4d0b34bb3d342578af84f84325c669102
+      expected-sha256: d1acac7ed5b45db587294b357fdd6e74982ce21f5edfcb113c4ca263bc0c666d
   
   - runs: |
       sed -i 's|LDFLAGS=-pthread|LDFLAGS=-pthread -static|' makefile
