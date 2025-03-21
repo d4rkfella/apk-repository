@@ -19,7 +19,7 @@ pipeline:
       expected-sha256: 583cc7f58e8da72fc3192df3f53e2717513b2f2a0fe4c9a0b8b5c28956de14ab
   - runs: |
       apk update
-      apk install bash
+      apk add bash
   - runs: |
       printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
       printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
