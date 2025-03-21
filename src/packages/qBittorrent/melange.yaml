@@ -43,9 +43,21 @@ pipeline:
       printf '%s\n' "qbt_static_ish=no" >> env.custom
       printf '%s\n' "qbt_optimise=no" >> env.custom
   - runs: |
-      export $(cat env.custom) && /usr/bin/env bash ./qbt-nox-static.bash
+      export $(cat env.custom)
+      /usr/bin/env bash ./qbt-nox-static.bash
       /usr/bin/env bash ./qbt-nox-static.bash update install_test
       /usr/bin/env bash ./qbt-nox-static.bash update install_core
+      /usr/bin/env bash ./qbt-nox-static.bash -bs-a
+      /usr/bin/env bash ./qbt-nox-static.bash zlib
+      /usr/bin/env bash ./qbt-nox-static.bash iconv
+      /usr/bin/env bash ./qbt-nox-static.bash icu
+      /usr/bin/env bash ./qbt-nox-static.bash openssl
+      /usr/bin/env bash ./qbt-nox-static.bash boost
+      /usr/bin/env bash ./qbt-nox-static.bash libtorrent
+      /usr/bin/env bash ./qbt-nox-static.bash double_conversion
+      /usr/bin/env bash ./qbt-nox-static.bash qtbase
+      /usr/bin/env bash ./qbt-nox-static.bash qttools
+      /usr/bin/env bash ./qbt-nox-static.bash qbittorrent
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       mv qbt-build/bin/qbittorrent-nox ${{targets.destdir}}/usr/bin/qbittorrent-nox
