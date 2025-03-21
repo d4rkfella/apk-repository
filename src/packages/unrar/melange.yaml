@@ -27,3 +27,5 @@ pipeline:
   - uses: autoconf/make
  
   - uses: autoconf/make-install
+    with: 
+      opts: -m755 unrar /usr/bin
