@@ -28,3 +28,4 @@ pipeline:
  
   - runs: |
       install -v -m755 unrar /usr/bin
+      mv /usr/bin/unrar ${{targets.destdir}}/usr/bin/unrar
