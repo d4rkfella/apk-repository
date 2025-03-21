@@ -3,7 +3,6 @@ package:
   version: 5.0.4_v2.0.11
   epoch: 0
   description: Statically Linked qBittorrent
-
 environment:
   contents:
     repositories:
@@ -13,12 +12,25 @@ environment:
       - build-base
       - ca-certificates-bundle
       - bash
-
+      - git
+      - autoconf
+      - automake
+      - cmake
+      - curl
+      - graphviz
+      - libtool
+      - linux-headers
+      - perl
+      - pkgconf
+      - python3-dev
+      - py3-numpy-dev
+      - re2c
+      - ttf-freefont
+      - sudo
 pipeline:
   - uses: fetch
     with:
       uri: https://github.com/userdocs/qbittorrent-nox-static/archive/refs/tags/release-5.0.4_v2.0.11.tar.gz
       expected-sha256: 583cc7f58e8da72fc3192df3f53e2717513b2f2a0fe4c9a0b8b5c28956de14ab
-  
   - runs: |
       /usr/bin/env bash ./qbt-nox-static.bash
