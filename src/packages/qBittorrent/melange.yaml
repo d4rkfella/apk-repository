@@ -1,0 +1,24 @@
+package:
+  name: qbittorrent
+  version: 5.0.4_v2.0.11
+  epoch: 0
+  description: Statically Linked qBittorrent
+
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+    packages:
+      - alpine-base
+      - build-base
+      - ca-certificates-bundle
+      - bash
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/userdocs/qbittorrent-nox-static/archive/refs/tags/release-5.0.4_v2.0.11.tar.gz
+      expected-sha256: d1acac7ed5b45db587294b357fdd6e74982ce21f5edfcb113c4ca263bc0c666d
+  
+  - runs: |
+      /usr/bin/env bash ./qbt-nox-static.bash
