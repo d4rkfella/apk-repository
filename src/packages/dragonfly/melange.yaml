@@ -18,7 +18,7 @@ environment:
       - boost-context
       - openssl-dev
       - libtool
-      - ninja-build
+      - samurai
       - libunwind-dev
       - bison
       - zlib-dev
@@ -31,6 +31,6 @@ pipeline:
       expected-commit: 51f400ac4a4bbd5ddd88662f1178c4dff67fa74c
       recurse-submodules: true
   - runs: |
-      ./helio/blaze.sh -release -DCMAKE_CXX_FLAGS="-flto" -DCMAKE_MAKE_PROGRAM=/usr/lib/ninja-build/ninja
+      ./helio/blaze.sh -release -DCMAKE_CXX_FLAGS="-flto" -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja
       cd build-opt
       ninja dragonfly
