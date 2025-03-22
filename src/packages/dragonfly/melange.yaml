@@ -27,6 +27,7 @@ pipeline:
       repository: https://github.com/dragonflydb/dragonfly
       tag: v${{package.version}}
       expected-commit: 51f400ac4a4bbd5ddd88662f1178c4dff67fa74c
+      recurse-submodules: true
   - runs: |
       ./helio/blaze.sh -release
       cd build-opt && ninja dragonfly
