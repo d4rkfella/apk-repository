@@ -25,7 +25,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/dragonflydb/dragonfly/archive/refs/tags/v${{package.version}}.tar.gz
-      expected-sha256: 74f076f7e364b2a99a6c5f9bb531c27610c78985abe956b442b192a2295f7548
+      expected-sha256: 4c5b91e9f87a1d8ec5596c4b51f0f43ed5dac1f33eb3abfbd25e455202303b03
   - runs: |
       ./helio/blaze.sh -release
       cd build-opt && ninja dragonfly
