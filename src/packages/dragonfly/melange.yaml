@@ -29,6 +29,7 @@ environment:
       - autoconf
       - automake
       - llvm
+      - linux-headers
 pipeline:
   - uses: git-checkout
     with:
