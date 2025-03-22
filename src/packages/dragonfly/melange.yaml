@@ -15,7 +15,8 @@ environment:
       - build-base
       - busybox
       - bash
-      - boost-dev
+      - glibc-dev
+      - boost-system
       - boost-context
       - openssl-dev
       - libtool
