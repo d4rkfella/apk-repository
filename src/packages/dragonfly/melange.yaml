@@ -22,6 +22,7 @@ environment:
       - libunwind-dev
       - bison
       - zlib-dev
+      - cmake
 pipeline:
   - uses: git-checkout
     with:
