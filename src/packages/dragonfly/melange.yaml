@@ -16,8 +16,7 @@ environment:
       - busybox
       - bash
       - glibc-dev
-      - boost-system
-      - boost-context
+      - boost-dev
       - openssl-dev
       - libtool
       - samurai
