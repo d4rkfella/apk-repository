@@ -14,7 +14,7 @@ environment:
     packages:
       - build-base
       - busybox
-      - boost-context-dev
+      - boost-context
       - libssl-dev
       - libtool
       - libssl-dev
