@@ -29,6 +29,7 @@ environment:
       - re2-dev
       - autoconf
       - automake
+      - posix-libc-utils
 pipeline:
   - uses: git-checkout
     with:
