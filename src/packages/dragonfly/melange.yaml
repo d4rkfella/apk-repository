@@ -25,6 +25,8 @@ environment:
       - zlib-dev
       - cmake
       - patch
+      - pcre2-dev
+      - re2-dev
 pipeline:
   - uses: git-checkout
     with:
