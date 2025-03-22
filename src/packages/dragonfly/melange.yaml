@@ -15,9 +15,8 @@ environment:
       - build-base
       - busybox
       - boost-context
-      - libssl-dev
-      - libtool
       - openssl-dev
+      - libtool
       - ninja-build
       - libunwind-dev
       - bison
