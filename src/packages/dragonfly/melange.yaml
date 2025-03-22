@@ -1,0 +1,32 @@
+package:
+  name: dragonfly
+  version: "1.28.0"
+  epoch: 0
+  description: Dragonfly is an in-memory data store built for modern application workloads.
+  copyright:
+    - license: BUSL-1.1
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - busybox
+      - boost-context-dev
+      - libssl-dev
+      - libtool
+      - libssl-dev
+      - ninja-build
+      - libunwind-dev
+      - bison
+      - zlib-dev
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/dragonflydb/dragonfly/archive/refs/tags/v${{package.version}}.tar.gz
+      expected-sha256: 74f076f7e364b2a99a6c5f9bb531c27610c78985abe956b442b192a2295f7548
+  - runs: |
+      ./helio/blaze.sh -release
+      cd build-opt && ninja dragonfly
