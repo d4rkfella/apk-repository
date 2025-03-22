@@ -23,6 +23,7 @@ environment:
       - bison
       - zlib-dev
       - cmake
+      - patch
 pipeline:
   - uses: git-checkout
     with:
