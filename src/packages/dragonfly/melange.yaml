@@ -17,7 +17,7 @@ environment:
       - boost-context
       - libssl-dev
       - libtool
-      - libssl-dev
+      - openssl-dev
       - ninja-build
       - libunwind-dev
       - bison
