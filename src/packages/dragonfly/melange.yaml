@@ -14,7 +14,7 @@ environment:
     packages:
       - busybox
       - bash
-      - glibc
+      - glibc-dev
       - boost-dev
       - openssl-dev
       - libtool
