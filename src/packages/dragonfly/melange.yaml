@@ -27,6 +27,8 @@ environment:
       - patch
       - pcre2-dev
       - re2-dev
+      - autoconf
+      - automake
 pipeline:
   - uses: git-checkout
     with:
