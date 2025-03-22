@@ -14,6 +14,7 @@ environment:
     packages:
       - build-base
       - busybox
+      - bash
       - boost-context
       - openssl-dev
       - libtool
@@ -29,5 +30,6 @@ pipeline:
       expected-commit: 51f400ac4a4bbd5ddd88662f1178c4dff67fa74c
       recurse-submodules: true
   - runs: |
-      ./helio/blaze.sh -release
-      cd build-opt && ninja dragonfly
+      ./helio/blaze.sh -release -DCMAKE_CXX_FLAGS="-flto"
+      cd build-opt
+      ninja dragonfly
