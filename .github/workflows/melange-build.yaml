@@ -48,15 +48,13 @@ jobs:
       - name: 'Install dependencies (bubblewrap)'
         shell: bash
         run: |
-          sudo apt install -y libcap-dev meson ninja-build
+          sudo apt install -y libcap-dev meson
           git clone https://github.com/containers/bubblewrap
-          pushd bubblewrap
-          meson setup --prefix=/usr -Drequire_userns=true . output
-          cd output
-          ninja
-          sudo ninja install
-          popd
-          rm -rf bubblewrap
+          cd bubblewrap
+          meson setup _builddir --prefix=/usr -Drequire_userns=true
+          meson compile -C _builddir
+          meson test -C _builddir
+          meson install -C _builddir
       
       - name: Install Melange
         run: |
@@ -87,7 +85,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          melange test ${{ matrix.packages }} \
+          sudo melange test ${{ matrix.packages }} \
           --arch amd64 \
           --source-dir ${{ github.workspace }} \
           --pipeline-dirs ${{ github.workspace }}/pipelines \
