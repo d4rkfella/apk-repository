@@ -2,6 +2,7 @@ name: docs
 
 needs:
   packages:
+    - busybox
     - apk-tools
     - grep
     - man-db
