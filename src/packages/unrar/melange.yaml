@@ -8,8 +8,7 @@ environment:
     repositories:
       - https://dl-cdn.alpinelinux.org/alpine/edge/main
     packages:
-      - alpine-baselayout-data
-      - busybox
+      - alpine-base
       - build-base
       - ca-certificates-bundle
 pipeline:
