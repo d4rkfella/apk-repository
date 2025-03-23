@@ -38,14 +38,7 @@ jobs:
         packages: ${{ fromJSON(needs.changed-files.outputs.packages) }}
       max-parallel: 4
       fail-fast: false
-    steps:
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-        
-      - name: Install Melange
-        run: |
-          brew install melange
-              
+    steps:             
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
          
