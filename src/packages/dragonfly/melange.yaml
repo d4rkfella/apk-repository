@@ -32,7 +32,7 @@ environment:
       - llvm
       - autoconf
       - automake
-      - gperf
+      - libselinux
 pipeline:
   - uses: git-checkout
     with:
