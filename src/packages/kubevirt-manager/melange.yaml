@@ -11,7 +11,6 @@ package:
       - openresty-custom
   copyright:
     - license: Apache-2.0
-
 environment:
   contents:
     keyring:
@@ -31,7 +30,6 @@ pipeline:
       repository: https://github.com/kubevirt-manager/kubevirt-manager
       branch: main
       expected-commit: 1dd1bbbcfcc8712b285c996586f5634841e1011f
-
   - uses: git-checkout
     with:
       repository: https://github.com/novnc/noVNC
@@ -42,8 +40,7 @@ pipeline:
       npm run clean
       npm install -g @angular/cli@18.1.1
       npm install
-      npm run build
-      
+      npm run build   
   - runs: |
       luarocks install lua-resty-openidc
       luarocks install lua-resty-redis-connector
