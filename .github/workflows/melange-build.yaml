@@ -71,6 +71,7 @@ jobs:
           signing-key-path: ${{ github.workspace }}/melange.rsa
           namespace: wolfi
           pipeline-dir: ${{ github.workspace }}/pipelines
+          update-index: false
 
       - name: Run Tests
         run: |
