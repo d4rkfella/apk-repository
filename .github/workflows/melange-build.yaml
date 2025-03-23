@@ -41,6 +41,26 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      
+      - name: 'Install dependencies (bubblewrap)'
+        shell: bash
+        run: |
+          sudo apt install -y libcap-dev meson ninja-build
+          git clone https://github.com/containers/bubblewrap
+          pushd bubblewrap
+          meson setup --prefix=/usr -Drequire_userns=true . output
+          cd output
+          ninja
+          sudo ninja install
+          popd
+          rm -rf bubblewrap
+      
+      - name: Install Melange
+        run: |
+          brew install melange
               
       - name: Generate snapshot date
         id: build-date
@@ -94,10 +114,10 @@ jobs:
           if [[ -n "$additional_flags" ]]; then
             melange_command+=" $additional_flags"
           fi
-      
+          
           echo "Running command: $melange_command"
           eval $melange_command
-      
+
           aws s3 cp --recursive packages/ s3://packages/ --endpoint-url $ENDPOINT_URL --checksum-algorithm CRC32
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
