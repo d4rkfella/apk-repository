@@ -16,8 +16,8 @@ environment:
       - apk-tools
 var-transforms:
   - from: ${{package.version}}
-    match: _p(\d{2})(\d{2})$
-    replace: _v$1.$2
+    match: _p(\d)(\d)(\d{2})$
+    replace: _v$1.$2.$3
     to: qbittorrent-package-version
 pipeline:
   - uses: fetch
