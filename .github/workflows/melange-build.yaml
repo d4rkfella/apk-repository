@@ -55,6 +55,7 @@ jobs:
           meson compile -C _builddir
           meson test -C _builddir
           sudo meson install -C _builddir
+          rm -rf ${{ github.workspace }}/bubblewrap
       
       - name: Install Melange
         run: |
