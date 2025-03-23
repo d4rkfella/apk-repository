@@ -23,6 +23,7 @@ pipeline:
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       install -v -m755 unrar ${{targets.destdir}}/usr/bin
+
 test:
   pipeline:
     - uses: test/ldd-check
