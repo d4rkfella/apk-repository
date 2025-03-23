@@ -45,9 +45,9 @@ jobs:
       - name: Extract folder path
         id: extract-folder
         run: |
-          folder_path=$(dirname "${{ matrix.packages }}")
-          echo "Folder path: $folder_path"
-          echo "folder_path=$folder_path" >> $GITHUB_ENV
+          parent_folder=$(basename $(dirname "${{ matrix.packages }}"))
+          echo "Parent folder: $parent_folder"
+          echo "parent_folder=$parent_folder" >> $GITHUB_ENV
          
       - name: Build Packages
         uses: d4rkfella/actions/melange-build@main
