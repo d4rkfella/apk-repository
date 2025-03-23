@@ -3,7 +3,6 @@ package:
   version: "7.1.5"
   epoch: 0
   description: UnRAR - free utility for RAR archives
-
 environment:
   contents:
     repositories:
@@ -13,19 +12,15 @@ environment:
       - busybox
       - build-base
       - ca-certificates-bundle
-
 pipeline:
   - uses: fetch
     with:
       uri: https://www.rarlab.com/rar/unrarsrc-${{package.version}}.tar.gz
       expected-sha256: d1acac7ed5b45db587294b357fdd6e74982ce21f5edfcb113c4ca263bc0c666d
-  
   - runs: |
       sed -i 's|LDFLAGS=-pthread|LDFLAGS=-pthread -static|' makefile
       sed -i 's|CXXFLAGS=-march=native |CXXFLAGS=|' makefile
-
   - uses: autoconf/make
- 
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       install -v -m755 unrar ${{targets.destdir}}/usr/bin
