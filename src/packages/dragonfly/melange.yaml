@@ -29,7 +29,6 @@ environment:
       - autoconf
       - automake
       - llvm
-      - linux-headers
 pipeline:
   - uses: git-checkout
     with:
@@ -38,6 +37,6 @@ pipeline:
       expected-commit: 51f400ac4a4bbd5ddd88662f1178c4dff67fa74c
       recurse-submodules: true
   - runs: |
-      ./helio/blaze.sh -release -DCMAKE_CXX_FLAGS="-flto -ffat-lto-objects -fsanitize=thread" -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja -DABSL_PROPAGATE_CXX_STD=ON
+      ./helio/blaze.sh -release -DCMAKE_CXX_FLAGS="-flto -ffat-lto-objects" -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja -DCMAKE_CXX_STANDARD=20 -DCMAKE_CXX_EXTENSIONS=ON
       cd build-opt
       ninja dragonfly
