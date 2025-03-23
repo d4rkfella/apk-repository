@@ -62,8 +62,12 @@ subpackages:
         - uses: test/docs
 
 update:
-  enabled: false
-  exclude-reason: package uses special versioning
+  enabled: true
+  version-transform:
+    - match: -(\d{8})$
+      replace: _p$1
+  release-monitor:
+    identifier: 377302
 
 test:
   pipeline:
