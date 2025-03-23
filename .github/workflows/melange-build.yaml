@@ -41,19 +41,7 @@ jobs:
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
-      
-      - name: 'Install dependencies (bubblewrap)'
-        shell: bash
-        run: |
-          sudo apt install -y libcap-dev meson
-          git clone https://github.com/containers/bubblewrap
-          cd bubblewrap
-          meson setup _builddir --prefix=/usr -Drequire_userns=true
-          meson compile -C _builddir
-          meson test -C _builddir
-          sudo meson install -C _builddir
-          rm -rf ${{ github.workspace }}/bubblewrap
-      
+        
       - name: Install Melange
         run: |
           brew install melange
@@ -86,7 +74,8 @@ jobs:
 
       - name: Run Tests
         run: |
-          sudo /home/linuxbrew/.linuxbrew/bin/melange test ${{ matrix.packages }} \
+          melange test ${{ matrix.packages }} \
+          --runner docker \
           --arch amd64 \
           --source-dir ${{ github.workspace }} \
           --pipeline-dirs ${{ github.workspace }}/pipelines \
