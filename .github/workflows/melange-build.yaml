@@ -85,7 +85,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          sudo melange test ${{ matrix.packages }} \
+          sudo /home/linuxbrew/.linuxbrew/bin/melange test ${{ matrix.packages }} \
           --arch amd64 \
           --source-dir ${{ github.workspace }} \
           --pipeline-dirs ${{ github.workspace }}/pipelines \
