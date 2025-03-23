@@ -54,7 +54,7 @@ jobs:
           meson setup _builddir --prefix=/usr -Drequire_userns=true
           meson compile -C _builddir
           meson test -C _builddir
-          meson install -C _builddir
+          sudo meson install -C _builddir
       
       - name: Install Melange
         run: |
