@@ -5,7 +5,6 @@ package:
   description: OpenResty's branch of LuaJIT
   copyright:
     - license: MIT
-
 environment:
   contents:
     keyring:
