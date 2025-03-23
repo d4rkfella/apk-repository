@@ -62,10 +62,6 @@ update:
   exclude-reason: package uses special versioning
 
 test:
-  environment:
-    contents:
-      packages:
-        - busybox
   pipeline:
     - runs: |
         lua -v
