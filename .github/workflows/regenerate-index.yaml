@@ -9,7 +9,14 @@ permissions:
 jobs:    
   regenerate-index:
     runs-on: ubuntu-24.04
-    steps:      
+    steps:     
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      
+      - name: Install Melange
+        run: |
+          brew install melange
+      
       - name: Save private key
         run: |
           set +x
