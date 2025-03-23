@@ -28,3 +28,7 @@ test:
     - uses: test/ldd-check
       with:
         packages: ${{package.name}}
+update:
+  enabled: true
+  release-monitor:
+    identifier: 13306
