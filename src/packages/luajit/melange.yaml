@@ -21,7 +21,7 @@ environment:
 
 var-transforms:
   - from: ${{package.version}}
-    match: _(\d+)$
+    match: _p(\d+)$
     replace: -$1
     to: luajit-package-version
 pipeline:
