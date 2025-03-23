@@ -70,7 +70,7 @@ pipeline:
 update:
   enabled: true
   version-transform:
-    match: _v(\d+)\.(\d+)\.(\d+)$
-    replace: _p$1$2$3
+    - match: _v(\d+)\.(\d+)\.(\d+)$
+      replace: _p$1$2$3
   release-monitor:
     identifier: 377279
