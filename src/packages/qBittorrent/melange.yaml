@@ -1,6 +1,6 @@
 package:
   name: qbittorrent-nox-static
-  version: "5.0.4_p2011"
+  version: "5.0.4_v2.0.11"
   epoch: 0
   description: The qbittorrent-nox-static project is a bash build script that compiles a static qbittorrent-nox binary using the latest available dependencies from their source.
   copyright:
