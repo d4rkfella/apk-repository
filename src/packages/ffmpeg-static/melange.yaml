@@ -1,6 +1,6 @@
 #nolint:git-checkout-must-use-github-updates
 package:
-  name: ffmpeg
+  name: ffmpeg-static
   version: "7.1.1"
   epoch: 1
   description: ffmpeg multimedia library
@@ -59,67 +59,102 @@ pipeline:
 
   - runs: |
       ./configure \
-        --prefix=/usr \
-        --libdir=/usr/lib \
-        --disable-shared \
-        --enable-libx264 \
-        --enable-libx265 \
-        --enable-libaom \
-        --enable-libtheora \
+        --prefix=/ffbuild/prefix \
+        --pkg-config-flags=--static \
+        --pkg-config=pkg-config \
+        --cross-prefix=x86_64-ffbuild-linux-gnu- \
+        --arch=x86_64 \
+        --target-os=linux \
         --enable-gpl \
         --enable-version3 \
-        --enable-openssl \
-        --enable-libmp3lame \
-        --disable-ffplay \
-        --enable-libdav1d \
-        --enable-libharfbuzz \
-        --enable-libopus \
-        --enable-libsnappy \
-        --enable-libsrt \
-        --enable-libssh \
-        --enable-libsvtav1 \
-        --enable-libvorbis \
-        --enable-libwebp \
-        --enable-libxml2 \
-        --enable-lzma \
-        --enable-libfontconfig \
+        --disable-debug \
+        --enable-iconv \
+        --enable-zlib \
         --enable-libfreetype \
+        --enable-libfribidi \
+        --enable-gmp \
+        --enable-libxml2 \
+        --enable-openssl \
+        --enable-lzma \
+        --enable-fontconfig \
+        --enable-libharfbuzz \
+        --enable-libvorbis \
+        --enable-opencl \
+        --enable-libpulse \
+        --enable-libvmaf \
+        --enable-libxcb \
+        --enable-xlib \
+        --enable-amf \
+        --enable-libaom \
+        --enable-libaribb24 \
+        --enable-avisynth \
+        --enable-chromaprint \
+        --enable-libdav1d \
+        --enable-libdavs2 \
+        --enable-libdvdread \
+        --enable-libdvdnav \
+        --disable-libfdk-aac \
+        --enable-ffnvcodec \
+        --enable-cuda-llvm \
+        --enable-frei0r \
+        --enable-libgme \
+        --enable-libkvazaar \
+        --enable-libaribcaption \
+        --enable-libass \
+        --enable-libbluray \
+        --enable-libjxl \
+        --enable-libmp3lame \
+        --enable-libopus \
+        --enable-librist \
+        --enable-libssh \
+        --enable-libtheora \
+        --enable-libvpx \
+        --enable-libwebp \
+        --enable-libzmq \
+        --enable-lv2 \
+        --enable-libvpl \
+        --enable-openal \
+        --enable-libopencore-amrnb \
+        --enable-libopencore-amrwb \
+        --enable-libopenh264 \
         --enable-libopenjpeg \
-        --enable-libspeex \
+        --enable-libopenmpt \
+        --enable-librav1e \
+        --enable-librubberband \
+        --disable-schannel \
+        --enable-sdl2 \
+        --enable-libsnappy \
         --enable-libsoxr \
-        --enable-libzmq
-
+        --enable-libsrt \
+        --enable-libsvtav1 \
+        --enable-libtwolame \
+        --enable-libuavs3d \
+        --enable-libdrm \
+        --enable-vaapi \
+        --enable-libvidstab \
+        --enable-vulkan \
+        --enable-libshaderc \
+        --enable-libplacebo \
+        --disable-libvvenc \
+        --enable-libx264 \
+        --enable-libx265 \
+        --enable-libxavs2 \
+        --enable-libxvid \
+        --enable-libzimg \
+        --enable-libzvbi \
+        --extra-cflags=-DLIBTWOLAME_STATIC \
+        --extra-cxxflags='--extra-libs=-ldl -lgomp' \
+        --extra-ldflags=-pthread \
+        --extra-ldexeflags=-pie \
+        --cc=x86_64-ffbuild-linux-gnu-gcc \
+        --cxx=x86_64-ffbuild-linux-gnu-g++ \
+        --ar=x86_64-ffbuild-linux-gnu-gcc-ar \
+        --ranlib=x86_64-ffbuild-linux-gnu-gcc-ranlib \
+        --nm=x86_64-ffbuild-linux-gnu-gcc-nm \
+        --extra-version=20250322
+              
   - uses: autoconf/make
 
   - uses: autoconf/make-install
 
   - uses: strip
-
-subpackages:
-  - name: ffmpeg-static
-    pipeline:
-      - uses: split/static
-    description: ffmpeg static libraries
-
-  - name: ffmpeg-dev
-    dependencies:
-      runtime:
-        - ffmpeg-static
-    pipeline:
-      - uses: split/dev
-    description: ffmpeg development headers
-    test:
-      pipeline:
-        - uses: test/pkgconf
-        - uses: test/tw/ldd-check
-
-  - name: ffmpeg-doc
-    pipeline:
-      - uses: split/manpages
-    description: ffmpeg manpages
-
-test:
-  pipeline:
-    - runs: |
-        ffmpeg --help
-        ffprobe --help
