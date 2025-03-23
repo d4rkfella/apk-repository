@@ -46,22 +46,9 @@ jobs:
         run: |
           brew install melange
               
-      - name: Generate snapshot date
-        id: build-date
-        run: |
-          echo "date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
-        shell: bash
-
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
-      
-      - name: Save private key
-        run: |
-          set +x
-          echo -n "${{ secrets.MELANGE_PRIVATE_KEY }}" > ${{ github.workspace }}/melange.rsa
-          chmod 400 ${{ github.workspace }}/melange.rsa
-          set -x
-      
+         
       - name: Build Packages
         uses: d4rkfella/actions/melange-build@main
         with:
@@ -70,44 +57,12 @@ jobs:
           signing-key-path: ${{ github.workspace }}/melange.rsa
           namespace: wolfi
           pipeline-dir: ${{ github.workspace }}/pipelines
-          update-index: false
-
-      - name: Run Tests
-        run: |
-          melange test ${{ matrix.packages }} \
-          --runner docker \
-          --arch amd64 \
-          --source-dir ${{ github.workspace }} \
-          --pipeline-dirs ${{ github.workspace }}/pipelines \
-          --repository-append ${{ github.workspace }}/packages \
-          --repository-append https://packages.wolfi.dev/os \
-          --repository-append https://packages.darkfellanetwork.com \
-          --keyring-append ${{ github.workspace }}/melange.rsa.pub \
-          --keyring-append https://packages.wolfi.dev/os/wolfi-signing.rsa.pub \
-          --keyring-append https://packages.darkfellanetwork.com/melange.rsa.pub
-          
-      - name: Generate Index and Upload output files to S3 bucket
-        run: |
-          if aws s3 ls s3://packages/x86_64/APKINDEX.tar.gz --endpoint-url=$ENDPOINT_URL > /dev/null 2>&1; then
-            echo "APKINDEX.tar.gz found in S3 bucket. Downloading and adding --source and --merge flags."
-            aws s3 cp s3://packages/x86_64/APKINDEX.tar.gz /tmp/APKINDEX.tar.gz --endpoint-url=$ENDPOINT_URL
-            additional_flags="--source /tmp/APKINDEX.tar.gz --merge"
-          else
-            echo "APKINDEX.tar.gz not found in S3 bucket. Skipping --source and --merge flags."
-            additional_flags=""
-          fi
-      
-          melange_command="melange index --signing-key ${{ github.workspace }}/melange.rsa --output packages/x86_64/APKINDEX.tar.gz packages/x86_64/*.apk"
-      
-          if [[ -n "$additional_flags" ]]; then
-            melange_command+=" $additional_flags"
-          fi
-          
-          echo "Running command: $melange_command"
-          eval $melange_command
-
-          aws s3 cp --recursive packages/ s3://packages/ --endpoint-url $ENDPOINT_URL --checksum-algorithm CRC32
+          s3-bucket-name: packages
+          tests-repository-append: https://packages.darkfellanetwork.com,https://packages.wolfi.dev/os
+          tests-keyring-append: https://packages.darkfellanetwork.com/melange.rsa.pub,https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+          build-date: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
+          MELANGE_PRIVATE_KEY: ${{ secrets.MELANGE_PRIVATE_KEY }}
