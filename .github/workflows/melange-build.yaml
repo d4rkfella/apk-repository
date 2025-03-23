@@ -47,7 +47,6 @@ jobs:
         with:
           config: ${{ matrix.packages }}
           sign-with-key: true
-          sign-with-temporary-key: true
           signing-key-path: ${{ github.workspace }}/melange.rsa
           namespace: wolfi
           pipeline-dir: ${{ github.workspace }}/pipelines
