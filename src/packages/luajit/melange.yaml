@@ -47,6 +47,7 @@ subpackages:
       - uses: split/dev
     dependencies:
       runtime:
+        - busybox
         - luajit-custom
     description: luajit dev
     test:
