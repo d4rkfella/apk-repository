@@ -22,7 +22,7 @@ var-transforms:
 pipeline:
   - uses: fetch
     with:
-      uri: https://github.com/userdocs/qbittorrent-nox-static/archive/refs/tags/release-${{package.version}}.tar.gz
+      uri: https://github.com/userdocs/qbittorrent-nox-static/archive/refs/tags/release-${{vars.qbittorrent-package-version}}.tar.gz
       expected-sha256: 583cc7f58e8da72fc3192df3f53e2717513b2f2a0fe4c9a0b8b5c28956de14ab
   - runs: |
       apk update
