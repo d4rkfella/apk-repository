@@ -93,6 +93,7 @@ jobs:
       - name: Bump the version if a newer release is available
         id: check-bump
         run: |
+          sudo apt install perl
           latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
           current_version=$(yq ".package.version" "${{ matrix.identifier.path }}")
           echo "Current version: $current_version"
@@ -106,7 +107,7 @@ jobs:
             echo "Applying version transform to latest version: match='$match', replace='$replace'"
             
             # Transform latest_version for comparison and bumping
-            latest_version_transformed=$(echo "$latest_version" | sed -E "s/$match/$replace/")
+            latest_version_transformed=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
             echo "Transformed latest version: $latest_version_transformed"
           else
             latest_version_transformed="$latest_version"
