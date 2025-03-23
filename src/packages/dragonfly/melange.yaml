@@ -40,6 +40,6 @@ pipeline:
       expected-commit: 51f400ac4a4bbd5ddd88662f1178c4dff67fa74c
       recurse-submodules: true
   - runs: |
-      ./helio/blaze.sh -release -DCMAKE_CXX_FLAGS="-flto -ffat-lto-objects -fdelete-null-pointer-checks"
+      ./helio/blaze.sh -release --log-level=DEBUG -DCMAKE_CXX_FLAGS="-flto -ffat-lto-objects -fdelete-null-pointer-checks"
       cd build-opt
       ninja dragonfly
