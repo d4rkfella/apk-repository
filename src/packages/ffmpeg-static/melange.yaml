@@ -96,16 +96,6 @@ pipeline:
   - uses: strip
 
 subpackages:
-  - range: libraries
-    name: ${{range.key}}
-    description: "${{range.value}} library"
-    dependencies:
-      provider-priority: 5
-    pipeline:
-      - runs: |
-          mkdir -p "${{targets.subpkgdir}}"/usr/lib
-          mv "${{targets.destdir}}"/usr/lib/${{range.value}}* "${{targets.subpkgdir}}"/usr/lib/
-
   - name: ffmpeg-static
     pipeline:
       - uses: split/static
@@ -114,7 +104,6 @@ subpackages:
   - name: ffmpeg-dev
     dependencies:
       runtime:
-        - ffmpeg
         - ffmpeg-static
     pipeline:
       - uses: split/dev
@@ -128,3 +117,9 @@ subpackages:
     pipeline:
       - uses: split/manpages
     description: ffmpeg manpages
+
+test:
+  pipeline:
+    - runs: |
+        ffmpeg --help
+        ffprobe --help
