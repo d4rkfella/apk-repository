@@ -50,7 +50,7 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/openresty/nginx/html/ ${{targets.destdir}}/docker-entrypoint.d/ ${{targets.destdir}}/usr/share/lua/5.1/
       cp -R /usr/share/lua/5.1/resty /usr/share/lua/5.1/ffi-zlib.lua ${{targets.destdir}}/usr/share/lua/5.1/
       cp -R dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
-      install -m444 -D src/packages/kubevirt-manager/resources/nginx.conf ${{targets.destdir}}/etc/nginx/nginx.conf
-      install -m444 -D src/packages/kubevirt-manager/resources/default.conf ${{targets.destdir}}/etc/nginx/conf.d/default.conf
-      install -m555 -D src/packages/kubevirt-manager/resources/30-tune-worker-processes.sh src/packages/kubevirt-manager/resources/45-create-bundle-ca.sh src/packages/kubevirt-manager/resources/91-startkubectl.sh ${{targets.destdir}}/docker-entrypoint.d/
-      install -m555 -D src/packages/kubevirt-manager/resources/docker-entrypoint.sh ${{targets.destdir}}/
+      install -m444 -D resources/nginx.conf ${{targets.destdir}}/etc/nginx/nginx.conf
+      install -m444 -D resources/default.conf ${{targets.destdir}}/etc/nginx/conf.d/default.conf
+      install -m555 -D resources/30-tune-worker-processes.sh resources/45-create-bundle-ca.sh resources/91-startkubectl.sh ${{targets.destdir}}/docker-entrypoint.d/
+      install -m555 -D resources/docker-entrypoint.sh ${{targets.destdir}}/
