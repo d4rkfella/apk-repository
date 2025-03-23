@@ -30,6 +30,8 @@ environment:
       - re2-dev
       - autoconf-archive
       - llvm
+      - autoconf
+      - automake
 pipeline:
   - uses: git-checkout
     with:
