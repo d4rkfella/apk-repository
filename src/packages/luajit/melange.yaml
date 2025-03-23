@@ -63,7 +63,7 @@ update:
   exclude-reason: package uses special versioning
 
 test:
-  enviroment:
+  environment:
     contents:
       packages:
         - busybox
