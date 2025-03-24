@@ -23,7 +23,7 @@ pipeline:
     with:
       uri: https://github.com/autobrr/autobrr/archive/refs/tags/v${{package.version}}.tar.gz
       expected-sha256: 7915aa4d7fd9b4fe596cb7d284c3b13d9b8a068c7f87caa53ff2c8b47f2f7c59
-  - run: |
+  - runs: |
       corepack enable
       mkdir /tmp/web
       cp web/package.json web/pnpm-lock.yaml /tmp/web/
@@ -32,7 +32,7 @@ pipeline:
       cd ..
       cp web/* /tmp/web/
       pnpm run build
-  - run: |
+  - runs: |
       mkdir -p /tmp/src/web/dist ${{targets.destdir}}/usr/bin
       cp src/go.mod src/go.sum /tmp/src
       cd /tmp/src && go mod download
