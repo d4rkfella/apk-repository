@@ -27,14 +27,14 @@ pipeline:
       expected-sha256: 7915aa4d7fd9b4fe596cb7d284c3b13d9b8a068c7f87caa53ff2c8b47f2f7c59
   - runs: |
       corepack enable
-      cp -R web /tmp/
-      cd /tmp/web
+      cd web
       pnpm install --frozen-lockfile
       pnpm run build
   - runs: |
-      mkdir -p /tmp/src/web/dist ${{targets.destdir}}/usr/bin
-      cp go.mod go.sum /tmp/src
-      cd /tmp/src && go mod download
-      cp -R /tmp/web /tmp/src/
-      go build -ldflags "-s -w" -o ${{targets.destdir}}/usr/bin/autobrr /tmp/src/cmd/autobrr/main.go
-      go build -ldflags "-s -w" -o ${{targets.destdir}}/usr/bin/autobrrctl /tmp/src/cmd/autobrrctl/main.go
+      mkdir -p ${{targets.destdir}}/usr/bin
+      cp go.mod go.sum src
+      cd src && go mod download
+      cp -R web src/
+      cd ..
+      go build -ldflags "-s -w" -o ${{targets.destdir}}/usr/bin/autobrr cmd/autobrr/main.go
+      go build -ldflags "-s -w" -o ${{targets.destdir}}/usr/bin/autobrrctl cmd/autobrrctl/main.go
