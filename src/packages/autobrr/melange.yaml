@@ -28,11 +28,9 @@ pipeline:
   - runs: |
       corepack enable
       mkdir /tmp/web
-      cp web/package.json web/pnpm-lock.yaml /tmp/web/
+      cp web/* /tmp/web/
       cd /tmp/web
       pnpm install --frozen-lockfile
-      cd ..
-      cp web/* /tmp/web/
       pnpm run build
   - runs: |
       mkdir -p /tmp/src/web/dist ${{targets.destdir}}/usr/bin
