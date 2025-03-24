@@ -33,7 +33,7 @@ pipeline:
       corepack enable
       cd web
       pnpm install --frozen-lockfile
-      pnpm approve-builds
+      pnpm approve-builds --yes
       pnpm run build
 
   - runs: |
