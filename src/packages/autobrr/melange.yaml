@@ -15,8 +15,28 @@ environment:
       - ca-certificates-bundle
       - nodejs
       - go
+      - git
+      - build-base
+      - tzdata
 pipeline:
   - uses: fetch
     with:
       uri: https://github.com/autobrr/autobrr/archive/refs/tags/v${{package.version}}.tar.gz
-      expected-sha256: 583cc7f58e8da72fc3192df3f53e2717513b2f2a0fe4c9a0b8b5c28956de14ab
+      expected-sha256: 7915aa4d7fd9b4fe596cb7d284c3b13d9b8a068c7f87caa53ff2c8b47f2f7c59
+  - run: |
+      corepack enable
+      mkdir /tmp/web
+      cp web/package.json web/pnpm-lock.yaml /tmp/web/
+      cd /tmp/web
+      pnpm install --frozen-lockfile
+      cd ..
+      cp web/* /tmp/web/
+      pnpm run build
+  - run: |
+      mkdir -p /tmp/src/web/dist ${{targets.destdir}}/usr/bin
+      cp src/go.mod src/go.sum /tmp/src
+      cd /tmp/src && go mod download
+      cp /tmp/web/dist/* /tmp/src/web/dist/*
+      cp /tmp/web/build.go /tmp/src/web/build.go
+      go build -ldflags "-s -w -o ${{targets.destdir}}/usr/bin/autobrr /tmp/src/cmd/autobrr/main.go && \
+      go build -ldflags "-s -w -o ${{targets.destdir}}/usr/bin/autobrrctl /tmp/src/cmd/autobrrctl/main.go
