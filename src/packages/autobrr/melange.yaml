@@ -13,8 +13,8 @@ environment:
     packages:
       - alpine-base
       - ca-certificates-bundle
-      - nodejs=~20
-      - go=~1.23
+      - nodejs~20
+      - go~1.23
 pipeline:
   - uses: fetch
     with:
