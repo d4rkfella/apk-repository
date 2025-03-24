@@ -27,6 +27,7 @@ pipeline:
   - uses: go/build
     with:
       packages: resources/cross-seed.go
+      output: cross-seed
   - runs: |
       apk update
       apk add bash
