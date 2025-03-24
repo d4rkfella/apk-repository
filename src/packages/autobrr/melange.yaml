@@ -43,9 +43,13 @@ pipeline:
       export BUILDTIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
       export GOOS=linux
       export CGO_ENABLED=0
-      echo $REVISION
+      
       go mod download
       go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${REVISION} -X main.date=${BUILDTIME}" \
         -o ${{targets.destdir}}/usr/bin/autobrr cmd/autobrr/main.go
       go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${REVISION} -X main.date=${BUILDTIME}" \
         -o ${{targets.destdir}}/usr/bin/autobrrctl cmd/autobrrctl/main.go
+update:
+  enabled: true
+  release-monitor:
+    identifier: 377310
