@@ -33,9 +33,8 @@ pipeline:
       pnpm run build
   - runs: |
       mkdir -p /tmp/src/web/dist ${{targets.destdir}}/usr/bin
-      cp src/go.mod src/go.sum /tmp/src
+      cp go.mod go.sum /tmp/src
       cd /tmp/src && go mod download
-      cp /tmp/web/dist/* /tmp/src/web/dist/*
-      cp /tmp/web/build.go /tmp/src/web/build.go
+      cp -R /tmp/web /tmp/src/
       go build -ldflags "-s -w -o ${{targets.destdir}}/usr/bin/autobrr /tmp/src/cmd/autobrr/main.go
       go build -ldflags "-s -w -o ${{targets.destdir}}/usr/bin/autobrrctl /tmp/src/cmd/autobrrctl/main.go
