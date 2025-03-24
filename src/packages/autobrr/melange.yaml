@@ -1,0 +1,21 @@
+package:
+  name: autobrr
+  version: "1.60.0"
+  epoch: 0
+  description: "Autobrr redefines download automation for torrents and Usenet, drawing inspiration from tools like trackarr, autodl-irssi, and flexget. We've combined the best of these worlds into one versatile tool that can do it all, and then some."
+  copyright:
+    - license: GPLv2-or-later
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+      - https://dl-cdn.alpinelinux.org/alpine/edge/community
+    packages:
+      - alpine-base
+      - ca-certificates-bundle
+      - nodejs=20.17.0-r0
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/autobrr/autobrr/archive/refs/tags/v${{package.version}}.tar.gz
+      expected-sha256: 583cc7f58e8da72fc3192df3f53e2717513b2f2a0fe4c9a0b8b5c28956de14ab
