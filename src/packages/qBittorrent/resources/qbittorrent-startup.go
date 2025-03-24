@@ -59,7 +59,7 @@ func main() {
 		}
 	}
 
-	cmd := exec.Command("/app/bin/qbittorrent-nox")
+	cmd := exec.Command("/usr/bin/qbittorrent-nox")
 	cmd.Args = append(cmd.Args, os.Args[1:]...) // Pass any command-line arguments
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
