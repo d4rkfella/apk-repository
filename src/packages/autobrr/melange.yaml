@@ -38,5 +38,5 @@ pipeline:
       cd /tmp/src && go mod download
       cp /tmp/web/dist/* /tmp/src/web/dist/*
       cp /tmp/web/build.go /tmp/src/web/build.go
-      go build -ldflags "-s -w -o ${{targets.destdir}}/usr/bin/autobrr /tmp/src/cmd/autobrr/main.go && \
+      go build -ldflags "-s -w -o ${{targets.destdir}}/usr/bin/autobrr /tmp/src/cmd/autobrr/main.go
       go build -ldflags "-s -w -o ${{targets.destdir}}/usr/bin/autobrrctl /tmp/src/cmd/autobrrctl/main.go
