@@ -13,7 +13,7 @@ environment:
     packages:
       - alpine-base
       - ca-certificates-bundle
-      - nodejs=20.17.0-r0
+      - nodejs=20.17.0
 pipeline:
   - uses: fetch
     with:
