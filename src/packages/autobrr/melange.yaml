@@ -36,5 +36,5 @@ pipeline:
       cp go.mod go.sum /tmp/src
       cd /tmp/src && go mod download
       cp -R /tmp/web /tmp/src/
-      go build -ldflags "-s -w -o ${{targets.destdir}}/usr/bin/autobrr /tmp/src/cmd/autobrr/main.go
-      go build -ldflags "-s -w -o ${{targets.destdir}}/usr/bin/autobrrctl /tmp/src/cmd/autobrrctl/main.go
+      go build -ldflags "-s -w" -o ${{targets.destdir}}/usr/bin/autobrr /tmp/src/cmd/autobrr/main.go
+      go build -ldflags "-s -w" -o ${{targets.destdir}}/usr/bin/autobrrctl /tmp/src/cmd/autobrrctl/main.go
