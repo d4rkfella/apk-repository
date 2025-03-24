@@ -24,16 +24,15 @@ environment:
       - busybox
 
 pipeline:
-  - uses: fetch
+  - uses: git-checkout
     with:
-      uri: https://github.com/autobrr/autobrr/archive/refs/tags/v${{package.version}}.tar.gz
-      expected-sha256: 7915aa4d7fd9b4fe596cb7d284c3b13d9b8a068c7f87caa53ff2c8b47f2f7c59
+      repository: https://github.com/autobrr/autobrr
+      tag: v${{package.version}}
 
   - runs: |
       corepack enable
       cd web
       pnpm install --frozen-lockfile
-      pnpm approve-builds --yes
       pnpm run build
 
   - runs: |
@@ -44,6 +43,7 @@ pipeline:
       export BUILDTIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
       export GOOS=linux
       export CGO_ENABLED=0
+      echo $REVISION
       go mod download
       go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${REVISION} -X main.date=${BUILDTIME}" \
         -o ${{targets.destdir}}/usr/bin/autobrr cmd/autobrr/main.go
