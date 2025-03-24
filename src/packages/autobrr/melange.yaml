@@ -7,14 +7,15 @@ package:
     - license: GPLv2-or-later
 environment:
   contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     repositories:
-      - https://dl-cdn.alpinelinux.org/alpine/edge/main
-      - https://dl-cdn.alpinelinux.org/alpine/edge/community
+      - https://packages.wolfi.dev/os
     packages:
-      - alpine-base
       - ca-certificates-bundle
-      - nodejs-current
-      - go
+      - nodejs-20
+      - corepack
+      - go-1.23
       - git
       - build-base
       - tzdata
