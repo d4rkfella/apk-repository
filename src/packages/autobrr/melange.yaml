@@ -19,6 +19,7 @@ environment:
       - git
       - build-base
       - tzdata
+      - busybox
 pipeline:
   - uses: fetch
     with:
