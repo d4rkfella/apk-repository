@@ -34,7 +34,6 @@ pipeline:
     with:
       repository: https://github.com/novnc/noVNC
       tag: v1.6.0
-      expected-commit: a8dfd6a3ea3c74244f5ebdaa5a7f1023007a7820
       destination: src/assets/noVNC
   - runs: |
       npm run clean
@@ -43,11 +42,11 @@ pipeline:
       npm run build   
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/openresty/nginx/html/ ${{targets.destdir}}/docker-entrypoint.d/ ${{targets.destdir}}/usr/share/lua/5.1/
-      cp -R dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
+      luarocks install lua-resty-openidc
+      luarocks install lua-resty-redis-connector
       install -m444 -D resources/nginx.conf ${{targets.destdir}}/etc/nginx/nginx.conf
       install -m444 -D resources/default.conf ${{targets.destdir}}/etc/nginx/conf.d/default.conf
       install -m555 -D resources/30-tune-worker-processes.sh resources/45-create-bundle-ca.sh resources/91-startkubectl.sh ${{targets.destdir}}/docker-entrypoint.d/
       install -m555 -D resources/docker-entrypoint.sh ${{targets.destdir}}/
-      luarocks install lua-resty-openidc
-      luarocks install lua-resty-redis-connector
       cp -R /usr/share/lua/5.1/resty /usr/share/lua/5.1/ffi-zlib.lua ${{targets.destdir}}/usr/share/lua/5.1/
+      cp -R dist/kubevirtmgr-webui/browser/* ${{targets.destdir}}/usr/openresty/nginx/html/
