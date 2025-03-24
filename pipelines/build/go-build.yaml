@@ -1,0 +1,91 @@
+name: go-build
+
+needs:
+  packages:
+    - ${{inputs.go-package}}
+    - busybox
+    - ca-certificates-bundle
+
+inputs:
+  go-package:
+    description: |
+      The go package to install
+    default: go
+
+  packages:
+    description: |
+      List of space-separated packages to compile. Files can also be specified.
+      This value is passed as an argument to go build.
+    required: true
+
+  tags:
+    description: |
+      A comma-separated list of build tags to append to the go compiler
+
+  toolchaintags:
+    description: |
+      A comma-separated list of default toolchain go build tags
+    default: "netgo,osusergo"
+
+  output:
+    description: |
+      Filename to use when writing the binary. The final install location inside
+      the apk will be in prefix / install-dir / output
+    required: true
+
+  prefix:
+    description: |
+      Prefix to relocate binaries
+    default: usr
+
+  ldflags:
+    description:
+      List of [pattern=]arg to append to the go compiler with -ldflags
+
+  strip:
+    description:
+      Set of strip ldflags passed to the go compiler
+    # Note symbols tables are useful for cryptography audits and govulncheck
+    default: "-w"
+
+  install-dir:
+    description: |
+      Directory where binaries will be installed
+    default: bin
+
+  experiments:
+    description: |
+      A comma-separated list of Golang experiment names (ex: loopvar) to use
+      when building the binary.
+    default: ""
+
+  extra-args:
+    description: |
+      A space-separated list of extra arguments to pass to the go build command.
+    default: ""
+
+  amd64:
+    description: |
+      GOAMD64 microarchitecture level to use
+    default: "v2"
+
+  arm64:
+    description: |
+      GOARM64 microarchitecture level to use
+    default: "v8.0"
+
+  buildmode:
+    description: |
+      The -buildmode flag value. See "go help buildmode" for more information.
+    default: "default"
+
+  cgo-enabled:
+    default: 0
+
+pipeline:
+  - runs: |
+      LDFLAGS="${{inputs.strip}} ${{inputs.ldflags}}"
+
+      BASE_PATH="${{inputs.prefix}}/${{inputs.install-dir}}/${{inputs.output}}"
+
+      CGO_ENABLED="${{inputs.cgo-enabled}}" GOAMD64="${{inputs.amd64}}" GOARM64="${{inputs.arm64}}" GOEXPERIMENT="${{inputs.experiments}}" go build -o "${{targets.contextdir}}"/${BASE_PATH} -tags "${{inputs.toolchaintags}},${{inputs.tags}}" -ldflags "${LDFLAGS}" -trimpath -buildmode ${{inputs.buildmode}} ${{inputs.extra-args}} ${{inputs.packages}}
