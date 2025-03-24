@@ -2,9 +2,10 @@ package:
   name: autobrr
   version: "1.60.0"
   epoch: 0
-  description: "Autobrr redefines download automation for torrents and Usenet, drawing inspiration from tools like trackarr, autodl-irssi, and flexget. We've combined the best of these worlds into one versatile tool that can do it all, and then some."
+  description: "Autobrr download automation tool"
   copyright:
-    - license: GPLv2-or-later
+    - license: GPL-2.0-or-later
+
 environment:
   contents:
     keyring:
@@ -19,21 +20,30 @@ environment:
       - git
       - build-base
       - tzdata
-      - busybox
+      - jq
+
 pipeline:
   - uses: fetch
     with:
       uri: https://github.com/autobrr/autobrr/archive/refs/tags/v${{package.version}}.tar.gz
       expected-sha256: 7915aa4d7fd9b4fe596cb7d284c3b13d9b8a068c7f87caa53ff2c8b47f2f7c59
+
   - runs: |
       corepack enable
       cd web
       pnpm install --frozen-lockfile
+      pnpm approve-builds
       pnpm run build
+
   - runs: |
-      mkdir -p ${{targets.destdir}}/usr/bin
+      mkdir -p ${{targets.destdir}}/usr/local/bin
+      
+      export VERSION=${{package.version}}
+      export REVISION=$(git -C . rev-parse --short HEAD 2>/dev/null || echo "unknown")
+      export BUILDTIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      
       go mod download
-      cp -R web src/
-      cd ..
-      go build -ldflags "-s -w" -o ${{targets.destdir}}/usr/bin/autobrr cmd/autobrr/main.go
-      go build -ldflags "-s -w" -o ${{targets.destdir}}/usr/bin/autobrrctl cmd/autobrrctl/main.go
+      go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${REVISION} -X main.date=${BUILDTIME}" \
+        -o ${{targets.destdir}}/usr/local/bin/autobrr cmd/autobrr/main.go
+      go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${REVISION} -X main.date=${BUILDTIME}" \
+        -o ${{targets.destdir}}/usr/local/bin/autobrrctl cmd/autobrrctl/main.go
