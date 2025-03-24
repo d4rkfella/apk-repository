@@ -37,14 +37,16 @@ pipeline:
       pnpm run build
 
   - runs: |
-      mkdir -p ${{targets.destdir}}/usr/local/bin
+      mkdir -p ${{targets.destdir}}/usr/bin
       
       export VERSION=${{package.version}}
       export REVISION=$(git -C . rev-parse --short HEAD 2>/dev/null || echo "unknown")
       export BUILDTIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-      
+      echo VERSION
+      echo REVISION
+      echo BUILDTIME
       go mod download
       go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${REVISION} -X main.date=${BUILDTIME}" \
-        -o ${{targets.destdir}}/usr/local/bin/autobrr cmd/autobrr/main.go
+        -o ${{targets.destdir}}/usr/bin/autobrr cmd/autobrr/main.go
       go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${REVISION} -X main.date=${BUILDTIME}" \
-        -o ${{targets.destdir}}/usr/local/bin/autobrrctl cmd/autobrrctl/main.go
+        -o ${{targets.destdir}}/usr/bin/autobrrctl cmd/autobrrctl/main.go
