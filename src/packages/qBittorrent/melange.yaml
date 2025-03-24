@@ -28,6 +28,10 @@ pipeline:
     with:
       packages: resources/cross-seed.go
       output: cross-seed
+  - uses: build/go-build
+    with:
+      packages: resources/qbittorrent-startup.go
+      output: qbittorrent-startup
   - runs: |
       apk update
       apk add bash
@@ -68,9 +72,10 @@ pipeline:
       /usr/bin/env bash ./qbt-nox-static.bash qttools
       /usr/bin/env bash ./qbt-nox-static.bash qbittorrent
   - runs: |
-      mkdir -p ${{targets.destdir}}/usr/bin
+      mkdir -p ${{targets.destdir}}/usr/bin ${{targets.destdir}}/app
       mv qbt-build/bin/qbittorrent-nox ${{targets.destdir}}/usr/bin/qbittorrent-nox
       chmod 755 ${{targets.destdir}}/usr/bin/qbittorrent-nox
+      install -m444 -D resources/qBittorrent.conf ${{targets.destdir}}/app/qBittorrent.conf
 update:
   enabled: true
   version-transform:
