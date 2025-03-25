@@ -19,6 +19,7 @@ environment:
       - yarn
       - aspnet-6-runtime
       - sqlite-libs
+      - nodejs-20
 pipeline:
   - uses: git-checkout
     with:
