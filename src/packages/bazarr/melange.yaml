@@ -19,13 +19,11 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
-      - wolfi-baselayout
       - python-3.12
       - py3.12-pip
       - busybox
       - bash
       - ca-certificates-bundle
-      - yq
 pipeline:
   - uses: git-checkout
     with:
@@ -34,8 +32,8 @@ pipeline:
       tag: v${{package.version}}
   - name: Install dependancies
     runs: |
-      PATH="$HOME/.volta/bin"
-      NODE_VERSION=$(yq '.' ./frontend/.nvmrc)
+      PATH="$PATH:$HOME/.volta/bin"
+      NODE_VERSION=$(cat frontend/.nvmrc)
       curl -sSL https://get.volta.sh | bash
       volta install node@$NODE_VERSION
   - name: Build frontend
