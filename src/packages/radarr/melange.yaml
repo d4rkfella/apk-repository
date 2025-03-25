@@ -93,4 +93,4 @@ pipeline:
 update:
   enabled: true
   release-monitor:
-    identifier: 377327
+    identifier: 377333
