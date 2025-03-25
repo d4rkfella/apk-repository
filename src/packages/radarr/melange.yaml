@@ -69,10 +69,10 @@ pipeline:
       
       cp -r $_artifacts/* $_destdir
       cp -r $_output/UI $_destdir
-      cp -r $_output/Radarr.Update/$framework/$runtime/publish $_destdir/Radarr.Update
+      cp -r $_output/Radarr.Update/$_framework/$_runtime/publish $_destdir/Radarr.Update
       cp $_destdir/Radarr.Mono.* $_destdir/Radarr.Update
       cp $_destdir/Mono.Posix.NETStandard.* $_destdir/Radarr.Update
-      cp $_destdir/libMonoPosixHelper.* $folder/Radarr.Update
+      cp $_destdir/libMonoPosixHelper.* $_destdir/Radarr.Update
 
       rm -f $_destdir/ServiceUninstall.*
       rm -f $_destdir/ServiceInstall.*
