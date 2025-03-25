@@ -15,10 +15,9 @@ environment:
       - build-base
       - busybox
       - ca-certificates-bundle
-      - dotnet-6-sdk
-      - yarn
-      - sqlite-libs
-      - nodejs-20
+      - bash
+      - curl
+      - icu
 pipeline:
   - uses: git-checkout
     with:
@@ -26,10 +25,12 @@ pipeline:
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
   - runs: |
-      export BROWSERSLIST_IGNORE_OLD_DATA=true
-      yarn install --frozen-lockfile --network-timeout 120000
-  
+      export DOTNET_VERSION=$(yq '.variables.dotnetVersion' azure-pipelines.yml)
+      curl -sSL https://get.volta.sh | bash
+      curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $DOTNET_VERSION
   - runs: |
+      export PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
+      export BROWSERSLIST_IGNORE_OLD_DATA=true
       _slnFile=src/Radarr.sln
       _platform=Posix
       _dotnet_arch="x64"
@@ -46,6 +47,8 @@ pipeline:
       dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
       chmod +x "$_artifacts"/ffprobe
   - runs: |
+      export BROWSERSLIST_IGNORE_OLD_DATA=true
+      export PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
       export BROWSERSLIST_IGNORE_OLD_DATA=true
       yarn install --frozen-lockfile --network-timeout 120000
       yarn lint
