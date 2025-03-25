@@ -16,7 +16,6 @@ environment:
       - busybox
       - ca-certificates-bundle
       - dotnet-6-sdk
-      - aspnet-7-runtime
       - yarn
       - sqlite-libs
       - nodejs-20
@@ -34,7 +33,7 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/lib/radarr
       _dotnet_arch="x64"
       _runtime="linux-$_dotnet_arch"
-      _framework="net7.0"
+      _framework="net6.0"
       _output="_output"
       _artifacts="$_output/$_framework/$_runtime/publish"
       ulimit -n 4096
