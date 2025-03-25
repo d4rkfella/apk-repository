@@ -42,7 +42,7 @@ pipeline:
       sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
       dotnet clean $_slnFile -c Debug
       dotnet clean $_slnFile -c Release
-      dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
+      dotnet msbuild -restore $_slnFile -p:SelfContained=True -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
       chmod +x "$_artifacts"/ffprobe
   - runs: |
       export BROWSERSLIST_IGNORE_OLD_DATA=true
