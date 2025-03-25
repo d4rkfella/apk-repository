@@ -14,6 +14,15 @@ package:
       - zlib
       - tzdata
 environment:
+  environment:
+    PATH: "$HOME/.volta/bin:$HOME/.dotnet:$PATH"
+    BROWSERSLIST_IGNORE_OLD_DATA: "true"
+    _dotnet_arch: "x64"
+    _runtime: "linux-$_dotnet_arch"
+    _framework: "net6.0"
+    _output: "_output"
+    _artifacts: "$_output/$_framework/$_runtime/publish"
+    _destdir: "${{targets.destdir}}/usr/lib/Radarr/bin"
   contents:
     keyring:
       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
@@ -28,15 +37,6 @@ environment:
       - icu
       - yq
 pipeline:
-  environment:
-    PATH: "$HOME/.volta/bin:$HOME/.dotnet:$PATH"
-    BROWSERSLIST_IGNORE_OLD_DATA: "true"
-    _dotnet_arch: "x64"
-    _runtime: "linux-$_dotnet_arch"
-    _framework: "net6.0"
-    _output: "_output"
-    _artifacts: "$_output/$_framework/$_runtime/publish"
-    _destdir: "${{targets.destdir}}/usr/lib/Radarr/bin"
   - uses: git-checkout
     with:
       expected-commit: ""
