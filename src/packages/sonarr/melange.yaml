@@ -59,7 +59,7 @@ pipeline:
       
       yarn install --frozen-lockfile --network-timeout 120000
       yarn lint
-      yarn stylelint-linux
+      yarn stylelint -f github
       yarn run build --env production
   
   - name: Prepare package
