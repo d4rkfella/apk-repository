@@ -47,4 +47,4 @@ pipeline:
     		-name "Radarr.Windows.*" \) -delete
     	mv "$_output"/UI "$_artifacts"
       destdir="${{targets.destdir}}"/usr/lib/radarr
-    	cp -af "$_artifacts" "$destdir"/bin
+      cp -af "$_artifacts" "$destdir"/bin
