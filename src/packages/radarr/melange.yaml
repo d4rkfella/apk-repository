@@ -83,9 +83,6 @@ pipeline:
 
       rm -f $_destdir/ServiceUninstall.*
       rm -f $_destdir/ServiceInstall.*
-      rm -f $_destdir/Radarr.Mono.*
-      rm -f $_destdir/Mono.Posix.NETStandard.*
-      rm -f $_destdir/libMonoPosixHelper.*
   
       echo "Removing Radarr.Windows"
       rm $_destdir/Radarr.Windows.*
