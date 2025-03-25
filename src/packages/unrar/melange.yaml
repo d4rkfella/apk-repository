@@ -1,6 +1,6 @@
 package:
   name: unrar
-  version: "7.1.5"
+  version: "7.1.6"
   epoch: 0
   description: UnRAR - free utility for RAR archives
 environment:
@@ -15,7 +15,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://www.rarlab.com/rar/unrarsrc-${{package.version}}.tar.gz
-      expected-sha256: d1acac7ed5b45db587294b357fdd6e74982ce21f5edfcb113c4ca263bc0c666d
+      expected-sha256: ca5e1da37dd6fa1b78bb5ed675486413f79e4a917709744aa04b6f93dfd914f0
   - runs: |
       sed -i 's|LDFLAGS=-pthread|LDFLAGS=-pthread -static|' makefile
       sed -i 's|CXXFLAGS=-march=native |CXXFLAGS=|' makefile
