@@ -37,7 +37,7 @@ pipeline:
       _output="_output"
       _artifacts="$_output/$_framework/$_runtime/publish"
       ulimit -n 4096
-      dotnet publish src -f $_framework -p:AssemblyConfiguration="master" -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifier="$_runtime" -p:Configuration=Release -p:SelfContained=true -p:PublishSingleFile=false --output $_artifacts
+      dotnet publish src -f $_framework -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifier="$_runtime" -p:Configuration=Release -p:SelfContained=true -p:PublishSingleFile=false --output $_artifacts
       yarn build --env production --no-stats
       chmod +x "$_artifacts"/ffprobe
       find "$_artifacts" \( \
