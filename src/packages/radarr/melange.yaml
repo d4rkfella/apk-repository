@@ -37,7 +37,10 @@ pipeline:
       _output="_output"
       _artifacts="$_output/$_framework/$_runtime/publish"
       ulimit -n 4096
-      dotnet publish src -f $_framework -p:MicrosoftNETCoreAppVersion=6.0.0 -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifier="$_runtime" -p:Configuration=Release -p:SelfContained=true -p:PublishSingleFile=false -p:EnsureNETCoreAppTargetingPackVersion=true --output $_artifacts
+      dotnet add package Microsoft.Extensions.DependencyInjection.Abstractions --version 6.0.0 --no-restore
+      dotnet add package Microsoft.Extensions.Hosting --version 6.0.0 --no-restore
+      dotnet restore --locked-mode --force-evaluate
+      dotnet publish src -f $_framework -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifier="$_runtime" -p:Configuration=Release -p:SelfContained=true -p:PublishSingleFile=false --no-restore --output $_artifacts
       yarn build --env production --no-stats
       chmod +x "$_artifacts"/ffprobe
       find "$_artifacts" \( \
