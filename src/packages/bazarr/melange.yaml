@@ -1,0 +1,50 @@
+package:
+  name: bazarr
+  version: "1.5.2-beta.30"
+  epoch: 0
+  description: Bazarr is a companion application to Sonarr and Radarr. It manages and downloads subtitles based on your requirements. You define your preferences by TV show or movie and Bazarr takes care of everything for you.
+  copyright:
+    - license: GPL-3.0-only
+  dependencies:
+    runtime:
+      - wolfi-baselayout
+      - python-3.12
+      - tzdata
+      - catatonit
+      - unrar
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - python-3.12
+      - py3.12-pip
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: ""
+      repository: https://github.com/morpheus65535/bazarr
+      tag: v${{package.version}}
+  - name: Install dependancies
+    runs: |
+      PATH="$HOME/.volta/bin"
+      NODE_VERSION=$(cat frontend/.nvmrc)
+      curl -sSL https://get.volta.sh | bash
+      volta install node@$NODE_VERSION
+  - name: Build frontend
+    runs: |
+      npm install
+      npm run check:ts
+      npm run check
+      npm run check:fmt
+      npm test
+      npm run build:ci
+  - name: Setup python venv
+    runs: |
+      python -m venv ./venv
+      pip install --upgrade --no-cache-dir \
+      -r app/requirements.txt \
+      -r app/postgres-requirements.txt
+      ls -la ./venv
