@@ -32,7 +32,7 @@ pipeline:
   
   - runs: |
       ulimit -n 4096
-      dotnet build src -p:AssemblyConfiguration="master" -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifiers="linux-x86_64" -p:Configuration=Release -p:SelfContained=false -t:PublishAllRids -t:PublishAllRids
+      dotnet build src -p:AssemblyConfiguration="master" -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifiers="linux-x64" -p:Configuration=Release -p:SelfContained=true -t:PublishAllRids -t:PublishAllRids
       yarn build --env production --no-stats
 
 test:
