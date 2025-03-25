@@ -62,10 +62,10 @@ pipeline:
       
       cp -r $_artifacts/* $_destdir
       cp -r $_output/UI $_destdir
-      cp -r $_output/Sonarr.Update/$framework/$runtime/publish $_destdir/Sonarr.Update
+      cp -r $_output/Sonarr.Update/$_framework/$_runtime/publish $_destdir/Sonarr.Update
       cp $_destdir/Sonarr.Mono.* $_destdir/Sonarr.Update
       cp $_destdir/Mono.Posix.NETStandard.* $_destdir/Sonarr.Update
-      cp $_destdir/libMonoPosixHelper.* $folder/Sonarr.Update
+      cp $_destdir/libMonoPosixHelper.* $_destdir/Sonarr.Update
 
       rm -f $_destdir/ServiceUninstall.*
       rm -f $_destdir/ServiceInstall.*
