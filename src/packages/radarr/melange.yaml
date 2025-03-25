@@ -34,59 +34,63 @@ pipeline:
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
   - name: Install dependancies
-    enviroment:
-      DOTNET_VERSION: $(yq '.variables.dotnetVersion' azure-pipelines.yml)
-    runs: |
-      curl -sSL https://get.volta.sh | bash
-      curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $DOTNET_VERSION
+    pipeline:
+      enviroment:
+        DOTNET_VERSION: $(yq '.variables.dotnetVersion' azure-pipelines.yml)
+      runs: |
+        curl -sSL https://get.volta.sh | bash
+        curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $DOTNET_VERSION
   - name: Build backend
-    enviroment:
-      PATH: "$HOME/.volta/bin:$HOME/.dotnet:$PATH"
-      _dotnet_arch: "x64"
-      _runtime: "linux-$_dotnet_arch"
-      _platform: "Posix"
-      _slnFile: "src/Radarr.sln"
-    runs: |
-      ulimit -n 4096
-      echo "Updating Version Info"
-      sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
-      sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
-      dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
-      chmod +x "$_artifacts"/ffprobe
+    pipeline:
+      enviroment:
+        PATH: "$HOME/.volta/bin:$HOME/.dotnet:$PATH"
+        _dotnet_arch: "x64"
+        _runtime: "linux-$_dotnet_arch"
+        _platform: "Posix"
+        _slnFile: "src/Radarr.sln"
+      runs: |
+        ulimit -n 4096
+        echo "Updating Version Info"
+        sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
+        sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
+        dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
+        chmod +x "$_artifacts"/ffprobe
   - name: Build frontend
-    enviroment:
-      PATH: "$HOME/.volta/bin:$HOME/.dotnet:$PATH"
-      BROWSERSLIST_IGNORE_OLD_DATA: "true"
-    runs: |
-      yarn install --frozen-lockfile --network-timeout 120000
-      yarn lint
-      yarn stylelint-linux
-      yarn run build --env production
+    pipeline:
+      enviroment:
+        PATH: "$HOME/.volta/bin:$HOME/.dotnet:$PATH"
+        BROWSERSLIST_IGNORE_OLD_DATA: "true"
+      runs: |
+        yarn install --frozen-lockfile --network-timeout 120000
+        yarn lint
+        yarn stylelint-linux
+        yarn run build --env production
   - name: Prepare package
-    enviroment:
-      _dotnet_arch: "x64"
-      _runtime: "linux-$_dotnet_arch"
-      _output: "_output"
-      _artifacts: "$_output/$_framework/$_runtime/publish"
-      _destdir: "${{targets.destdir}}/usr/lib/Radarr/bin"
-    runs: |
-      mkdir -p $_destdir
-      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > ${{targets.destdir}}/usr/lib/Radarr/package_info
-      
-      cp -r $_artifacts/* $_destdir
-      cp -r $_output/UI $_destdir
-
-      rm -f $_destdir/ServiceUninstall.*
-      rm -f $_destdir/ServiceInstall.*
-      rm -f $_destdir/Radarr.Mono.*
-      rm -f $_destdir/Mono.Posix.NETStandard.*
-      rm -f $_destdir/libMonoPosixHelper.*
+    pipeline:
+      enviroment:
+        _dotnet_arch: "x64"
+        _runtime: "linux-$_dotnet_arch"
+        _output: "_output"
+        _artifacts: "$_output/$_framework/$_runtime/publish"
+        _destdir: "${{targets.destdir}}/usr/lib/Radarr/bin"
+      runs: |
+        mkdir -p $_destdir
+        printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > ${{targets.destdir}}/usr/lib/Radarr/package_info
+        
+        cp -r $_artifacts/* $_destdir
+        cp -r $_output/UI $_destdir
   
-      echo "Removing Radarr.Windows"
-      rm $_destdir/Radarr.Windows.*
-  
-      echo "Adding LICENSE"
-      cp LICENSE $_destdir
+        rm -f $_destdir/ServiceUninstall.*
+        rm -f $_destdir/ServiceInstall.*
+        rm -f $_destdir/Radarr.Mono.*
+        rm -f $_destdir/Mono.Posix.NETStandard.*
+        rm -f $_destdir/libMonoPosixHelper.*
+    
+        echo "Removing Radarr.Windows"
+        rm $_destdir/Radarr.Windows.*
+    
+        echo "Adding LICENSE"
+        cp LICENSE $_destdir
 update:
   enabled: true
   release-monitor:
