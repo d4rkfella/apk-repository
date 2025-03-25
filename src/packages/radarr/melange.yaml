@@ -17,7 +17,6 @@ environment:
       - ca-certificates-bundle
       - dotnet-6-sdk
       - yarn
-      - aspnet-6-runtime
       - sqlite-libs
       - nodejs-20
 pipeline:
