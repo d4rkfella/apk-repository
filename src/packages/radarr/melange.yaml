@@ -5,6 +5,10 @@ package:
   description: Movie download automation for usenet and torrents.
   copyright:
     - license: GPL-3.0-only
+  dependencies:
+    runtime:
+      - icu-libs
+      - sqlite-libs
 environment:
   contents:
     keyring:
@@ -18,6 +22,7 @@ environment:
       - bash
       - curl
       - icu
+      - yq
 pipeline:
   - uses: git-checkout
     with:
