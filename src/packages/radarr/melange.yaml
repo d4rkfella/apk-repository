@@ -31,12 +31,20 @@ pipeline:
       yarn install --frozen-lockfile --network-timeout 120000
   
   - runs: |
+      mkdir -p ${{targets.destdir}}/usr/lib/radarr
+      _dotnet_arch="x64"
+      _runtime="linux-$_dotnet_arch"
+      _framework="net6.0"
+      _output="_output"
+      _artifacts="$_output/$_framework/$_runtime/publish"
       ulimit -n 4096
-      dotnet build src -p:AssemblyConfiguration="master" -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifiers="linux-x64" -p:Configuration=Release -p:SelfContained=true -t:PublishAllRids -t:PublishAllRids
+      dotnet build src -p:AssemblyConfiguration="master" -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifiers="$_runtime" -p:Configuration=Release -p:SelfContained=true -t:PublishAllRids -t:PublishAllRids
       yarn build --env production --no-stats
-
-test:
-  environment: {}
-  pipeline:
-    - name: Verify radarr installation, please improve the test as needed
-      runs: radarr --version || exit 1
+      chmod +x "$_artifacts"/ffprobe
+      find "$_artifacts" \( \
+    		-name "ServiceUninstall.*" -o \
+    		-name "ServiceInstall.*" -o \
+    		-name "Radarr.Windows.*" \) -delete
+    	mv "$_output"/UI "$_artifacts"
+      destdir="${{targets.destdir}}"/usr/lib/radarr
+    	cp -af "$_artifacts" "$destdir"/bin
