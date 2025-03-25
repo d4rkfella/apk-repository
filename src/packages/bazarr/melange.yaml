@@ -39,7 +39,7 @@ pipeline:
     working-directory: /home/build/frontend
     runs: |
       PATH="$PATH:$HOME/.volta/bin"
-      NODE_VERSION=$(cat ./frontend/.nvmrc)
+      NODE_VERSION=$(cat .nvmrc)
       volta install node@${NODE_VERSION}
       npm install
       npm run check:ts
