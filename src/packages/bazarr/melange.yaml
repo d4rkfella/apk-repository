@@ -37,6 +37,7 @@ pipeline:
       NODE_VERSION=$(cat frontend/.nvmrc)
       curl -sSL https://get.volta.sh | bash
       volta install node@$NODE_VERSION
+      volta install npm@latest
   - name: Build frontend
     runs: |
       npm install
