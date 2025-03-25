@@ -81,9 +81,6 @@ pipeline:
 
       rm -f $_destdir/ServiceUninstall.*
       rm -f $_destdir/ServiceInstall.*
-      rm -f $_destdir/Sonarr.Mono.*
-      rm -f $_destdir/Mono.Posix.NETStandard.*
-      rm -f $_destdir/libMonoPosixHelper.*
   
       echo "Removing Sonarr.Windows"
       rm $_destdir/Sonarr.Windows.*
