@@ -30,13 +30,7 @@ pipeline:
       yarn install --frozen-lockfile --network-timeout 120000
   - runs: |
       ulimit -n 4096
-    	dotnet build src \
-      -p:AssemblyConfiguration="master" \
-      -p:AssemblyVersion="$pkgver" \
-      -p:RuntimeIdentifiers="$_runtime" \
-      -p:Configuration=Release \
-      -p:SelfContained=false \
-      -t:PublishAllRids
+    	dotnet build src -p:AssemblyConfiguration="master" -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifiers="linux-x86_64" -p:Configuration=Release -p:SelfContained=false -t:PublishAllRids -t:PublishAllRids
     	yarn build --env production --no-stats
 
 test:
