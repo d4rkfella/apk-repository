@@ -15,7 +15,7 @@ package:
       - tzdata
 environment:
   environment:
-    PATH: "$HOME/.volta/bin:$HOME/.dotnet:$PATH"
+    PATH: "/root/.volta/bin:/root/.dotnet:$PATH"
     BROWSERSLIST_IGNORE_OLD_DATA: "true"
     _dotnet_arch: "x64"
     _runtime: "linux-$_dotnet_arch"
