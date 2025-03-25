@@ -7,8 +7,11 @@ package:
     - license: GPL-3.0-only
   dependencies:
     runtime:
+      - wolfi-baselayout
+      - ca-certificates-bundle
       - icu-libs
       - sqlite-libs
+      - libssl3
 environment:
   contents:
     keyring:
