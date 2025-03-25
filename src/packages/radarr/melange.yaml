@@ -67,6 +67,7 @@ pipeline:
   - name: Prepare package
     runs: |
       _dotnet_arch="x64"
+      _framework="net6.0"
       _runtime="linux-$_dotnet_arch"
       _output="_output"
       _artifacts="$_output/$_framework/$_runtime/publish"
