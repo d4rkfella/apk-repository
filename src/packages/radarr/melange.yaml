@@ -53,7 +53,6 @@ pipeline:
       sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
       sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
       dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
-      chmod +x "$_artifacts"/ffprobe
   
   - name: Build frontend
     runs: |
@@ -75,6 +74,8 @@ pipeline:
       
       mkdir -p $_destdir
       printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > ${{targets.destdir}}/usr/lib/Radarr/package_info
+
+      chmod +x "$_artifacts"/ffprobe
       
       cp -r $_artifacts/* $_destdir
       cp -r $_output/UI $_destdir
