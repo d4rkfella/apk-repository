@@ -21,6 +21,9 @@ environment:
     packages:
       - python-3.12
       - py3.12-pip
+      - busybox
+      - bash
+      - ca-certificates-bundle
 pipeline:
   - uses: git-checkout
     with:
