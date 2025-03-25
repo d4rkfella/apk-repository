@@ -1,6 +1,6 @@
 package:
   name: sonarr
-  version: "5.21.1.9799"
+  version: "4.0.14.2939"
   epoch: 0
   description: Movie download automation for usenet and torrents.
   copyright:
@@ -15,16 +15,19 @@ environment:
       - build-base
       - busybox
       - ca-certificates-bundle
-      - dotnet-8-sdk
+      - bash
+      - curl
+      - icu
 pipeline:
   - uses: git-checkout
     with:
       expected-commit: ""
-      repository: https://github.com/Radarr/Radarr
+      repository: https://github.com/Sonarr/Sonarr
       tag: v${{package.version}}
   - runs: |
-      curl https://get.volta.sh | bash
-      export PATH="$HOME/.volta/bin:$PATH"
+      curl -sSL https://get.volta.sh | bash
+      curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --jsonfile /global.json
+      export PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
   - runs: |
       _slnFile=src/Sonarr.sln
       _platform=Posix
@@ -54,21 +57,21 @@ pipeline:
       _framework="net6.0"
       _output="_output"
       _artifacts="$_output/$_framework/$_runtime/publish"
-      _destdir="${{targets.destdir}}/usr/lib/Radarr"
-      mkdir -p ${{targets.destdir}}/usr/lib/Radarr
+      _destdir="${{targets.destdir}}/usr/lib/Sonarr"
+      mkdir -p ${{targets.destdir}}/usr/lib/Sonarr
       
       cp -r $_artifacts/* $_destdir
       cp -r $_output/UI $_destdir
-      cp -r $_output/Radarr.Update/$framework/$runtime/publish $_destdir/Radarr.Update
-      cp $_destdir/Radarr.Mono.* $_destdir/Radarr.Update
-      cp $_destdir/Mono.Posix.NETStandard.* $_destdir/Radarr.Update
-      cp $_destdir/libMonoPosixHelper.* $folder/Radarr.Update
+      cp -r $_output/Sonarr.Update/$framework/$runtime/publish $_destdir/Sonarr.Update
+      cp $_destdir/Sonarr.Mono.* $_destdir/Sonarr.Update
+      cp $_destdir/Mono.Posix.NETStandard.* $_destdir/Sonarr.Update
+      cp $_destdir/libMonoPosixHelper.* $folder/Sonarr.Update
 
       rm -f $_destdir/ServiceUninstall.*
       rm -f $_destdir/ServiceInstall.*
   
-      echo "Removing Radarr.Windows"
-      rm $_destdir/Radarr.Windows.*
+      echo "Removing Sonarr.Windows"
+      rm $_destdir/Sonarr.Windows.*
   
       echo "Adding LICENSE"
       cp LICENSE $_destdir
