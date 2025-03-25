@@ -19,6 +19,7 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
+      - wolfi-baselayout
       - python-3.12
       - py3.12-pip
       - busybox
