@@ -1,0 +1,38 @@
+package:
+  name: radarr
+  version: "5.21.1.9799"
+  epoch: 0
+  description: Movie download automation for usenet and torrents.
+  copyright:
+    - license: GPL-3.0-only
+environment:
+  contents:
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - dotnet6-sdk
+      - yarn
+      - aspnetcore6-runtime
+      - sqlite-libs
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: ""
+      repository: https://github.com/Radarr/Radarr
+      tag: v${{package.version}}
+  - uses: autoconf/configure
+  - uses: autoconf/make
+  - uses: autoconf/make-install
+  - uses: strip
+update:
+  enabled: true
+  manual: false
+  require-sequential: false
+  github:
+    identifier: Radarr/Radarr
+test:
+  environment: {}
+  pipeline:
+    - name: Verify radarr installation, please improve the test as needed
+      runs: radarr --version || exit 1
