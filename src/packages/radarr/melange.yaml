@@ -42,9 +42,9 @@ pipeline:
       yarn build --env production --no-stats
       chmod +x "$_artifacts"/ffprobe
       find "$_artifacts" \( \
-    		-name "ServiceUninstall.*" -o \
-    		-name "ServiceInstall.*" -o \
-    		-name "Radarr.Windows.*" \) -delete
+        -name "ServiceUninstall.*" -o \
+        -name "ServiceInstall.*" -o \
+        -name "Radarr.Windows.*" \) -delete
       mv "$_output"/UI "$_artifacts"
       destdir="${{targets.destdir}}"/usr/lib/radarr
       cp -af "$_artifacts" "$destdir"/bin
