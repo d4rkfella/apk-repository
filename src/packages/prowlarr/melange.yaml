@@ -60,7 +60,7 @@ pipeline:
       BROWSERSLIST_IGNORE_OLD_DATA="true"
       NODE_VERSION=$(yq '.variables.nodeVersion' azure-pipelines.yml | sed 's/X/*/g')
       volta install node@$NODE_VERSION
-      volta install yarn
+      volta install yarn@1.22.*
       yarn install --frozen-lockfile --network-timeout 120000
       yarn lint
       yarn stylelint-linux
