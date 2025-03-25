@@ -46,6 +46,7 @@ pipeline:
   - runs: |
       export PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
       export BROWSERSLIST_IGNORE_OLD_DATA=true
+      rm -rf /usr/local/share/.cache/yarn
       yarn install --frozen-lockfile --network-timeout 120000
       yarn lint
       yarn stylelint -f github
@@ -74,4 +75,4 @@ pipeline:
       rm $_destdir/Sonarr.Windows.*
   
       echo "Adding LICENSE"
-      cp LICENSE $_destdir
+      cp LICENSE.md $_destdir
