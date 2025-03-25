@@ -25,10 +25,20 @@ pipeline:
       expected-commit: ""
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
-  - uses: autoconf/configure
-  - uses: autoconf/make
-  - uses: autoconf/make-install
-  - uses: strip
+  - runs: |
+      export BROWSERSLIST_IGNORE_OLD_DATA=true
+	    yarn install --frozen-lockfile --network-timeout 120000
+  - runs: |
+      ulimit -n 4096
+    	dotnet build src \
+    		-p:AssemblyConfiguration="master" \
+    		-p:AssemblyVersion="$pkgver" \
+    		-p:RuntimeIdentifiers="$_runtime" \
+    		-p:Configuration=Release \
+    		-p:SelfContained=false \
+    		-t:PublishAllRids
+    	yarn build --env production --no-stats
+
 test:
   environment: {}
   pipeline:
