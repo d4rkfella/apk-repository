@@ -19,6 +19,7 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
+      - build-base
       - python-3.12
       - py3.12-pip
       - busybox
@@ -33,13 +34,12 @@ pipeline:
       tag: v${{package.version}}
   - name: Install dependancies
     runs: |
-      PATH="$PATH:$HOME/.volta/bin"
-      NODE_VERSION=$(cat frontend/.nvmrc)
       curl -sSL https://get.volta.sh | bash
-      volta install node@$NODE_VERSION
-      volta install npm@latest
   - name: Build frontend
     runs: |
+      PATH="$PATH:$HOME/.volta/bin"
+      NODE_VERSION=$(cat ./frontend/.nvmrc)
+      volta install node@${NODE_VERSION}
       npm install
       npm run check:ts
       npm run check
