@@ -16,6 +16,7 @@ environment:
       - busybox
       - ca-certificates-bundle
       - dotnet-6-sdk
+      - aspnet-7-runtime
       - yarn
       - sqlite-libs
       - nodejs-20
@@ -33,14 +34,12 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/lib/radarr
       _dotnet_arch="x64"
       _runtime="linux-$_dotnet_arch"
-      _framework="net6.0"
+      _framework="net7.0"
       _output="_output"
       _artifacts="$_output/$_framework/$_runtime/publish"
       ulimit -n 4096
-      dotnet add package Microsoft.Extensions.DependencyInjection.Abstractions --version 6.0.0 --no-restore
-      dotnet add package Microsoft.Extensions.Hosting --version 6.0.0 --no-restore
-      dotnet restore --locked-mode --force-evaluate
-      dotnet publish src -f $_framework -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifier="$_runtime" -p:Configuration=Release -p:SelfContained=true -p:PublishSingleFile=false --no-restore --output $_artifacts
+      dotnet restore src
+      dotnet publish src --no-restore -f $_framework -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifier="$_runtime" -p:Configuration=Release -p:SelfContained=true -p:PublishSingleFile=false --no-restore --output $_artifacts
       yarn build --env production --no-stats
       chmod +x "$_artifacts"/ffprobe
       find "$_artifacts" \( \
