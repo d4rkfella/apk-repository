@@ -39,8 +39,8 @@ pipeline:
       _output="_output"
       _artifacts="$_output/$_framework/$_runtime/publish"
       ulimit -n 4096
-      dotnet clean $slnFile -c Debug
-      dotnet clean $slnFile -c Release
+      dotnet clean $_slnFile -c Debug
+      dotnet clean $_slnFile -c Release
       dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
       yarn build --env production --no-stats
       chmod +x "$_artifacts"/ffprobe
