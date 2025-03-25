@@ -34,7 +34,7 @@ pipeline:
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin"
-      NODE_VERSION=$(cat frontend/.nvmrc)
+      NODE_VERSION=$(yq '.' ./frontend/.nvmrc)
       curl -sSL https://get.volta.sh | bash
       volta install node@$NODE_VERSION
   - name: Build frontend
