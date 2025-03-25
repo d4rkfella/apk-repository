@@ -27,7 +27,7 @@ pipeline:
       tag: v${{package.version}}
   - runs: |
       export BROWSERSLIST_IGNORE_OLD_DATA=true
-	    yarn install --frozen-lockfile --network-timeout 120000
+      yarn install --frozen-lockfile --network-timeout 120000
   - runs: |
       ulimit -n 4096
     	dotnet build src \
