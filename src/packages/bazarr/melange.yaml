@@ -24,6 +24,7 @@ environment:
       - busybox
       - bash
       - ca-certificates-bundle
+      - curl
 pipeline:
   - uses: git-checkout
     with:
