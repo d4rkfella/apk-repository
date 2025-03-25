@@ -38,6 +38,7 @@ pipeline:
       _platform: "Posix"
       _artifacts: "$_output/$_framework/$_runtime/publish"
       _destdir: "${{targets.destdir}}/usr/lib/Radarr/bin"
+      _slnFile: "src/Radarr.sln"
   - uses: git-checkout
     with:
       expected-commit: ""
@@ -50,7 +51,6 @@ pipeline:
       curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $DOTNET_VERSION
   - name: Build backend
     runs: |
-      PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
       ulimit -n 4096
       echo "Updating Version Info"
       sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
@@ -59,7 +59,6 @@ pipeline:
       chmod +x "$_artifacts"/ffprobe
   - name: Build frontend
     runs: |
-      PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
       yarn install --frozen-lockfile --network-timeout 120000
       yarn lint
       yarn stylelint-linux
