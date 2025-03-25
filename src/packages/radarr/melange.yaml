@@ -31,14 +31,17 @@ pipeline:
   
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/radarr
+      _slnFile=src/Radarr.sln
+      _platform=Posix
       _dotnet_arch="x64"
       _runtime="linux-$_dotnet_arch"
       _framework="net6.0"
       _output="_output"
       _artifacts="$_output/$_framework/$_runtime/publish"
       ulimit -n 4096
-      dotnet restore src
-      dotnet publish src --no-restore -f $_framework -p:AssemblyConfiguration="master" -p:AssemblyVersion="${{package.version}}" -p:RuntimeIdentifier="$_runtime" -p:Configuration=Release -p:SelfContained=true -p:PublishSingleFile=false --no-restore --output $_artifacts
+      dotnet clean $slnFile -c Debug
+      dotnet clean $slnFile -c Release
+      dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
       yarn build --env production --no-stats
       chmod +x "$_artifacts"/ffprobe
       find "$_artifacts" \( \
