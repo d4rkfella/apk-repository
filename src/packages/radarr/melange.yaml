@@ -12,6 +12,8 @@ package:
       - icu-libs
       - sqlite-libs
       - libssl3
+      - zlib
+      - tzdata
 environment:
   contents:
     keyring:
@@ -85,3 +87,7 @@ pipeline:
   
       echo "Adding LICENSE"
       cp LICENSE $_destdir
+update:
+  enabled: true
+  release-monitor:
+    identifier: 377327
