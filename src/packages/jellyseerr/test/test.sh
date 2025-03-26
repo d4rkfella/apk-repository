@@ -10,7 +10,7 @@ node dist/index.js > /tmp/server.log 2>&1 &
 timeout 20s bash -c 'until curl -s http://localhost:5055; do sleep 2; done'
 
 version=$(curl -s http://localhost:5055/api/v1/status | jq -r '.version')
-[[ "$version" == "${{package.version}}" ]] || {
+[[ "$version" == "$expected_version" ]] || {
   echo "❌ Version mismatch: $version" >&2
   exit 1
 }
