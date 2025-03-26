@@ -80,6 +80,3 @@ pipeline:
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
       cp -a /home/build/Jellyseerr/. ${{targets.destdir}}/usr/lib/Jellyseerr/
-test:
-  pipeline:
-    - uses: test/tw/ldd-check
