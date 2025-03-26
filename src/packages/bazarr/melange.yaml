@@ -11,6 +11,7 @@ package:
       - tzdata
       - catatonit
       - unrar
+      - python-3.12
 environment:
   contents:
     keyring:
