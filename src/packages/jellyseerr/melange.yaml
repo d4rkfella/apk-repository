@@ -33,7 +33,15 @@ pipeline:
       curl -sSL https://get.volta.sh | bash
       volta install "node@$(yq -r '.engines.node' Jellyseerr/package.json)"
       volta install "pnpm@$(yq -r '.engines.pnpm' Jellyseerr/package.json)"
-
+  
+  - name: Clean source directory
+    working-directory: /home/build/Jellyseerr
+    runs: |
+      while IFS= read -r pattern; do
+        [ -z "$pattern" ] || [ "${pattern#\#}" != "$pattern" ] && continue
+        find . -path "./$pattern" -exec rm -rf {} +
+      done < .dockerignore
+  
   - name: Build
     working-directory: /home/build/Jellyseerr
     runs: |
