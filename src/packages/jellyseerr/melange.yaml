@@ -36,8 +36,8 @@ pipeline:
     working-directory: /home/build/Jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
-      npx update-browserslist-db@latest
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
+      npx update-browserslist-db@latest
       pnpm build
       pnpm prune --prod
       rm -rf src server .next/cache charts gen-docs docs
