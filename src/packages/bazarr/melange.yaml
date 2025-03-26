@@ -68,7 +68,7 @@ pipeline:
       
       sed -i 's/cert_reqs=self\.cert_reqs/cert_reqs=ssl.CERT_REQUIRED/' "libs/urllib3/connectionpool.py"
   
-  - name: Prepare packages
+  - name: Prepare package
     runs: |
       set -e
       PATH="/usr/lib/Bazarr/venv/bin:$PATH"
