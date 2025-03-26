@@ -32,9 +32,11 @@ pipeline:
       expected-commit: ""
       repository: https://github.com/morpheus65535/bazarr
       tag: v${{package.version}}
+  
   - name: Install volta
     runs: |
       curl -sSL https://get.volta.sh | bash
+  
   - name: Build frontend
     working-directory: /home/build/frontend
     runs: |
@@ -47,6 +49,7 @@ pipeline:
       npm run check:fmt
       npm test
       npm run build:ci
+  
   - name: Setup python venv
     runs: |
       python -m venv ./venv
