@@ -37,12 +37,24 @@ pipeline:
   - name: Clean source directory
     working-directory: /home/build/Jellyseerr
     runs: |
+      exclude_args=$(
       grep -vE '^(#|$)' .dockerignore | while IFS= read -r pattern; do
         case "$pattern" in
-          **/*) echo "-name ${pattern#**/} -o -path ./${pattern#/}";;
-          *)    echo "-path ./${pattern#/}";;
+          **/*) 
+            # Handle double-star patterns (match at any depth)
+            echo "-name ${pattern#**/} -o -path ./${pattern#/}"
+            ;;
+          *)
+            # Handle normal patterns
+            echo "-path ./${pattern#/}"
+            ;;
         esac
-      done | xargs -r find . \( \) -exec rm -rf {} + 2>/dev/null
+      done | tr '\n' ' '
+    )
+    
+    if [ -n "$exclude_args" ]; then
+      find . \( $exclude_args \) -prune -exec rm -rf {} + 2>/dev/null || true
+    fi
   
   - name: Build
     working-directory: /home/build/Jellyseerr
