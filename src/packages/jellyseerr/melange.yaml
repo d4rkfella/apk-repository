@@ -23,6 +23,7 @@ pipeline:
       expected-commit: ""
       repository: https://github.com/fallenbagel/jellyseerr
       tag: v${{package.version}}
+      destination: Jellyseerr
   
   - name: Install dependancies
     runs: |
@@ -32,10 +33,16 @@ pipeline:
       volta install "pnpm@$(yq -r '.engines.pnpm' package.json)"
 
   - name: Build
+    working-directory: /home/build/Jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       CYPRESS_INSTALL_BINARY=0
+      pnpm install --frozen-lockfile
+      pnpm build && \
+      pnpm prune --prod --ignore-scripts
+      rm -rf src server .next/cache charts gen-docs docs
+  
+  - name: Prepare package
+    runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
-      pnpm --dir ${{targets.destdir}}/usr/lib/Jellyseerr install --frozen-lockfile
-      pnpm --dir ${{targets.destdir}}/usr/lib/Jellyseerr build && \
-      pnpm --dir ${{targets.destdir}}/usr/lib/Jellyseerr prune --prod --ignore-scripts
+      cp -r /home/build/Jellyseerr/* ${{targets.destdir}}/usr/lib/Jellyseerr
