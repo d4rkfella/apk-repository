@@ -45,9 +45,9 @@ pipeline:
     working-directory: /home/build/Jellyseerr
     runs: |
       find node_modules -type d \
-        \( -name "*linuxmusl*" -o -name "*musl-x64*" \) \
-        -exec echo "Deleting: {}" \; \
-        -exec rm -rf {} \; \
+        -name "*musl*" \
+        -print \
+        -exec rm -rf {} + \
         -prune
   
   - name: Prepare package
