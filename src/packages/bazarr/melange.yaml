@@ -8,7 +8,6 @@ package:
   dependencies:
     runtime:
       - wolfi-baselayout
-      - python-3.12
       - tzdata
       - catatonit
       - unrar
@@ -56,9 +55,11 @@ pipeline:
       
       to_dist=${{targets.destdir}}/usr/lib/Bazarr
       file_list=$(cat .github/files_to_copy)
-      mkdir -p $to_dist
       
-      python -m venv $to_dist/venv
+      mkdir -p $to_dist
+      mkdir -p /usr/lib/Bazarr
+      
+      python -m venv /usr/lib/Bazarr/venv
       pip install --upgrade --no-cache-dir \
       -r requirements.txt \
       -r postgres-requirements.txt
