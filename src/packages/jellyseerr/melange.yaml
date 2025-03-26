@@ -81,3 +81,20 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
       cp -a /home/build/Jellyseerr/. ${{targets.destdir}}/usr/lib/Jellyseerr/
       chmod 755 ${{targets.destdir}}/usr/lib/Jellyseerr
+test:
+  environment:
+    contents:
+      keyring:
+        - https://packages.darkfellanetwork.com/melange.rsa.pub
+      repositories:
+        - https://packages.darkfellanetwork.com
+      packages:
+        - curl
+        - bash
+  pipeline:
+    - uses: test/tw/ldd-check
+      with:
+        packages: ${{package.name}}
+    - name: Start the server and test response
+      runs: |
+        test/test.sh
