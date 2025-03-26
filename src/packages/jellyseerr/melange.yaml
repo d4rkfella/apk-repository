@@ -92,7 +92,7 @@ test:
         - curl
         - bash
         - jq
-        - catatonit
+        - catatonit@https://packages.darkfellanetwork.com 
   pipeline:
     - uses: test/tw/ldd-check
       with:
