@@ -42,22 +42,6 @@ pipeline:
   - name: Clean source directory
     working-directory: /home/build/Jellyseerr
     runs: |
-      while IFS= read -r pattern; do
-        [ -z "$pattern" ] || [ "${pattern#\#}" != "$pattern" ] && continue
-        find . -path "./$pattern" -exec rm -rf {} +
-      done < .dockerignore
-  
-  - name: Build
-    working-directory: /home/build/Jellyseerr
-    runs: |
-      PATH="$HOME/.volta/bin:$PATH"
-      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
-      pnpm build
-      pnpm prune --prod --ignore-scripts
-
-  - name: Delete linux-musl node-modules and other unneeded files
-    working-directory: /home/build/Jellyseerr
-    runs: |
       grep -E '^\*\*/' .dockerignore | while IFS= read -r pattern; do
         base_pattern="${pattern#\*\*/}"
         
@@ -73,6 +57,24 @@ pipeline:
       grep -vE '^(#|$|^\*\*/)' .dockerignore | while IFS= read -r pattern; do
         find . -path "./${pattern#/}" -exec rm -rf {} + 2>/dev/null
       done
+  
+  - name: Build
+    working-directory: /home/build/Jellyseerr
+    runs: |
+      PATH="$HOME/.volta/bin:$PATH"
+      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
+      pnpm build
+      pnpm prune --prod --ignore-scripts
+
+  - name: Delete linux-musl node-modules and other unneeded files
+    working-directory: /home/build/Jellyseerr
+    runs: |
+      find node_modules -type d \
+        -name "*musl*" \
+        -print \
+        -exec rm -rf {} + \
+        -prune
+      rm -rf src server .next/cache charts gen-docs docs
   
   - name: Prepare package
     runs: |
