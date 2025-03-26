@@ -50,21 +50,20 @@ pipeline:
       npm test -- --run
       npm run build:ci
   
-  - name: Setup python venv
-    runs: |
-      PATH="/home/build/venv/bin:$PATH"
-      python -m venv ./venv
-      pip install --upgrade --no-cache-dir \
-      -r requirements.txt \
-      -r postgres-requirements.txt
-  
   - name: Prepare packages
     runs: |
       set -e
-      git describe --abbrev=0 > VERSION
+      
       to_dist=${{targets.destdir}}/usr/lib/Bazarr
-      mkdir -p $to_dist
       file_list=$(cat .github/files_to_copy)
+      mkdir -p $to_dist
+      
+      python -m venv $to_dist/venv
+      pip install --upgrade --no-cache-dir \
+      -r requirements.txt \
+      -r postgres-requirements.txt
+      
+      git describe --abbrev=0 > VERSION
       
       for f in $file_list
       do
@@ -73,4 +72,3 @@ pipeline:
       done
       
       cp VERSION $to_dist
-      cp -r venv $to_dist
