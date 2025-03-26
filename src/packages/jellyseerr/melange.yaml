@@ -91,6 +91,8 @@ test:
       packages:
         - curl
         - bash
+        - jq
+        - catatonit
   pipeline:
     - uses: test/tw/ldd-check
       with:
