@@ -33,6 +33,7 @@ pipeline:
 
   - name: Build
     runs: |
+      PATH="$HOME/.volta/bin:$PATH"
       CYPRESS_INSTALL_BINARY=0
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
       pnpm --dir ${{targets.destdir}}/usr/lib/Jellyseerr install --frozen-lockfile
