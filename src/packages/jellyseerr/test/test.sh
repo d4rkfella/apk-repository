@@ -1,45 +1,62 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -eo pipefail
 
+# Configuration
 TARGET_DIR="/usr/lib/Jellyseerr"
-REQUIRED_PERMS="o+rx"
+EXPECTED_VERSION="$EXPECTED_VERSION"
+SERVER_PORT=5055
+STARTUP_TIMEOUT=20
 
-check_dir_perms() {
-    local dir="$1"
-    if ! [ -r "$dir" ] || ! [ -x "$dir" ]; then
-        echo "❌ Permission error: 'others' need read/execute permissions on: $dir" >&2
-        echo "   Current permissions: $(stat -c '%A %a %n' "$dir")" >&2
-        exit 1
-    fi
-}
-
+# --------------------------------------------------
+# Function: Verify Directory Permissions
+# --------------------------------------------------
 verify_permissions() {
-    echo "Checking permissions in $TARGET_DIR..."
-    
-    check_dir_perms "$TARGET_DIR"
-    
+    echo "Checking directory permissions..."
     find "$TARGET_DIR" -type d | while read -r dir; do
-        check_dir_perms "$dir"
+        if ! [ -r "$dir" ] || ! [ -x "$dir" ]; then
+            echo "❌ Permission error: Need read/execute permissions on: $dir" >&2
+            stat -c '%A %a %n' "$dir" >&2
+            exit 1
+        fi
     done
-    
     echo "✅ All directories have correct permissions"
 }
 
+# --------------------------------------------------
+# Function: Start and Test Server
+# --------------------------------------------------
+run_tests() {
+    export NODE_ENV=production
+    cd "$TARGET_DIR" || exit 1
 
-verify_permissions
+    # Start server (no PID tracking needed in containers)
+    echo "Starting server..."
+    node dist/index.js 2>&1 &
 
-export NODE_ENV=production
+    # Wait for startup
+    echo "Waiting for server (max ${STARTUP_TIMEOUT}s)..."
+    timeout $STARTUP_TIMEOUT bash -c "
+        until curl -sSf http://localhost:$SERVER_PORT; do
+            sleep 2
+        done
+    " || {
+        echo "❌ Server failed to start" >&2
+        exit 1
+    }
 
-cd "$TARGET_DIR" || exit 1
-
-node dist/index.js 2>&1 &
-
-timeout 20s bash -c 'until curl -s http://localhost:5055; do sleep 2; done'
-
-version=$(curl -s http://localhost:5055/api/v1/status | jq -r '.version')
-[[ "$version" == "$expected_version" ]] || {
-  echo "❌ Version mismatch: $version" >&2
-  exit 1
+    # Version test
+    version=$(curl -sSf http://localhost:$SERVER_PORT/api/v1/status | jq -r '.version')
+    [[ "$version" == "$EXPECTED_VERSION" ]] || {
+        echo "❌ Version mismatch: expected $EXPECTED_VERSION, got $version" >&2
+        exit 1
+    }
+    echo "✅ Version check passed ($version)"
 }
 
-echo "✅ All tests passed"
+# --------------------------------------------------
+# Main Execution
+# --------------------------------------------------
+verify_permissions
+run_tests
+
+echo "✅ All tests completed successfully"
