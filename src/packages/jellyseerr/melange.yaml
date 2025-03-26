@@ -18,6 +18,7 @@ environment:
       - bash
       - curl
       - yq
+      - rsync
 pipeline:
   - uses: git-checkout
     with:
@@ -54,7 +55,7 @@ pipeline:
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
-      cp -r /home/build/Jellyseerr/* ${{targets.destdir}}/usr/lib/Jellyseerr
+      rsync -a /home/build/Jellyseerr/ ${{targets.destdir}}/usr/lib/Jellyseerr/
 test:
   pipeline:
     - uses: test/tw/ldd-check
