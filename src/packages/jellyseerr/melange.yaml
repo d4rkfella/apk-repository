@@ -10,7 +10,6 @@ package:
       - wolfi-baselayout
       - nodejs-22
       - tzdata
-      - catatonit
 environment:
   contents:
     keyring:
@@ -84,15 +83,10 @@ pipeline:
 test:
   environment:
     contents:
-      keyring:
-        - https://packages.darkfellanetwork.com/melange.rsa.pub
-      repositories:
-        - https://packages.darkfellanetwork.com
       packages:
         - curl
         - bash
         - jq
-        - catatonit@https://packages.darkfellanetwork.com 
   pipeline:
     - uses: test/tw/ldd-check
       with:
