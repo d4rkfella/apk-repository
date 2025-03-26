@@ -5,6 +5,12 @@ package:
   description: Open-source media request and discovery manager for Jellyfin, Plex, and Emby.
   copyright:
     - license: MIT
+  dependencies:
+    runtime:
+      - wolfi-baselayout
+      - nodejs-22
+      - tzdata
+      - catatonit
 environment:
   contents:
     keyring:
@@ -18,7 +24,6 @@ environment:
       - bash
       - curl
       - yq
-      - rsync
 pipeline:
   - uses: git-checkout
     with:
@@ -37,22 +42,10 @@ pipeline:
   - name: Clean source directory
     working-directory: /home/build/Jellyseerr
     runs: |
-      exclude_args=$(
-        grep -vE '^(#|$)' .dockerignore | while IFS= read -r pattern; do
-          case "$pattern" in
-            **/*) 
-              echo "-name ${pattern#**/} -o -path ./${pattern#/}"
-              ;;
-            *)
-              echo "-path ./${pattern#/}"
-              ;;
-          esac
-        done | tr '\n' ' '
-      )
-      
-      if [ -n "$exclude_args" ]; then
-        find . \( $exclude_args \) -prune -exec rm -rf {} + 2>/dev/null || true
-      fi
+      while IFS= read -r pattern; do
+        [ -z "$pattern" ] || [ "${pattern#\#}" != "$pattern" ] && continue
+        find . -path "./$pattern" -exec rm -rf {} +
+      done < .dockerignore
   
   - name: Build
     working-directory: /home/build/Jellyseerr
@@ -65,17 +58,26 @@ pipeline:
   - name: Delete linux-musl node-modules and other unneeded files
     working-directory: /home/build/Jellyseerr
     runs: |
-      find node_modules -type d \
-        -name "*musl*" \
-        -print \
-        -exec rm -rf {} + \
-        -prune
-      rm -rf src server .next/cache charts gen-docs docs
+      grep -E '^\*\*/' .dockerignore | while IFS= read -r pattern; do
+        base_pattern="${pattern#\*\*/}"
+        
+        echo "Processing Dockerignore pattern: $pattern → $base_pattern"
+        
+        find . -name "$base_pattern" -exec rm -rf {} + 2>/dev/null
+        
+        [ -e "./$base_pattern" ] && rm -rf "./$base_pattern"
+        
+        find . -path "./*/$base_pattern" -exec rm -rf {} + 2>/dev/null
+      done
+      
+      grep -vE '^(#|$|^\*\*/)' .dockerignore | while IFS= read -r pattern; do
+        find . -path "./${pattern#/}" -exec rm -rf {} + 2>/dev/null
+      done
   
   - name: Prepare package
     runs: |
-      mkdir -p ${{targets.destdir}}/usr/lib
-      cp -r /home/build/Jellyseerr ${{targets.destdir}}/usr/lib
+      mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
+      cp -a /home/build/Jellyseerr/. ${{targets.destdir}}/usr/lib/Jellyseerr/
 test:
   pipeline:
     - uses: test/tw/ldd-check
