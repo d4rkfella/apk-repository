@@ -7,9 +7,6 @@ package:
     - license: GPL-3.0-only
   dependencies:
     runtime:
-      - wolfi-baselayout
-      - tzdata
-      - catatonit
       - unrar
 environment:
   contents:
@@ -95,3 +92,18 @@ pipeline:
       cp -r /usr/lib/Bazarr/venv $to_dist
       
       printf "UpdateMethod=docker\nBranch=master\nPackageVersion=${{package.version}}\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)" > ${{targets.destdir}}/usr/lib/Bazarr/package_info
+test:
+  environment:
+    contents:
+      packages:
+        - curl
+        - bash
+        - jq
+  pipeline:
+    - name: Check for missing dependancies
+      uses: test/tw/ldd-check
+      with:
+        packages: ${{package.name}}
+    - name: Run test script
+      runs: |
+        EXPECTED_VERSION="${{vars.transformed-version}}" test/test.sh
