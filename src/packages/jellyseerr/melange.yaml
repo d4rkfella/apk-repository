@@ -38,23 +38,21 @@ pipeline:
     working-directory: /home/build/Jellyseerr
     runs: |
       exclude_args=$(
-      grep -vE '^(#|$)' .dockerignore | while IFS= read -r pattern; do
-        case "$pattern" in
-          **/*) 
-            # Handle double-star patterns (match at any depth)
-            echo "-name ${pattern#**/} -o -path ./${pattern#/}"
-            ;;
-          *)
-            # Handle normal patterns
-            echo "-path ./${pattern#/}"
-            ;;
-        esac
-      done | tr '\n' ' '
-    )
-    
-    if [ -n "$exclude_args" ]; then
-      find . \( $exclude_args \) -prune -exec rm -rf {} + 2>/dev/null || true
-    fi
+        grep -vE '^(#|$)' .dockerignore | while IFS= read -r pattern; do
+          case "$pattern" in
+            **/*) 
+              echo "-name ${pattern#**/} -o -path ./${pattern#/}"
+              ;;
+            *)
+              echo "-path ./${pattern#/}"
+              ;;
+          esac
+        done | tr '\n' ' '
+      )
+      
+      if [ -n "$exclude_args" ]; then
+        find . \( $exclude_args \) -prune -exec rm -rf {} + 2>/dev/null || true
+      fi
   
   - name: Build
     working-directory: /home/build/Jellyseerr
@@ -76,8 +74,8 @@ pipeline:
   
   - name: Prepare package
     runs: |
-      mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
-      rsync -a /home/build/Jellyseerr/ ${{targets.destdir}}/usr/lib/Jellyseerr/
+      mkdir -p ${{targets.destdir}}/usr/lib
+      cp -r /home/build/Jellyseerr ${{targets.destdir}}/usr/lib
 test:
   pipeline:
     - uses: test/tw/ldd-check
