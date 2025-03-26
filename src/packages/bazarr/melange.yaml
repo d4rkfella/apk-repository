@@ -52,8 +52,25 @@ pipeline:
   
   - name: Setup python venv
     runs: |
+      PATH="/home/build/venv/bin:$PATH"
       python -m venv ./venv
       pip install --upgrade --no-cache-dir \
       -r requirements.txt \
       -r postgres-requirements.txt
-      ls -la ./venv
+  
+  - name: Prepare packages
+    runs: |
+      set -e
+      git describe --abbrev=0 > VERSION
+      to_dist=${{targets.destdir}}/usr/lib/Bazarr
+      mkdir -p $to_dist
+      file_list=$(cat .github/files_to_copy)
+      
+      for f in $file_list
+      do
+          echo "**** copying $f to release ****"
+          cp -r --parents "$f" $to_dist
+      done
+      
+      cp VERSION $to_dist
+      cp -r venv $to_dist
