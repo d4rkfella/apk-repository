@@ -72,11 +72,11 @@ pipeline:
     runs: |
       set -e
       PATH="/usr/lib/Bazarr/venv/bin:$PATH"
-      to_dist=${{targets.destdir}}/usr/lib/Bazarr
+      to_dist=${{targets.destdir}}/usr/lib/Bazarr/bin
       file_list=$(cat .github/files_to_copy)
       
       mkdir -p $to_dist
-      mkdir -p /usr/lib/Bazarr
+      mkdir -p /usr/lib/bazarr
       
       python -m venv --copies /usr/lib/Bazarr/venv
       pip install --upgrade --no-cache-dir \
@@ -93,3 +93,5 @@ pipeline:
       
       cp VERSION $to_dist
       cp -r /usr/lib/Bazarr/venv $to_dist
+      
+      printf "UpdateMethod=docker\nBranch=master\nPackageVersion=${VERSION}\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)" > ${{targets.destdir}}/usr/lib/Bazarr/package_info
