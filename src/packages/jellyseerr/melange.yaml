@@ -80,6 +80,7 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
       cp -a /home/build/Jellyseerr/. ${{targets.destdir}}/usr/lib/Jellyseerr/
       chmod 755 ${{targets.destdir}}/usr/lib/Jellyseerr
+
 test:
   environment:
     contents:
