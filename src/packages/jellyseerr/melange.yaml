@@ -41,7 +41,7 @@ pipeline:
       pnpm build
       pnpm prune --prod --ignore-scripts
 
-  - name: Delete linux-musl node-modules
+  - name: Delete linux-musl node-modules and other unneeded files
     working-directory: /home/build/Jellyseerr
     runs: |
       find node_modules -type d \
@@ -49,13 +49,12 @@ pipeline:
         -print \
         -exec rm -rf {} + \
         -prune
+      rm -rf src server .next/cache charts gen-docs docs
   
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
-      cp -r /home/build/Jellyseerr/public ${{targets.destdir}}/usr/lib/Jellyseerr
-      cp -r /home/build/Jellyseerr/node_modules ${{targets.destdir}}/usr/lib/Jellyseerr
-      cp -r /home/build/Jellyseerr/dist ${{targets.destdir}}/usr/lib/Jellyseerr
+      cp -r /home/build/Jellyseerr/* ${{targets.destdir}}/usr/lib/Jellyseerr
 test:
   pipeline:
     - uses: test/tw/ldd-check
