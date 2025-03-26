@@ -46,8 +46,10 @@ pipeline:
     runs: |
       find node_modules -type d \
         \( -name "*linuxmusl*" -o -name "*musl-x64*" \) \
-        -exec echo "Deleting: {}" \; \
-        -exec rm -rf "{}" \;
+        -exec sh -c '
+          echo "Attempting to delete: $1"
+          rm -rf "$1" 2>/dev/null || true
+        ' sh {} \;
   
   - name: Prepare package
     runs: |
