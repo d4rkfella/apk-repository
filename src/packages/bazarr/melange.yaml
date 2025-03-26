@@ -75,7 +75,7 @@ pipeline:
   - name: Prepare packages
     runs: |
       set -e
-      
+      PATH="/usr/lib/Bazarr/venv/bin:$PATH"
       to_dist=${{targets.destdir}}/usr/lib/Bazarr
       file_list=$(cat .github/files_to_copy)
       
