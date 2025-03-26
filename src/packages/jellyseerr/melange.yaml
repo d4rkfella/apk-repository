@@ -91,6 +91,7 @@ test:
   pipeline:
     - name: Start the server and test response
       runs: |
+        expected_version=${{package.version}}
         test/test.sh
     - uses: test/tw/ldd-check
       with:
