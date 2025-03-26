@@ -37,10 +37,12 @@ pipeline:
   - name: Clean source directory
     working-directory: /home/build/Jellyseerr
     runs: |
-      while IFS= read -r pattern; do
-        [ -z "$pattern" ] || [ "${pattern#\#}" != "$pattern" ] && continue
-        find . -path "./$pattern" -exec rm -rf {} +
-      done < .dockerignore
+      grep -vE '^(#|$)' .dockerignore | while IFS= read -r pattern; do
+        case "$pattern" in
+          **/*) echo "-name ${pattern#**/} -o -path ./${pattern#/}";;
+          *)    echo "-path ./${pattern#/}";;
+        esac
+      done | xargs -r find . \( \) -exec rm -rf {} + 2>/dev/null
   
   - name: Build
     working-directory: /home/build/Jellyseerr
