@@ -88,9 +88,9 @@ test:
         - bash
         - jq
   pipeline:
-    - uses: test/tw/ldd-check
-      with:
-        packages: ${{package.name}}
     - name: Start the server and test response
       runs: |
         test/test.sh
+    - uses: test/tw/ldd-check
+      with:
+        packages: ${{package.name}}
