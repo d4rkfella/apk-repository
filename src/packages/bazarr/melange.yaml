@@ -27,7 +27,7 @@ environment:
       - curl
 var-transforms:
   - from: ${{package.version}}
-    match: "_beta(\d+)$"
+    match: "_beta(\\d+)$"
     replace: "-beta.$1"
     to: transformed-version
 pipeline:
