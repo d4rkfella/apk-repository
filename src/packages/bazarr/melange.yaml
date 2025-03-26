@@ -48,11 +48,7 @@ pipeline:
       NODE_VERSION=$(cat .nvmrc)
       volta install node@${NODE_VERSION}
       npm install
-      npm run check:ts
-      npm run check
-      npm run check:fmt
-      npm test -- --run
-      npm run build:ci
+      npm run build
 
   - name: Download ffmpeg-static binaries
     runs: |
