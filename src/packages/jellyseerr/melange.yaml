@@ -1,0 +1,40 @@
+package:
+  name: jellyseerr
+  version: "2.5.1"
+  epoch: 0
+  description: Open-source media request and discovery manager for Jellyfin, Plex, and Emby.
+  copyright:
+    - license: MIT
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - busybox
+      - bash
+      - curl
+      - yq
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: ""
+      repository: https://github.com/fallenbagel/jellyseerr
+      tag: v${{package.version}}
+  
+  - name: Install dependancies
+    runs: |
+      PATH="$HOME/.volta/bin:$PATH"
+      curl -sSL https://get.volta.sh | bash
+      volta install "node@$(yq -r '.engines.node' package.json)"
+      volta install "pnpm@$(yq -r '.engines.pnpm' package.json)"
+
+  - name: Build
+    runs: |
+      CYPRESS_INSTALL_BINARY=0
+      mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
+      pnpm --dir ${{targets.destdir}}/usr/lib/Jellyseerr install --frozen-lockfile
+      pnpm --dir ${{targets.destdir}}/usr/lib/Jellyseerr build && \
+      pnpm --dir ${{targets.destdir}}/usr/lib/Jellyseerr prune --prod --ignore-scripts
