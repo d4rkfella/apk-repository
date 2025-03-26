@@ -1,6 +1,6 @@
 package:
   name: bazarr
-  version: "1.5.2_beta28"
+  version: "1.5.2_beta30"
   epoch: 0
   description: Bazarr is a companion application to Sonarr and Radarr. It manages and downloads subtitles based on your requirements. You define your preferences by TV show or movie and Bazarr takes care of everything for you.
   copyright:
@@ -47,6 +47,7 @@ pipeline:
       PATH="$PATH:$HOME/.volta/bin"
       NODE_VERSION=$(cat .nvmrc)
       volta install node@${NODE_VERSION}
+      npx update-browserslist-db@latest
       npm install
       npm run build
 
