@@ -47,7 +47,7 @@ pipeline:
       npm run check:ts
       npm run check
       npm run check:fmt
-      npm test
+      npm test -- --run
       npm run build:ci
   
   - name: Setup python venv
