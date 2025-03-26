@@ -37,9 +37,10 @@ pipeline:
     working-directory: /home/build/Jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
-      CYPRESS_INSTALL_BINARY=0 PNPM_IGNORE_PLATFORM=1 pnpm install --frozen-lockfile
+      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
+      rm -rf node_modules/.pnpm/@img+sharp-linuxmusl-x64*
   
   - name: Prepare package
     runs: |
@@ -47,3 +48,6 @@ pipeline:
       cp -r /home/build/Jellyseerr/public ${{targets.destdir}}/usr/lib/Jellyseerr
       cp -r /home/build/Jellyseerr/node_modules ${{targets.destdir}}/usr/lib/Jellyseerr
       cp -r /home/build/Jellyseerr/dist ${{targets.destdir}}/usr/lib/Jellyseerr
+test:
+  pipeline:
+    - uses: test/tw/ldd-check
