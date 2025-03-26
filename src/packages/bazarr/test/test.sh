@@ -31,7 +31,7 @@ run_tests() {
     API_KEY=$(yq -r '.auth.apikey' bin/data/config/config.yaml)
     
     echo "Starting server (expecting version: ${EXPECTED_VERSION})..."
-    bin/venv/bin/python bin/bazarr.py >/tmp/server.log 2>&1 &
+    bin/venv/bin/python bin/bazarr.py --no-update >/tmp/server.log 2>&1 &
 
     echo "Waiting for server readiness (max ${STARTUP_TIMEOUT}s)..."
     timeout $STARTUP_TIMEOUT bash -c "
