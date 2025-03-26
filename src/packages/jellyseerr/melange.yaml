@@ -37,12 +37,12 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
-      npx update-browserslist-db@latest
       pnpm build
-      pnpm prune --prod
-      rm -rf src server .next/cache charts gen-docs docs
+      pnpm prune --prod --ignore-scripts
   
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
-      cp -r /home/build/Jellyseerr/* ${{targets.destdir}}/usr/lib/Jellyseerr
+      cp -r /home/build/Jellyseerr/public ${{targets.destdir}}/usr/lib/Jellyseerr
+      cp -r /home/build/Jellyseerr/node_modules ${{targets.destdir}}/usr/lib/Jellyseerr
+      cp -r /home/build/Jellyseerr/dist ${{targets.destdir}}/usr/lib/Jellyseerr
