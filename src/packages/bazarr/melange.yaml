@@ -73,3 +73,4 @@ pipeline:
       done
       
       cp VERSION $to_dist
+      cp -r /usr/lib/Bazarr/venv $to_dist
