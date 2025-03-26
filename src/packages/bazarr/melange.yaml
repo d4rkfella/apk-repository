@@ -11,7 +11,6 @@ package:
       - tzdata
       - catatonit
       - unrar
-      - python-3.12
 environment:
   contents:
     keyring:
@@ -83,7 +82,7 @@ pipeline:
       mkdir -p $to_dist
       mkdir -p /usr/lib/Bazarr
       
-      python -m venv /usr/lib/Bazarr/venv
+      python -m venv --copies /usr/lib/Bazarr/venv
       pip install --upgrade --no-cache-dir \
       -r requirements.txt \
       -r postgres-requirements.txt
