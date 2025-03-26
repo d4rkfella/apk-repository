@@ -40,7 +40,14 @@ pipeline:
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
-      rm -rf node_modules/.pnpm/@img+sharp-linuxmusl-x64*
+
+  - name: Delete linux-musl node-modules
+    working-directory: /home/build/Jellyseerr
+    runs: |
+      find node_modules -type d \
+        \( -name "*linuxmusl*" -o -name "*musl-x64*" \) \
+        -exec echo "Deleting: {}" \; \
+        -exec rm -rf "{}" \;
   
   - name: Prepare package
     runs: |
