@@ -54,6 +54,6 @@ pipeline:
     runs: |
       python -m venv ./venv
       pip install --upgrade --no-cache-dir \
-      -r app/requirements.txt \
-      -r app/postgres-requirements.txt
+      -r requirements.txt \
+      -r postgres-requirements.txt
       ls -la ./venv
