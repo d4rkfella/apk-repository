@@ -29,8 +29,8 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
-      volta install "node@$(yq -r '.engines.node' package.json)"
-      volta install "pnpm@$(yq -r '.engines.pnpm' package.json)"
+      volta install "node@$(yq -r '.engines.node' Jellyseerr/package.json)"
+      volta install "pnpm@$(yq -r '.engines.pnpm' Jellyseerr/package.json)"
 
   - name: Build
     working-directory: /home/build/Jellyseerr
