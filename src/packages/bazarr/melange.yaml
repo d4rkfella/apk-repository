@@ -94,4 +94,4 @@ pipeline:
       cp VERSION $to_dist
       cp -r /usr/lib/Bazarr/venv $to_dist
       
-      printf "UpdateMethod=docker\nBranch=master\nPackageVersion=${VERSION}\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)" > ${{targets.destdir}}/usr/lib/Bazarr/package_info
+      printf "UpdateMethod=docker\nBranch=master\nPackageVersion=${{package.version}}\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)" > ${{targets.destdir}}/usr/lib/Bazarr/package_info
