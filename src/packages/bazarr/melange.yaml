@@ -42,6 +42,7 @@ pipeline:
       PATH="$PATH:$HOME/.volta/bin"
       NODE_VERSION=$(cat .nvmrc)
       volta install node@${NODE_VERSION}
+      npx update-browserslist-db@latest
       npm install
       npm run check:ts
       npm run check
