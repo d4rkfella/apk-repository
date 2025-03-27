@@ -36,8 +36,11 @@ jobs:
           declare -a package_info_array=()
       
           while IFS= read -r -d '' file; do
-            identifier=$(yq ".update.release-monitor.identifier" "$file")
-            [[ "$identifier" == "null" || -z "$identifier" ]] && continue
+            update_config=$(yq '.update' "$file")
+            enabled=$(echo "$update_config" | yq '.enabled')
+            identifier=$(echo "$update_config" | yq '.release-monitor.identifier')
+            
+            [[ "$enabled" == "false" ]] && { echo "Skipping $file - updates disabled"; continue; }
             
             package_name=$(yq ".package.name" "$file")
             version=$(yq ".package.version" "$file")
