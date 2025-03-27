@@ -33,34 +33,28 @@ jobs:
       - name: Extract package info with metadata
         id: extract-info
         run: |
-          # Initialize an empty array
           declare -a package_info_array=()
           
-          # Process each melange.yaml file
           while IFS= read -r -d '' file; do
             identifier=$(yq ".update.release-monitor.identifier" "$file")
             [[ "$identifier" == "null" || -z "$identifier" ]] && continue
             
             package_name=$(yq ".package.name" "$file")
             current_version=$(yq ".package.version" "$file")
-            
-            # Handle changelog URL
+          
             changelog_url=$(yq '.environment.CHANGELOG_URL // ""' "$file")
             [[ "$changelog_url" == "null" ]] && changelog_url=""
-            
-            # Handle version transform
+          
             version_transform=$(yq ".update.version-transform" "$file")
             if [[ "$version_transform" != "null" ]]; then
               match=$(yq ".update.version-transform[0].match" "$file")
               replace=$(yq ".update.version-transform[0].replace" "$file")
-              # Create temporary JSON file for transform data
               transform_json=$(jq -n --arg match "$match" --arg replace "$replace" \
                 '{match: $match, replace: $replace}')
             else
               transform_json="null"
             fi
-            
-            # Add to array as properly formatted JSON
+          
             package_info_array+=("$(jq -n \
               --arg path "$file" \
               --arg identifier "$identifier" \
@@ -78,9 +72,9 @@ jobs:
               }')")
           done < <(find . -name "melange.yaml" -print0)
           
-          # Output as proper JSON array
-          printf -v joined '%s,' "${package_info_array[@]}"
-          echo "package_info=[${joined%,}]" >> $GITHUB_OUTPUT
+          json_output=$(printf "%s\n" "${package_info_array[@]}" | jq -s '.')
+          
+          echo "package_info=$json_output" >> "$GITHUB_OUTPUT"
 
   release-monitoring:
     runs-on: ubuntu-latest
