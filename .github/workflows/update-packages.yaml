@@ -34,7 +34,7 @@ jobs:
         id: extract-info
         run: |
           declare -a package_info_array=()
-
+      
           while IFS= read -r -d '' file; do
             identifier=$(yq ".update.release-monitor.identifier" "$file")
             [[ "$identifier" == "null" || -z "$identifier" ]] && continue
@@ -45,35 +45,35 @@ jobs:
             changelog_url=$(yq '.environment.CHANGELOG_URL // ""' "$file")
             [[ "$changelog_url" == "null" ]] && changelog_url=""
           
-            version_transform=$(yq ".update.version-transform" "$file")
-            if [[ "$version_transform" != "null" ]]; then
-              match=$(yq ".update.version-transform[0].match" "$file")
-              replace=$(yq ".update.version-transform[0].replace" "$file")
-              transform_json=$(jq -n --arg match "$match" --arg replace "$replace" \
-                '{match: $match, replace: $replace}')
-            else
-              transform_json="null"
-            fi
-          
-            package_info_array+=("$(jq -n \
+            json_base=$(jq -n \
               --arg package_name "$package_name" \
               --arg path "$file" \
               --arg identifier "$identifier" \
               --arg version "$version" \
-              --arg changelog_url "$changelog_url" \
-              --argjson version_transform "$transform_json" \
               '{
                 package_name: $package_name,
                 path: $path,
                 identifier: $identifier,
-                version: $version,
-                changelog_url: (if $changelog_url == "" then null else $changelog_url end),
-                version_transform: $version_transform
-              }')")
+                version: $version
+              }')
+          
+            if [[ -n "$changelog_url" ]]; then
+              json_base=$(jq --arg changelog_url "$changelog_url" \
+                '. + {changelog_url: $changelog_url}' <<< "$json_base")
+            fi
+          
+            if yq -e ".update.version-transform" "$file" >/dev/null 2>&1; then
+              match=$(yq ".update.version-transform[0].match" "$file")
+              replace=$(yq ".update.version-transform[0].replace" "$file")
+              json_base=$(jq -n --argjson base "$json_base" \
+                --arg match "$match" --arg replace "$replace" \
+                '$base + {version_transform: {match: $match, replace: $replace}}')
+            fi
+          
+            package_info_array+=("$json_base")
           done < <(find . -name "melange.yaml" -print0)
           
           json_output=$(printf "%s\n" "${package_info_array[@]}" | jq -cs '.')
-          echo $json_output
           echo "package_info=$json_output" >> "$GITHUB_OUTPUT"
 
 
@@ -117,15 +117,20 @@ jobs:
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
       
-          version_transform="${{ matrix.package_info.version_transform }}"
-          
-          if [[ "$version_transform" != "null" ]]; then
-            match=$(echo '${{ matrix.package_info.version_transform }}' | jq -r '.match')
-            replace=$(echo '${{ matrix.package_info.version_transform }}' | jq -r '.replace')
-            latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
-            echo "Transformed latest version: $latest_version"
+          version_transform='${{ matrix.package_info.version_transform }}'
+      
+          if echo "$version_transform" | jq -e 'has("match") and has("replace")' >/dev/null; then
+            match=$(echo "$version_transform" | jq -r '.match // empty')
+            replace=$(echo "$version_transform" | jq -r '.replace // empty')
+      
+            if [[ -n "$match" && -n "$replace" ]]; then
+              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
+              echo "Transformed latest version: $latest_version"
+            else
+              echo "No valid match/replace rules found in version_transform."
+            fi
           else
-            latest_version="$latest_version"
+            echo "No valid version transform rules defined. Skipping transformation."
           fi
       
           function version_gt() {
