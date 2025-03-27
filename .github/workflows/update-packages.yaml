@@ -130,7 +130,7 @@ jobs:
             echo "Replace pattern: $replace"
             
             if [[ -n "$match" && -n "$replace" ]]; then
-              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/)
+              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
               echo "Transformed version: $latest_version"
             else
               echo "Invalid match/replace patterns in version_transform"
