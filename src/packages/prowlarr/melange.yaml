@@ -11,6 +11,7 @@ package:
       - sqlite-libs
       - libssl3
       - zlib
+      - lttng-ust
 environment:
   contents:
     keyring:
