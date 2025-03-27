@@ -6,12 +6,12 @@ on:
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
-  check-updates:
+  construct-array:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     outputs:
-      identifiers: ${{ steps.extract-ids.outputs.identifiers }}
+      package_info: ${{ steps.extract-info.outputs.package_info }}
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
@@ -30,34 +30,59 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
           yq --version
 
-      - name: Extract identifiers and file paths
-        id: extract-ids
+      - name: Extract package info with metadata
+        id: package-info
         run: |
-          echo "Extracting identifiers and file paths..."
-      
-          identifiers_and_paths=$(find . -name "melange.yaml" -exec bash -c '
+          package_info=$(find . -name "melange.yaml" -exec bash -c '
             file="{}"
             identifier=$(yq ".update.release-monitor.identifier" "$file")
             if [[ "$identifier" != "null" && -n "$identifier" ]]; then
-              echo "$file,$identifier"
+              package_name=$(yq ".package.name" "$file")
+              current_version=$(yq ".package.version" "$file")
+              
+              changelog_url=$(yq ".environment.CHANGELOG_URL // \"\"" "$file")
+              if [[ "$changelog_url" == "\"\"" || "$changelog_url" == "null" ]]; then
+                changelog_json="null"
+              else
+                changelog_json="\"$changelog_url\""
+              fi
+              
+              version_transform=$(yq ".update.version-transform" "$file")
+              if [[ "$version_transform" != "null" ]]; then
+                match=$(yq ".update.version-transform[0].match" "$file")
+                replace=$(yq ".update.version-transform[0].replace" "$file")
+                transform_json="{\"match\":\"$match\",\"replace\":\"$replace\"}"
+              else
+                transform_json="null"
+              fi
+              
+              echo "$file,$identifier,$package_name,$current_version,$changelog_json,$transform_json"
             fi
-          ' \;)      
-          identifiers_array=()      
-          while IFS=, read -r path identifier; do
-            identifiers_array+=("{\"path\":\"$path\",\"identifier\":\"$identifier\"}")
-          done <<< "$identifiers_and_paths" 
-          identifiers="[$(printf "%s," "${identifiers_array[@]}" | sed 's/,$//')]"
-          echo "identifiers=$identifiers" >> $GITHUB_OUTPUT
+          ' \;)
+          
+          identifiers_array=()
+          while IFS=, read -r path identifier package_name current_version changelog_url transform_json; do
+            identifiers_array+=("{
+              \"package_name\":\"$package_name\",
+              \"path\":\"$path\",
+              \"current_version\":\"$current_version\",
+              \"identifier\":\"$identifier\",
+              \"version_transform\":$transform_json,
+              \"changelog_url\":$changelog_url
+            }")
+          done <<< "$package_info"
+          
+          echo "package_info=[$(printf "%s," "${identifiers_array[@]}" | sed 's/,$//')]" >> $GITHUB_OUTPUT
 
   release-monitoring:
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
-    needs: check-updates
+    needs: construct-array
     strategy:
       matrix:
-        identifier: ${{ fromJson(needs.check-updates.outputs.identifiers) }}
+        package_info: ${{ fromJson(needs.construct-array.outputs.package_info) }}
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
@@ -74,49 +99,39 @@ jobs:
         run: |
           brew install melange
 
-      - name: Install yq
-        run: |
-          echo "Installing yq..."
-          sudo apt-get update
-          sudo apt-get install -y jq
-          wget https://github.com/mikefarah/yq/releases/download/v4.18.1/yq_linux_amd64 -O /usr/local/bin/yq
-          sudo chmod +x /usr/local/bin/yq
-          yq --version
-
       - name: Run release-monitoring for each identifier
         id: release-monitoring
         uses: chainguard-images/actions/release-monitoring@0c41b080c7a4d6f7caf510a1c6f67d593f687789 # main
         with:
-          project-id: ${{ matrix.identifier.identifier }}
+          project-id: ${{ matrix.package_info.identifier }}
           api-token: ${{ secrets.RELEASE_MONITORING_TOKEN }}
 
       - name: Bump the version if a newer release is available
         id: check-bump
         run: |
           latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
-          current_version=$(yq ".package.version" "${{ matrix.identifier.path }}")
+          current_version="${{ matrix.package_info.version }}"
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
       
-          version_transform=$(yq ".update.version-transform" "${{ matrix.identifier.path }}")
+          version_transform="${{ matrix.package_info.version_transform }}"
+          
           if [[ "$version_transform" != "null" ]]; then
-            match=$(yq ".update.version-transform[0].match" "${{ matrix.identifier.path }}")
-            replace=$(yq ".update.version-transform[0].replace" "${{ matrix.identifier.path }}")
-            echo "Applying version transform to latest version: match='$match', replace='$replace'"
-            
-            latest_version_transformed=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
-            echo "Transformed latest version: $latest_version_transformed"
+            match=$(echo '${{ matrix.package_info.version_transform }}' | jq -r '.match')
+            replace=$(echo '${{ matrix.package_info.version_transform }}' | jq -r '.replace')
+            latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
+            echo "Transformed latest version: $latest_version"
           else
-            latest_version_transformed="$latest_version"
+            latest_version="$latest_version"
           fi
       
           function version_gt() {
             test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"
           }
       
-          if version_gt "$latest_version_transformed" "$current_version"; then
-            echo "New version available: $latest_version_transformed. Proceeding with version bump."
-            melange bump "${{ matrix.identifier.path }}" "$latest_version_transformed"
+          if version_gt "$latest_version" "$current_version"; then
+            echo "New version available: $latest_version. Proceeding with version bump."
+            melange bump "${{ matrix.package_info.path }}" "$latest_version"
             echo "bumped=true" >> $GITHUB_ENV
           else
             echo "No new version available. Skipping version bump."
@@ -128,7 +143,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          package_name=$(yq ".package.name" "${{ matrix.identifier.path }}")
+          package_name=${{ matrix.package_info.package_name }}
           branch_name="update-$package_name"
           
           git config --global user.name "github-actions[bot]"
@@ -142,20 +157,20 @@ jobs:
             
             git checkout $branch_name
 
-            git checkout stash -- "${{ matrix.identifier.path }}"
+            git checkout stash -- "${{ matrix.package_info.path }}"
             
-            if git diff --quiet origin/$branch_name -- "${{ matrix.identifier.path }}"; then
-              echo "No changes detected in ${{ matrix.identifier.path }}. Skipping commit and push."
+            if git diff --quiet origin/$branch_name -- "${{ matrix.package_info.path }}"; then
+              echo "No changes detected in ${{ matrix.package_info.path }}. Skipping commit and push."
             else
-              echo "Changes detected in ${{ matrix.identifier.path }}. Proceeding with commit and force push."
-              git add "${{ matrix.identifier.path }}"
+              echo "Changes detected in ${{ matrix.package_info.path }}. Proceeding with commit and force push."
+              git add "${{ matrix.package_info.path }}"
               git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
               git push origin $branch_name
             fi
           else
             echo "Creating new branch $branch_name"
             git checkout -b $branch_name
-            git add "${{ matrix.identifier.path }}"
+            git add "${{ matrix.package_info.path }}"
             git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
             git push origin $branch_name
           fi
