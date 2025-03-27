@@ -11,7 +11,6 @@ package:
       - sqlite-libs
       - libssl3
       - zlib
-      - lttng-ust-dotnet6-compat
 environment:
   contents:
     keyring:
@@ -95,6 +94,7 @@ test:
         - bash
         - jq
         - xmlstarlet
+        - lttng-ust-dotnet6-compat
   pipeline:
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
