@@ -119,10 +119,10 @@ jobs:
           echo "Latest version: $latest_version"
         
           # Debugging the matrix data
-          echo "Matrix package info: ${{ matrix.package_info }}"
+          echo "Matrix package info: ${{ toJson(matrix.package_info) }}"
           
           # Debugging the version_transform field
-          echo "Version transform: ${{ matrix.package_info.version_transform }}"
+          echo "Version transform: ${{ toJson(matrix.package_info.version_transform) }}"
         
           # Check if version_transform exists and is not null or empty
           if [[ -n "${{ matrix.package_info.version_transform }}" && "${{ matrix.package_info.version_transform }}" != "null" && "${{ matrix.package_info.version_transform }}" != "{}" ]]; then
