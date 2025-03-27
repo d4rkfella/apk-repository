@@ -49,7 +49,7 @@ jobs:
             
             package_name=$(yq ".package.name" "$file")
             version=$(yq ".package.version" "$file")
-            identifier=$(yq '.release-monitor.identifier' "$file")
+            identifier=$(yq '.update.release-monitor.identifier' "$file")
             changelog_url=$(yq '.environment.CHANGELOG_URL // ""' "$file")
             [[ "$changelog_url" == "null" ]] && changelog_url=""
           
