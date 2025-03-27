@@ -34,7 +34,7 @@ jobs:
         id: extract-info
         run: |
           declare -a package_info_array=()
-          
+
           while IFS= read -r -d '' file; do
             identifier=$(yq ".update.release-monitor.identifier" "$file")
             [[ "$identifier" == "null" || -z "$identifier" ]] && continue
@@ -72,9 +72,10 @@ jobs:
               }')")
           done < <(find . -name "melange.yaml" -print0)
           
-          json_output=$(printf "%s\n" "${package_info_array[@]}" | jq -s '.')
+          json_output=$(printf "%s\n" "${package_info_array[@]}" | jq -cs '.')
           
-          echo "package_info=$json_output" >> "$GITHUB_OUTPUT"
+          echo "package_info=$json_output" >> "$GITHUB_ENV"
+
 
   release-monitoring:
     runs-on: ubuntu-latest
