@@ -11,17 +11,17 @@ STARTUP_TIMEOUT=20
 # Function: Verify Directory Permissions
 # --------------------------------------------------
 verify_permissions() {
-    echo "Checking directory permissions..."
+    echo "Checking directory permissions for other users..."
     find "$TARGET_DIR" -type d | while read -r dir; do
-        if ! [ -r "$dir" ] || ! [ -x "$dir" ]; then
-            echo "❌ Permission error: Need read/execute permissions on: $dir" >&2
+        perms=$(stat -c '%A' "$dir")
+        if [[ "${perms:7:1}" != "r" || "${perms:9:1}" != "x" ]]; then
+            echo "❌ Other users lack read/execute permissions on: $dir" >&2
             stat -c '%A %a %n' "$dir" >&2
             exit 1
         fi
     done
-    echo "✅ All directories have correct permissions"
+    echo "✅ All directories have correct permissions for other users"
 }
-
 # --------------------------------------------------
 # Function: Start and Test Server
 # --------------------------------------------------
