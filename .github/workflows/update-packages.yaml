@@ -40,7 +40,7 @@ jobs:
             [[ "$identifier" == "null" || -z "$identifier" ]] && continue
             
             package_name=$(yq ".package.name" "$file")
-            current_version=$(yq ".package.version" "$file")
+            version=$(yq ".package.version" "$file")
           
             changelog_url=$(yq '.environment.CHANGELOG_URL // ""' "$file")
             [[ "$changelog_url" == "null" ]] && changelog_url=""
@@ -56,17 +56,17 @@ jobs:
             fi
           
             package_info_array+=("$(jq -n \
+              --arg package_name "$package_name" \
               --arg path "$file" \
               --arg identifier "$identifier" \
-              --arg package_name "$package_name" \
-              --arg current_version "$current_version" \
+              --arg version "$version" \
               --arg changelog_url "$changelog_url" \
               --argjson version_transform "$transform_json" \
               '{
+                package_name: $package_name,
                 path: $path,
                 identifier: $identifier,
-                package_name: $package_name,
-                current_version: $current_version,
+                version: $version,
                 changelog_url: (if $changelog_url == "" then null else $changelog_url end),
                 version_transform: $version_transform
               }')")
