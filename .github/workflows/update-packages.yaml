@@ -36,15 +36,13 @@ jobs:
           declare -a package_info_array=()
       
           while IFS= read -r -d '' file; do
-            update_config=$(yq '.update' "$file")
-            enabled=$(echo "$update_config" | yq '.enabled')
-            identifier=$(echo "$update_config" | yq '.release-monitor.identifier')
+            enabled=$(yq '.enabled' "$file")
             
-            [[ "$enabled" == "false" ]] && { echo "Skipping $file - updates disabled"; continue; }
+            [[ "$enabled" == "false" && "$enabled" == "null" ]] && { echo "Skipping $file - updates disabled or not configured"; continue; }
             
             package_name=$(yq ".package.name" "$file")
             version=$(yq ".package.version" "$file")
-          
+            identifier=$(yq '.release-monitor.identifier' "$file")
             changelog_url=$(yq '.environment.CHANGELOG_URL // ""' "$file")
             [[ "$changelog_url" == "null" ]] && changelog_url=""
           
