@@ -53,7 +53,9 @@ jobs:
             if [[ "$version_transform" != "null" ]]; then
               match=$(yq ".update.version-transform[0].match" "$file")
               replace=$(yq ".update.version-transform[0].replace" "$file")
-              transform_json="{\"match\":\"$match\",\"replace\":\"$replace\"}"
+              # Create temporary JSON file for transform data
+              transform_json=$(jq -n --arg match "$match" --arg replace "$replace" \
+                '{match: $match, replace: $replace}')
             else
               transform_json="null"
             fi
