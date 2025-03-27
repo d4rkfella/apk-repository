@@ -7,12 +7,10 @@ package:
     - license: GPL-3.0-only
   dependencies:
     runtime:
-      - wolfi-baselayout
       - icu-libs
       - sqlite-libs
       - libssl3
       - zlib
-      - tzdata
 environment:
   contents:
     keyring:
