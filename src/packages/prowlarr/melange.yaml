@@ -11,7 +11,7 @@ package:
       - sqlite-libs
       - libssl3
       - zlib
-      - lttng-ust
+      - lttng-ust-dotnet6-compat
 environment:
   contents:
     keyring:
@@ -26,7 +26,6 @@ environment:
       - curl
       - icu
       - yq
-      - patchelf
 pipeline:
   - uses: git-checkout
     with:
@@ -88,7 +87,6 @@ pipeline:
   
       echo "Adding LICENSE"
       cp LICENSE $_destdir
-      patchelf --replace-needed liblttng-ust.so.0 liblttng-ust.so.1 $_destdir/libcoreclrtraceptprovider.so
 test:
   environment:
     contents:
