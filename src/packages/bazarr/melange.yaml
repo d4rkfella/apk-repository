@@ -66,7 +66,7 @@ pipeline:
     runs: |
       set -e
       
-      PATH="/usr/lib/Bazarr/venv/bin:$PATH"
+      PATH="/usr/lib/Bazarr/bin/venv/bin:$PATH"
       to_dist=${{targets.destdir}}/usr/lib/Bazarr/bin
       file_list=$(cat .github/files_to_copy)
       
