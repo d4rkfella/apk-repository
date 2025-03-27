@@ -125,16 +125,16 @@ jobs:
           echo "Version transform: ${{ toJson(matrix.package_info.version_transform) }}"
         
           # Check if version_transform exists and is not null or empty
-          if [[ -n "${{ toJson(matrix.package_info.version_transform) }}" && "${{ toJson(matrix.package_info.version_transform) }}" != "null" && "${{ toJson(matrix.package_info.version_transform) }}" != "{}" ]]; then
+          if [[ -n "${{ matrix.package_info.version_transform }}" && "${{ matrix.package_info.version_transform }}" != "null" && "${{ matrix.package_info.version_transform }}" != "{}" ]]; then
             # Extract match and replace rules from the version_transform object (JSON)
-            match=$(echo "${{ toJson(matrix.package_info.version_transform) }}" | jq -r '.match // empty')
-            replace=$(echo "${{ toJson(matrix.package_info.version_transform) }}" | jq -r '.replace // empty')
+            match=$(echo "${{ matrix.package_info.version_transform }}" | jq -r '.match // empty')
+            replace=$(echo "${{ matrix.package_info.version_transform }}" | jq -r '.replace // empty')
         
             echo "Match: $match"
             echo "Replace: $replace"
         
             if [[ -n "$match" && -n "$replace" ]]; then
-              # Escape the backslashes correctly for perl
+              # Escape the parentheses and backslashes correctly for perl
               latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
               echo "Transformed latest version: $latest_version"
             else
