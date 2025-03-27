@@ -31,48 +31,54 @@ jobs:
           yq --version
 
       - name: Extract package info with metadata
-        id: package-info
+        id: extract-info
         run: |
-          package_info=$(find . -name "melange.yaml" -exec bash -c '
-            file="{}"
+          # Initialize an empty array
+          declare -a package_info_array=()
+          
+          # Process each melange.yaml file
+          while IFS= read -r -d '' file; do
             identifier=$(yq ".update.release-monitor.identifier" "$file")
-            if [[ "$identifier" != "null" && -n "$identifier" ]]; then
-              package_name=$(yq ".package.name" "$file")
-              current_version=$(yq ".package.version" "$file")
-              
-              changelog_url=$(yq ".environment.CHANGELOG_URL // \"\"" "$file")
-              if [[ "$changelog_url" == "\"\"" || "$changelog_url" == "null" ]]; then
-                changelog_json="null"
-              else
-                changelog_json="\"$changelog_url\""
-              fi
-              
-              version_transform=$(yq ".update.version-transform" "$file")
-              if [[ "$version_transform" != "null" ]]; then
-                match=$(yq ".update.version-transform[0].match" "$file")
-                replace=$(yq ".update.version-transform[0].replace" "$file")
-                transform_json="{\"match\":\"$match\",\"replace\":\"$replace\"}"
-              else
-                transform_json="null"
-              fi
-              
-              echo "$file,$identifier,$package_name,$current_version,$changelog_json,$transform_json"
+            [[ "$identifier" == "null" || -z "$identifier" ]] && continue
+            
+            package_name=$(yq ".package.name" "$file")
+            current_version=$(yq ".package.version" "$file")
+            
+            # Handle changelog URL
+            changelog_url=$(yq '.environment.CHANGELOG_URL // ""' "$file")
+            [[ "$changelog_url" == "null" ]] && changelog_url=""
+            
+            # Handle version transform
+            version_transform=$(yq ".update.version-transform" "$file")
+            if [[ "$version_transform" != "null" ]]; then
+              match=$(yq ".update.version-transform[0].match" "$file")
+              replace=$(yq ".update.version-transform[0].replace" "$file")
+              transform_json="{\"match\":\"$match\",\"replace\":\"$replace\"}"
+            else
+              transform_json="null"
             fi
-          ' \;)
+            
+            # Add to array as properly formatted JSON
+            package_info_array+=("$(jq -n \
+              --arg path "$file" \
+              --arg identifier "$identifier" \
+              --arg package_name "$package_name" \
+              --arg current_version "$current_version" \
+              --arg changelog_url "$changelog_url" \
+              --argjson version_transform "$transform_json" \
+              '{
+                path: $path,
+                identifier: $identifier,
+                package_name: $package_name,
+                current_version: $current_version,
+                changelog_url: (if $changelog_url == "" then null else $changelog_url end),
+                version_transform: $version_transform
+              }')")
+          done < <(find . -name "melange.yaml" -print0)
           
-          identifiers_array=()
-          while IFS=, read -r path identifier package_name current_version changelog_url transform_json; do
-            identifiers_array+=("{
-              \"package_name\":\"$package_name\",
-              \"path\":\"$path\",
-              \"current_version\":\"$current_version\",
-              \"identifier\":\"$identifier\",
-              \"version_transform\":$transform_json,
-              \"changelog_url\":$changelog_url
-            }")
-          done <<< "$package_info"
-          
-          echo "package_info=[$(printf "%s," "${identifiers_array[@]}" | sed 's/,$//')]" >> $GITHUB_OUTPUT
+          # Output as proper JSON array
+          printf -v joined '%s,' "${package_info_array[@]}"
+          echo "package_info=[${joined%,}]" >> $GITHUB_OUTPUT
 
   release-monitoring:
     runs-on: ubuntu-latest
