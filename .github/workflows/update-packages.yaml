@@ -118,20 +118,13 @@ jobs:
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
       
-          version_transform='${{ matrix.package_info.version_transform }}'
-      
-          if echo "$version_transform" | jq -e 'has("match") and has("replace")' >/dev/null; then
-            match=$(echo "$version_transform" | jq -r '.match // empty')
-            replace=$(echo "$version_transform" | jq -r '.replace // empty')
-      
-            if [[ -n "$match" && -n "$replace" ]]; then
-              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
-              echo "Transformed latest version: $latest_version"
-            else
-              echo "No valid match/replace rules found in version_transform."
-            fi
+          if [[ -n "${{ matrix.package_info.version_transform }}" ]]; then
+            match=$(echo "${{ matrix.package_info.version_transform }}" | jq -r '.match // empty')
+            replace=$(echo "${{ matrix.package_info.version_transform }}" | jq -r '.replace // empty')
+            latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
+            echo "Transformed latest version: $latest_version"
           else
-            echo "No valid version transform rules defined. Skipping transformation."
+            echo "No version transform rules defined. Skipping transformation."
           fi
       
           function version_gt() {
