@@ -118,10 +118,6 @@ jobs:
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
           
-          # Debug output - show the complete package info
-          echo "Matrix package info:"
-          echo '${{ toJson(matrix.package_info) }}' | jq .
-          
           # Check if version_transform exists
           if [[ "${{ matrix.package_info.version_transform }}" != "null" ]]; then
             echo "Processing version transform..."
@@ -134,13 +130,13 @@ jobs:
             echo "Replace pattern: $replace"
             
             if [[ -n "$match" && -n "$replace" ]]; then
-              # Use Perl for the substitution with proper escaping
+              # Use Perl with proper regex capture group handling
               latest_version=$(echo "$latest_version" | perl -pe '
-                BEGIN {
-                  $match = qr/'$match'/;
-                  $replace = "'$replace'";
-                }
-                s/$match/$replace/
+                use strict;
+                use warnings;
+                my $pattern = qr/'$match'/;
+                my $replacement = "'$replace'";
+                $_ =~ s/$pattern/$replacement/ee;
               ')
               echo "Transformed version: $latest_version"
             else
