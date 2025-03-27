@@ -1,6 +1,6 @@
 package:
-  name: lttng-ust
-  version: 2.13.8
+  name: lttng-ust-dotnet6-compat
+  version: "2.12.10"
   epoch: 10
   description: LTTng 2.0 Userspace Tracer
   copyright:
@@ -27,7 +27,7 @@ environment:
 pipeline:
   - uses: fetch
     with:
-      expected-sha256: d4ef98dab9a37ad4f524ccafdfd50af4f266039b528dd5afabce78e49024d937
+      expected-sha256: aa802851c6d08c653ac1dd7da8f552baaa5d87e9b03c2d6a8b7a04322e53dc47
       uri: https://lttng.org/files/lttng-ust/lttng-ust-${{package.version}}.tar.bz2
 
   - uses: autoconf/configure
@@ -47,9 +47,6 @@ pipeline:
 
   - uses: strip
   
-  - runs: |
-      ln -s ${{targets.destdir}}/usr/lib/liblttng-ust.so.1 ${{targets.destdir}}/usr/lib/liblttng-ust.so.0
-
 subpackages:
   - name: lttng-ust-doc
     pipeline:
@@ -64,7 +61,7 @@ subpackages:
       - uses: split/dev
     dependencies:
       runtime:
-        - lttng-ust
+        - lttng-ust-dotnet6-compat
         - userspace-rcu-dev
     description: lttng-ust dev
     test:
@@ -87,6 +84,6 @@ subpackages:
     description: lttng-ust python agent
 
 update:
-  enabled: true
+  enabled: false
   release-monitor:
     identifier: 7135
