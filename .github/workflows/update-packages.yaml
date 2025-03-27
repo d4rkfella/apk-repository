@@ -130,14 +130,7 @@ jobs:
             echo "Replace pattern: $replace"
             
             if [[ -n "$match" && -n "$replace" ]]; then
-              # Use Perl with proper regex capture group handling
-              latest_version=$(echo "$latest_version" | perl -pe '
-                use strict;
-                use warnings;
-                my $pattern = qr/'$match'/;
-                my $replacement = "'$replace'";
-                $_ =~ s/$pattern/$replacement/ee;
-              ')
+              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/)
               echo "Transformed version: $latest_version"
             else
               echo "Invalid match/replace patterns in version_transform"
