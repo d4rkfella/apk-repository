@@ -53,6 +53,8 @@ pipeline:
       tar xJ --strip-components=2 --exclude='**/LICENSE.txt' --exclude='**/doc' --exclude='**/man' --exclude='**/bin/ffplay' --directory=${{targets.destdir}}/usr/bin
   - name: Enable SSL verification
     runs: |
+      set -euo pipefail
+      
       if ! head -n 15 "libs/urllib3/connectionpool.py" | grep -q "import ssl"; then
         sed -i '/from __future__ import annotations/a import ssl' "libs/urllib3/connectionpool.py"
         echo "'import ssl' has been added to the top of the file."
@@ -63,7 +65,8 @@ pipeline:
       sed -i 's/cert_reqs=self\.cert_reqs/cert_reqs=ssl.CERT_REQUIRED/' "libs/urllib3/connectionpool.py"  
   - name: Prepare package
     runs: |
-      set -e
+      set -euo pipefail
+      
       export LANG=C.UTF-8
       export PYTHONDONTWRITEBYTECODE=1
       export PYTHONUNBUFFERED=1
@@ -86,6 +89,8 @@ pipeline:
           echo "**** copying $f to release ****"
           cp -r --parents "$f" $to_dist
       done
+      
+      find /usr/lib/Bazarr/bin/venv -name "*.pc" -delete
       
       cp VERSION $to_dist
       cp -r /usr/lib/Bazarr/bin/venv $to_dist
