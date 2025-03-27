@@ -126,7 +126,7 @@ jobs:
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
           
-          if [[ "${{ matrix.package_info.version_transform }}" != "null" ]]; then
+          if [[ "${{ matrix.package_info.version_transform }}" != "" ]]; then
             echo "Processing version transform..."
             
             match='${{ matrix.package_info.version_transform.match }}'
