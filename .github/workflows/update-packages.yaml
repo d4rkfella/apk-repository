@@ -36,7 +36,7 @@ jobs:
           declare -a package_info_array=()
       
           while IFS= read -r -d '' file; do
-            enabled=$(yq '.enabled' "$file")
+            enabled=$(yq '.update.enabled' "$file")
             
             [[ "$enabled" == "false" && "$enabled" == "null" ]] && { echo "Skipping $file - updates disabled or not configured"; continue; }
             
