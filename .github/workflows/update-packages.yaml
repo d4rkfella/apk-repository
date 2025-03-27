@@ -134,6 +134,7 @@ jobs:
             echo "Replace: $replace"
         
             if [[ -n "$match" && -n "$replace" ]]; then
+              # Escape the backslashes correctly for perl
               latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
               echo "Transformed latest version: $latest_version"
             else
@@ -156,7 +157,6 @@ jobs:
             echo "No new version available. Skipping version bump."
             echo "bumped=false" >> $GITHUB_ENV
           fi
-
       - name: Create a PR
         if: env.bumped == 'true'
         env:
