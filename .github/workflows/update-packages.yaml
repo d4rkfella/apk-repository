@@ -30,7 +30,7 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
           yq --version
 
-      - name: Extract package info with metadata
+      - name: Construct package info json array
         id: extract-info
         run: |
           declare -a package_info_array=()
@@ -106,14 +106,14 @@ jobs:
         run: |
           brew install melange
 
-      - name: Run release-monitoring for each identifier
+      - name: Check for latest version
         id: release-monitoring
         uses: chainguard-images/actions/release-monitoring@0c41b080c7a4d6f7caf510a1c6f67d593f687789 # main
         with:
           project-id: ${{ matrix.package_info.identifier }}
           api-token: ${{ secrets.RELEASE_MONITORING_TOKEN }}
 
-      - name: Bump the version if a newer release is available
+      - name: Compare current version with latest version
         id: check-bump
         run: |
           latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
@@ -127,26 +127,22 @@ jobs:
             match='${{ matrix.package_info.version_transform.match }}'
             replace='${{ matrix.package_info.version_transform.replace }}'
             
-            echo "Match pattern: $match"
-            echo "Replace pattern: $replace"
-            
-            if [[ -n "$match" && -n "$replace" ]]; then
-              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
-              echo "Transformed version: $latest_version"
-            else
+            latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
+            echo "Transformed version: $latest_version"
+          else
               echo "No version transform to apply"
-            fi
+          fi
           
           function version_gt() {
             [ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" ]
           }
           
           if version_gt "$latest_version" "$current_version"; then
-            echo "New version available: $latest_version. Proceeding with version bump."
+            echo "New version available: $latest_version > $current_version. Proceeding with version bump."
             melange bump "${{ matrix.package_info.path }}" "$latest_version"
             echo "bumped=true" >> $GITHUB_ENV
           else
-            echo "No new version available. Skipping version bump."
+            echo "No new version available. $current_version = $latest_version."
             echo "bumped=false" >> $GITHUB_ENV
           fi
       
