@@ -96,6 +96,7 @@ test:
       packages:
         - curl
         - bash
+        - jq
         - yq
   pipeline:
     - name: Check for missing dependancies
