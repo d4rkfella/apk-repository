@@ -127,8 +127,8 @@ jobs:
           # Check if version_transform exists and is not null or empty
           if [[ -n "${{ matrix.package_info.version_transform }}" && "${{ matrix.package_info.version_transform }}" != "null" && "${{ matrix.package_info.version_transform }}" != "{}" ]]; then
             # Extract match and replace rules from the version_transform object (JSON)
-            match=$(echo "${{ matrix.package_info.version_transform }}" | jq -r '.match // empty')
-            replace=$(echo "${{ matrix.package_info.version_transform }}" | jq -r '.replace // empty')
+            match=$(echo "$match" | sed 's/\\/\\\\/g' | sed 's/(/\\(/g' | sed 's/)/\\)/g')  # Properly escape the match string for perl
+            replace=$(echo "$replace" | sed 's/\$/\\$/g')
         
             echo "Match: $match"
             echo "Replace: $replace"
