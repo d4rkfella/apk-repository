@@ -36,9 +36,16 @@ jobs:
           declare -a package_info_array=()
       
           while IFS= read -r -d '' file; do
-            enabled=$(yq '.update.enabled' "$file")
+            if ! yq -e '.update' "$file" >/dev/null 2>&1; then
+                echo "Skipping $file - no update section"
+                continue
+            fi
             
-            [[ "$enabled" == "false" && "$enabled" == "null" ]] && { echo "Skipping $file - updates disabled or not configured"; continue; }
+            enabled=$(yq '.update.enabled' "$file")
+            if [[ "$enabled" == "false" ]]; then
+                echo "Skipping $file - updates disabled"
+                continue
+            fi
             
             package_name=$(yq ".package.name" "$file")
             version=$(yq ".package.version" "$file")
