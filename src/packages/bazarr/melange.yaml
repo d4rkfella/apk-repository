@@ -71,9 +71,9 @@ pipeline:
       file_list=$(cat .github/files_to_copy)
       
       mkdir -p $to_dist
-      mkdir -p /usr/lib/bazarr
+      mkdir -p /usr/lib/Bazarr/bin
       
-      python -m venv --copies /usr/lib/Bazarr/venv
+      python -m venv --copies /usr/lib/Bazarr/bin/venv
       pip install --upgrade --no-cache-dir \
       -r requirements.txt \
       -r postgres-requirements.txt
@@ -87,7 +87,7 @@ pipeline:
       done
       
       cp VERSION $to_dist
-      cp -r /usr/lib/Bazarr/venv $to_dist
+      cp -r /usr/lib/Bazarr/bin/venv $to_dist
       
       printf "UpdateMethod=docker\nBranch=master\nPackageVersion=${{package.version}}\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)" > ${{targets.destdir}}/usr/lib/Bazarr/package_info
 test:
