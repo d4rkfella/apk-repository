@@ -118,37 +118,41 @@ jobs:
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
           
-          # Debug output (no changes needed here)
-          echo "Matrix package info: ${{ toJson(matrix.package_info) }}"
-          echo "Version transform: ${{ toJson(matrix.package_info.version_transform) }}"
+          # Debug output - show the complete package info
+          echo "Matrix package info:"
+          echo '${{ toJson(matrix.package_info) }}' | jq .
           
-          # Check if version_transform exists and is not null or empty
-          if [[ -n "${{ matrix.package_info.version_transform }}" && "${{ matrix.package_info.version_transform }}" != "null" && "${{ matrix.package_info.version_transform }}" != "{}" ]]; then
-            # Extract match and replace rules using jq
-            match=$(echo '${{ matrix.package_info.version_transform }}' | jq -r '.match')
-            replace=$(echo '${{ matrix.package_info.version_transform }}' | jq -r '.replace')
+          # Check if version_transform exists
+          if [[ "${{ matrix.package_info.version_transform }}" != "null" ]]; then
+            echo "Processing version transform..."
             
-            # Escape special regex characters for Perl
-            match_escaped=$(echo "$match" | sed 's/\\/\\\\/g; s/\./\\./g; s/\*/\\*/g; s/\[/\\[/g; s/\]/\\]/g; s/\^/\\^/g; s/\$/\\$/g')
+            # Extract patterns directly from the matrix object
+            match='${{ matrix.package_info.version_transform.match }}'
+            replace='${{ matrix.package_info.version_transform.replace }}'
             
-            echo "Match: $match"
-            echo "Replace: $replace"
-            echo "Escaped match: $match_escaped"
+            echo "Match pattern: $match"
+            echo "Replace pattern: $replace"
             
             if [[ -n "$match" && -n "$replace" ]]; then
-              # Apply the transformation
-              latest_version=$(echo "$latest_version" | perl -pe "s/$match_escaped/$replace/")
-              echo "Transformed latest version: $latest_version"
+              # Use Perl for the substitution with proper escaping
+              latest_version=$(echo "$latest_version" | perl -pe '
+                BEGIN {
+                  $match = qr/'$match'/;
+                  $replace = "'$replace'";
+                }
+                s/$match/$replace/
+              ')
+              echo "Transformed version: $latest_version"
             else
-              echo "No valid match/replace rules found in version_transform."
+              echo "Invalid match/replace patterns in version_transform"
             fi
           else
-            echo "No version transform rules defined or version_transform is invalid. Skipping transformation."
+            echo "No version transform to apply"
           fi
           
-          # Version comparison logic
+          # Version comparison
           function version_gt() {
-            test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"
+            [ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" ]
           }
           
           if version_gt "$latest_version" "$current_version"; then
