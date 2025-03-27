@@ -28,7 +28,6 @@ verify_permissions() {
 run_tests() {
     cd "$TARGET_DIR" || exit 1
     
-    API_KEY=$(yq -r '.auth.apikey' bin/data/config/config.yaml)
     
     echo "Starting server (expecting version: ${EXPECTED_VERSION})..."
     bin/venv/bin/python bin/bazarr.py --no-update >/tmp/server.log 2>&1 &
@@ -44,7 +43,7 @@ run_tests() {
         cat /tmp/server.log >&2
         exit 1
     }
-
+    API_KEY=$(yq -r '.auth.apikey' bin/data/config/config.yaml)
     version=$(curl -sSf http://localhost:$SERVER_PORT/api/system/status?apikey=$API_KEY | jq -r '.data.bazarr_version')
     [[ "$version" == "$EXPECTED_VERSION" ]] || {
         echo "❌ Version mismatch: expected ${EXPECTED_VERSION}, got ${version}" >&2
