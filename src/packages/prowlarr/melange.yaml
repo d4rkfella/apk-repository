@@ -7,12 +7,10 @@ package:
     - license: GPL-3.0-only
   dependencies:
     runtime:
-      - wolfi-baselayout
       - icu-libs
       - sqlite-libs
       - libssl3
       - zlib
-      - tzdata
 environment:
   contents:
     keyring:
@@ -36,9 +34,8 @@ pipeline:
   
   - name: Install dependancies
     runs: |
-      DOTNET_VERSION=$(yq '.variables.dotnetVersion' azure-pipelines.yml)
       curl -sSL https://get.volta.sh | bash
-      curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $DOTNET_VERSION
+      curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $(yq '.variables.dotnetVersion' azure-pipelines.yml)
   
   - name: Build backend
     runs: |
@@ -58,8 +55,7 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
       BROWSERSLIST_IGNORE_OLD_DATA="true"
-      NODE_VERSION=$(yq '.variables.nodeVersion' azure-pipelines.yml | sed 's/X/*/g')
-      volta install node@$NODE_VERSION
+      volta install node@$(yq '.variables.nodeVersion' azure-pipelines.yml)
       volta install yarn@1.22.*
       yarn install --frozen-lockfile --network-timeout 120000
       yarn lint
@@ -90,7 +86,22 @@ pipeline:
   
       echo "Adding LICENSE"
       cp LICENSE $_destdir
-
+test:
+  environment:
+    contents:
+      packages:
+        - curl
+        - bash
+        - jq
+        - xmlstarlet
+  pipeline:
+    - name: Check for missing dependancies
+      uses: test/tw/ldd-check
+      with:
+        packages: ${{package.name}}
+    - name: Run test script
+      runs: |
+        EXPECTED_VERSION="${{package.version}}" test/test.sh
 update:
   enabled: true
   release-monitor:
