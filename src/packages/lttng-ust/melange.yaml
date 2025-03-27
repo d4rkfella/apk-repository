@@ -48,7 +48,7 @@ pipeline:
   - uses: strip
   
 subpackages:
-  - name: lttng-ust-doc
+  - name: lttng-ust-doc-dotnet6-compat
     pipeline:
       - uses: split/manpages
     description: lttng-ust manpages
@@ -56,7 +56,7 @@ subpackages:
       pipeline:
         - uses: test/docs
 
-  - name: lttng-ust-dev
+  - name: lttng-ust-dev-dotnet6-compat
     pipeline:
       - uses: split/dev
     dependencies:
@@ -68,14 +68,14 @@ subpackages:
       pipeline:
         - uses: test/pkgconf
 
-  - name: lttng-ust-tools
+  - name: lttng-ust-tools-dotnet6-compat
     pipeline:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/usr
           mv "${{targets.destdir}}"/usr/bin "${{targets.subpkgdir}}"/usr/
     description: lttng-ust tools
 
-  - name: py3-lttng
+  - name: py3-lttng-dotnet6-compat
     pipeline:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/usr/lib
