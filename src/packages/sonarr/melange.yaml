@@ -87,3 +87,24 @@ pipeline:
   
       echo "Adding LICENSE"
       cp LICENSE.md $_destdir
+test:
+  environment:
+    contents:
+      packages:
+        - curl
+        - bash
+        - jq
+        - xmlstarlet
+        - lttng-ust-dotnet6-compat
+  pipeline:
+    - name: Check for missing dependancies
+      uses: test/tw/ldd-check
+      with:
+        packages: ${{package.name}}
+    - name: Run test script
+      runs: |
+        EXPECTED_VERSION="${{package.version}}" test/test.sh
+update:
+  enabled: true
+  release-monitor:
+    identifier: 377336
