@@ -42,8 +42,7 @@ pipeline:
     working-directory: /home/build/frontend
     runs: |
       PATH="$PATH:$HOME/.volta/bin"
-      NODE_VERSION=$(cat .nvmrc)
-      volta install node@${NODE_VERSION}
+      volta install node@$(cat .nvmrc)
       npx update-browserslist-db@latest
       npm install
       npm run build
