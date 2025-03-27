@@ -74,6 +74,7 @@ jobs:
           done < <(find . -name "melange.yaml" -print0)
           
           json_output=$(printf "%s\n" "${package_info_array[@]}" | jq -cs '.')
+          echo $json_output
           echo "package_info=$json_output" >> "$GITHUB_OUTPUT"
 
 
