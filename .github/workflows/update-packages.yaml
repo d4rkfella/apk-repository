@@ -117,20 +117,37 @@ jobs:
           current_version="${{ matrix.package_info.version }}"
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
-      
-          if [[ -n "${{ matrix.package_info.version_transform }}" ]]; then
+        
+          # Debugging the matrix data
+          echo "Matrix package info: ${{ matrix.package_info }}"
+          
+          # Debugging the version_transform field
+          echo "Version transform: ${{ matrix.package_info.version_transform }}"
+        
+          # Check if version_transform exists and is not null or empty
+          if [[ -n "${{ matrix.package_info.version_transform }}" && "${{ matrix.package_info.version_transform }}" != "null" && "${{ matrix.package_info.version_transform }}" != "{}" ]]; then
+            # Extract match and replace rules
             match=$(echo "${{ matrix.package_info.version_transform }}" | jq -r '.match // empty')
             replace=$(echo "${{ matrix.package_info.version_transform }}" | jq -r '.replace // empty')
-            latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
-            echo "Transformed latest version: $latest_version"
+            
+            echo "Match: $match"
+            echo "Replace: $replace"
+            
+            if [[ -n "$match" && -n "$replace" ]]; then
+              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
+              echo "Transformed latest version: $latest_version"
+            else
+              echo "No valid match/replace rules found in version_transform."
+            fi
           else
-            echo "No version transform rules defined. Skipping transformation."
+            echo "No version transform rules defined or version_transform is invalid. Skipping transformation."
           fi
-      
+        
+          # Version comparison logic
           function version_gt() {
             test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"
           }
-      
+        
           if version_gt "$latest_version" "$current_version"; then
             echo "New version available: $latest_version. Proceeding with version bump."
             melange bump "${{ matrix.package_info.path }}" "$latest_version"
