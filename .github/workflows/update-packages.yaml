@@ -241,7 +241,6 @@ jobs:
           if [ -n "${{ steps.changelog.outputs.changelog }}" ]; then
             echo "${{ steps.changelog.outputs.changelog }}" >> pr_body.md
           else
-            echo "${{ steps.changelog.outputs.compare_url }}" >> pr_body.md
             echo "[v${{ steps.release-monitoring.outputs.latest-version }}](${{ steps.changelog.outputs.compare_url }})" >> pr_body.md
           fi
       
