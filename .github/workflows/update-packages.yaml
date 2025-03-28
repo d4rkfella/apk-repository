@@ -211,6 +211,7 @@ jobs:
               --title "Update $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}" \
               --body "This Automated PR updates the version of $package_name to ${{ steps.release-monitoring.outputs.latest-version }}" \
               --label version-bump
+              --label automated-pr
           else
             echo "PR already exists."
           fi
