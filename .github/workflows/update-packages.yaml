@@ -229,39 +229,39 @@ jobs:
         id: prepare-pr-body
         run: |
           if [ -n "${{ steps.changelog.outputs.changelog }}" ]; then
-            cat <<-'EOF' > pr_body.md
-              ### 📦 Automated Package Update
-              
-              **Package:** ${{ matrix.package_info.package_name }}
-              **Change:** ${{ matrix.package_info.version }} → ${{ steps.release-monitoring.outputs.latest-version }}
-              **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
-              
-              <details>
-              <summary><b>📜 Release Notes</b></summary>
-              
-              ${{ steps.changelog.outputs.changelog }}
-              
-              </details>
-              EOF
+            cat <<EOF > pr_body.md
+            ### 📦 Automated Package Update
+            
+            **Package:** ${{ matrix.package_info.package_name }}
+            **Change:** ${{ matrix.package_info.version }} → ${{ steps.release-monitoring.outputs.latest-version }}
+            **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
+            
+            <details>
+            <summary><b>📜 Release Notes</b></summary>
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            </details>
+            EOF
           else
-            cat <<-'EOF' > pr_body.md
-              ### 📦 Automated Package Update
-              
-              **Package:** ${{ matrix.package_info.package_name }}
-              **Change:** ${{ matrix.package_info.version }} → ${{ steps.release-monitoring.outputs.latest-version }}
-              **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
-              
-              <details>
-              <summary><b>📜 Release Notes</b></summary>
-              
-              ${{ steps.changelog.outputs.compare_url }}
-              [v${{ matrix.package_info.package_name }}](${{ steps.changelog.outputs.compare_url }})
-              
-              </details>
-              EOF
+            cat <<EOF > pr_body.md
+            ### 📦 Automated Package Update
+            
+            **Package:** ${{ matrix.package_info.package_name }}
+            **Change:** ${{ matrix.package_info.version }} → ${{ steps.release-monitoring.outputs.latest-version }}
+            **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
+            
+            <details>
+            <summary><b>📜 Release Notes</b></summary>
+            
+            ${{ steps.changelog.outputs.compare_url }}
+            [v${{ matrix.package_info.package_name }}](${{ steps.changelog.outputs.compare_url }})
+            
+            </details>
+            EOF
           fi
-          
-          echo "body_path=pr_body.md" >> $GITHUB_OUTPUT
+      
+          echo "body_path=pr_body.md" >> "$GITHUB_OUTPUT"
       
       - name: Create Pull Request
         if: steps.check-bump.outputs.bumped == 'true' && steps.prepare-pr-body.outputs.body_path == ''
