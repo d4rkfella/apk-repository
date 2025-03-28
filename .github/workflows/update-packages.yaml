@@ -228,40 +228,29 @@ jobs:
         if: steps.changelog.outputs.changelog != null || steps.changelog.outputs.compare_url != null
         id: prepare-pr-body
         run: |
+          echo "### 📦 Automated Package Update" > pr_body.md
+          echo "" >> pr_body.md
+          echo "**Package:** ${{ matrix.package_info.package_name }}" >> pr_body.md
+          echo "**Change:** ${{ matrix.package_info.version }} → ${{ steps.release-monitoring.outputs.latest-version }}" >> pr_body.md
+          echo "**Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "<details>" >> pr_body.md
+          echo "<summary><b>📜 Release Notes</b></summary>" >> pr_body.md
+          echo "" >> pr_body.md
+      
           if [ -n "${{ steps.changelog.outputs.changelog }}" ]; then
-            cat <<EOF > pr_body.md
-            ### 📦 Automated Package Update
-            
-            **Package:** ${{ matrix.package_info.package_name }}
-            **Change:** ${{ matrix.package_info.version }} → ${{ steps.release-monitoring.outputs.latest-version }}
-            **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
-            
-            <details>
-            <summary><b>📜 Release Notes</b></summary>
-            
-            ${{ steps.changelog.outputs.changelog }}
-            
-            </details>
-            EOF
+            echo "${{ steps.changelog.outputs.changelog }}" >> pr_body.md
           else
-            cat <<EOF > pr_body.md
-            ### 📦 Automated Package Update
-            
-            **Package:** ${{ matrix.package_info.package_name }}
-            **Change:** ${{ matrix.package_info.version }} → ${{ steps.release-monitoring.outputs.latest-version }}
-            **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
-            
-            <details>
-            <summary><b>📜 Release Notes</b></summary>
-            
-            ${{ steps.changelog.outputs.compare_url }}
-            [v${{ matrix.package_info.package_name }}](${{ steps.changelog.outputs.compare_url }})
-            
-            </details>
-            EOF
+            echo "${{ steps.changelog.outputs.compare_url }}" >> pr_body.md
+            echo "[v${{ matrix.package_info.package_name }}](${{ steps.changelog.outputs.compare_url }})" >> pr_body.md
           fi
       
+          echo "" >> pr_body.md
+          echo "</details>" >> pr_body.md
+      
           echo "body_path=pr_body.md" >> "$GITHUB_OUTPUT"
+        shell: bash
+
       
       - name: Create Pull Request
         if: steps.check-bump.outputs.bumped == 'true' && steps.prepare-pr-body.outputs.body_path == ''
