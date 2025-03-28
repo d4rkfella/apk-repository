@@ -24,10 +24,11 @@ var-transforms:
     replace: -$1
     to: luajit-package-version
 pipeline:
-  - uses: fetch
+  - uses: git-checkout
     with:
-      expected-sha256: 68ff3dc2cc97969f7385679da7c9ff96738aa9cc275fa6bab77316eb3340ea8e
-      uri: https://github.com/openresty/luajit2/archive/refs/tags/v${{vars.luajit-package-version}}.tar.gz
+      expected-commit: ""
+      repository: https://github.com/openresty/luajit2
+      tag: v${{vars.luajit-package-version}}
 
   - runs: |
       export LUAJIT_LIB=/usr/lib
