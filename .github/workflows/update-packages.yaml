@@ -182,21 +182,29 @@ jobs:
         id: changelog
         run: |
           function apply_version_transform() {
-            local current_version="$1"
-            local transform_info="$2"
-          
-            if [[ "$transform_info" != "" ]]; then
-              echo "Processing version transform..." >&2
-              match='${{ matrix.package_info.var_transform.match }}'
-              replace='${{ matrix.package_info.var_transform.replace }}'
-              current_version=$(echo "$current_version" | perl -pe "s/$match/$replace/")
-              echo "$current_version"
-            else
-              echo "No version transform regex to apply..." >&2
-              echo "$current_version"
-            fi
+              local current_version="$1"
+              local transform_info="$2"
+            
+              if [[ "$transform_info" != "" ]]; then
+                  echo "Processing version transform..." >&2
+                  match='${{ matrix.package_info.var_transform.match }}'
+                  replace='${{ matrix.package_info.var_transform.replace }}'
+                  
+                  # Debug output
+                  echo "Match pattern: $match" >&2
+                  echo "Replace pattern: $replace" >&2
+                  echo "Original version: $current_version" >&2
+                  
+                  current_version=$(echo "$current_version" | perl -pe "s/$match/$replace/")
+                  echo "Transformed version: $current_version" >&2
+                  echo "$current_version"
+              else
+                  echo "No version transform regex to apply..." >&2
+                  echo "$current_version"
+              fi
           }
-
+          
+          # Usage remains the same
           CURRENT_VERSION=v$(apply_version_transform "${{ matrix.package_info.version }}" "${{ matrix.package_info.var_transform }}")
           REPO_PATH=$(echo "${{ matrix.package_info.repo }}" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
           LATEST_VERSION="v${{ steps.release-monitoring.outputs.latest-version}}"
