@@ -185,13 +185,13 @@ jobs:
           
             if [[ "$transform_info" != "" ]]; then
               echo "Processing version transform..." >&2
-              match='${{ matrix.package_info.version_transform.match }}'
-              replace='${{ matrix.package_info.version_transform.replace }}'
-              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
-              echo "$latest_version"
+              match='${{ matrix.package_info.version_transforms.match }}'
+              replace='${{ matrix.package_info.version_transforms.replace }}'
+              current_version=$(echo "$current_version" | perl -pe "s/$match/$replace/")
+              echo "$current_version"
             else
               echo "No version transform regex to apply..." >&2
-              echo "$latest_version"
+              echo "$current_version"
             fi
           }
 
