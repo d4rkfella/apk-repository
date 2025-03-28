@@ -69,7 +69,8 @@ jobs:
               match=$(yq ".update.version-transform[0].match" "$file")
               replace=$(yq ".update.version-transform[0].replace" "$file")
               json_base=$(jq -n --argjson base "$json_base" \
-                --arg match "$match" --arg replace "$replace" \
+                --arg match "$match" \
+                --arg replace "$replace" \
                 '$base + {version_transform: {match: $match, replace: $replace}}')
             fi
             
@@ -80,12 +81,13 @@ jobs:
             fi
 
             if [[ -n "$transform" ]] && [ "$transform" != "null" ]; then
-              match2=$(echo "$transform" | yq '.match')
-              replace2=$(echo "$transform" | yq '.replace')
+              match=$(echo "$transform" | yq '.match')
+              replace=$(echo "$transform" | yq '.replace')
               
               json_base=$(jq -n --argjson base "$json_base" \
-                --arg match2 "$match2" --arg replace2 "$replace2" \
-                '$base + {var_transforms: {match2: $match2, replace2: $replace2}}')
+                --arg match "$match" \
+                --arg replace "$replace" \
+                '$base + {var_transform: {match: $match, replace: $replace}}')
             fi
           
             package_info_array+=("$json_base")
