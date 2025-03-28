@@ -191,7 +191,10 @@ jobs:
             RELEASE_NOTES="## Commit Log\n$COMMITS"
           fi          
           
-          echo "changelog=${RELEASE_NOTES}" >> $GITHUB_OUTPUT       
+          CLEAN_NOTES=$(echo "$RELEASE_NOTES" | sed 's/%0A/\n/g')  
+          echo "changelog<<EOF_NOTES" >> $GITHUB_OUTPUT
+          echo "$CLEAN_NOTES" >> $GITHUB_OUTPUT
+          echo "EOF_NOTES" >> $GITHUB_OUTPUT
       
       - name: Create Pull Request
         if: steps.check-bump.outputs.bumped == 'true' && steps.changelog.outputs.changelog == ''
