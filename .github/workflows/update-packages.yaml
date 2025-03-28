@@ -208,7 +208,6 @@ jobs:
             
             **Package:** ${{ matrix.package_info.package_name }}
             **New Version:** ${{ matrix.package_info.version }}
-            **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
           commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
           delete-branch: true
           sign-commits: true
