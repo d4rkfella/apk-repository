@@ -79,7 +79,7 @@ jobs:
                 '$base + {repo: $repo}')
             fi
 
-            if [[ -n "$transform" ]]; then
+            if [[ -n "$transform" ]] && [ "$transform" != "null" ]; then
               match=$(echo "$transform" | yq '.match')
               replace=$(echo "$transform" | yq '.replace')
               
@@ -185,8 +185,8 @@ jobs:
           
             if [[ "$transform_info" != "" ]]; then
               echo "Processing version transform..." >&2
-              match='${{ matrix.package_info.version_transforms.match }}'
-              replace='${{ matrix.package_info.version_transforms.replace }}'
+              match='${{ matrix.package_info.var_transforms.match }}'
+              replace='${{ matrix.package_info.var_transforms.replace }}'
               current_version=$(echo "$current_version" | perl -pe "s/$match/$replace/")
               echo "$current_version"
             else
@@ -195,7 +195,7 @@ jobs:
             fi
           }
 
-          CURRENT_VERSION=v$(apply_version_transform "${{ matrix.package_info.version }}" "${{ matrix.package_info.vars_transforms }}")
+          CURRENT_VERSION=v$(apply_version_transform "${{ matrix.package_info.version }}" "${{ matrix.package_info.var_transforms }}")
           REPO_PATH=$(echo "${{ matrix.package_info.repo }}" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
           LATEST_VERSION="v${{ steps.release-monitoring.outputs.latest-version}}"
           
