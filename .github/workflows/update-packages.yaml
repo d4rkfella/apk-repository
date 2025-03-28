@@ -121,35 +121,46 @@ jobs:
       - name: Compare current version with latest version
         id: check-bump
         run: |
-          latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
+          function apply_version_transform() {
+            local latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
+            local transform_info="$2"
+          
+            if [[ "$transform_info" != "" ]]; then
+              echo "Processing version transform..."
+              match="${{ matrix.package_info.version_transform.match }}"
+              replace="${{ matrix.package_info.version_transform.replace }}"
+              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
+              echo "Transformed version: $latest_version"
+              echo "$latest_version"
+            else
+              echo "No version transform to apply"
+              echo "$latest_version"
+            fi
+          }
+          function compare_and_bump() {
+            local latest_version="$1"
+            local current_version="$2"
+            local package_path="$3"
+          
+            function version_gt() {
+              [ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" ]
+            }
+          
+            if version_gt "$latest_version" "$current_version"; then
+              echo "New version available: $latest_version > $current_version. Proceeding with version bump."
+              melange bump "$package_path" "$latest_version"
+              echo "bumped=true" >> $GITHUB_ENV
+            else
+              echo "No new version available. $current_version = $latest_version."
+              echo "bumped=false" >> $GITHUB_ENV
+            fi
+          }
+
           current_version="${{ matrix.package_info.version }}"
           echo "Current version: $current_version"
-          echo "Latest version: $latest_version"
           
-          if [[ "${{ matrix.package_info.version_transform }}" != "" ]]; then
-            echo "Processing version transform..."
-            
-            match='${{ matrix.package_info.version_transform.match }}'
-            replace='${{ matrix.package_info.version_transform.replace }}'
-            
-            latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
-            echo "Transformed version: $latest_version"
-          else
-              echo "No version transform to apply"
-          fi
-          
-          function version_gt() {
-            [ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" ]
-          }
-          
-          if version_gt "$latest_version" "$current_version"; then
-            echo "New version available: $latest_version > $current_version. Proceeding with version bump."
-            melange bump "${{ matrix.package_info.path }}" "$latest_version"
-            echo "bumped=true" >> $GITHUB_ENV
-          else
-            echo "No new version available. $current_version = $latest_version."
-            echo "bumped=false" >> $GITHUB_ENV
-          fi
+          latest_version=$(get_and_transform_version "${{ matrix.package_info.version_transform }}")          
+          compare_and_bump "$latest_version" "$current_version" "${{ matrix.package_info.path }}"
       
       - name: Create a PR
         if: env.bumped == 'true'
