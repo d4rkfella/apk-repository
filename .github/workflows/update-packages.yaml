@@ -127,8 +127,8 @@ jobs:
           
             if [[ "$transform_info" != "" ]]; then
               echo "Processing version transform..." >&2
-              match="${{ matrix.package_info.version_transform.match }}"
-              replace="${{ matrix.package_info.version_transform.replace }}"
+              match='${{ matrix.package_info.version_transform.match }}'
+              replace='${{ matrix.package_info.version_transform.replace }}'
               latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
             fi
             echo "$latest_version"
