@@ -50,7 +50,7 @@ jobs:
             package_name=$(yq ".package.name" "$file")
             version=$(yq ".package.version" "$file")
             identifier=$(yq '.update.release-monitor.identifier' "$file")
-            transform=$(yq '.var-transforms[] | select(.from == "\${{package.version}}")' "$file")
+            transform=$(yq '.var-transforms[] | select(.from | test("package\\.version"))' "$file")
             repo=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.repository' "$file")
           
             json_base=$(jq -n \
@@ -80,8 +80,8 @@ jobs:
             fi
 
             if [[ -n "$transform" ]]; then
-              match=$(echo "$transform" | yq -r '.match')
-              replace=$(echo "$transform" | yq -r '.replace')
+              match=$(echo "$transform" | yq '.match')
+              replace=$(echo "$transform" | yq '.replace')
               
               json_base=$(jq -n --argjson base "$json_base" \
                 --arg match "$match" --arg replace "$replace" \
