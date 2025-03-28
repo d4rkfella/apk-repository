@@ -50,8 +50,6 @@ jobs:
             package_name=$(yq ".package.name" "$file")
             version=$(yq ".package.version" "$file")
             identifier=$(yq '.update.release-monitor.identifier' "$file")
-            changelog_url=$(yq '.environment.enviroment.CHANGELOG_URL // ""' "$file")
-            [[ "$changelog_url" == "null" ]] && changelog_url=""
           
             json_base=$(jq -n \
               --arg package_name "$package_name" \
@@ -64,18 +62,21 @@ jobs:
                 identifier: $identifier,
                 version: $version
               }')
-          
-            if [[ -n "$changelog_url" ]]; then
-              json_base=$(jq --arg changelog_url "$changelog_url" \
-                '. + {changelog_url: $changelog_url}' <<< "$json_base")
-            fi
-          
+                   
             if yq -e ".update.version-transform" "$file" >/dev/null 2>&1; then
               match=$(yq ".update.version-transform[0].match" "$file")
               replace=$(yq ".update.version-transform[0].replace" "$file")
               json_base=$(jq -n --argjson base "$json_base" \
                 --arg match "$match" --arg replace "$replace" \
                 '$base + {version_transform: {match: $match, replace: $replace}}')
+            fi
+
+            repo=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.repository' "$file")
+            
+            if [ -n "$repo" ] && [ "$repo" != "null" ]; then
+              json_base=$(jq -n --argjson base "$json_base" \
+                --arg repo "$repo" \
+                '$base + {repo: $repo}')
             fi
           
             package_info_array+=("$json_base")
@@ -166,17 +167,78 @@ jobs:
           echo "Latest version: $latest_version"
           
           compare_and_bump "$latest_version" "$current_version" "${{ matrix.package_info.path }}"
+
+      - name: Get changelog
+        if: steps.check-bump.outputs.bumped == 'true' && matrix.package_info.repo
+        id: changelog
+        run: |
+          REPO_PATH=$(echo "${{ matrix.package_info.repo }}" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
+          VERSION="v${{ matrix.package_info.version }}"
+          
+          RELEASE_NOTES=$(curl -s \
+            "https://api.github.com/repos/$REPO_PATH/releases/tags/$VERSION" | \
+            jq -r '.body // empty')
+          
+          if [ -z "$RELEASE_NOTES" ]; then
+            echo "Fetching commits..."
+            PREV_TAG=$(git ls-remote --tags ${{ matrix.package_info.repo }} \
+              | grep -v '{}' | cut -d'/' -f3 | sort -V | grep -B1 "$VERSION" | head -n1)
+            
+            COMMITS=$(curl -s \
+              "https://api.github.com/repos/$REPO_PATH/compare/$PREV_TAG...$VERSION" | \
+              jq -r '.commits[] | "- \(.commit.message | split("\n")[0])"')
+            
+            RELEASE_NOTES="## Commit Log\n$COMMITS"
+          fi
+          
+          RELEASE_NOTES="${RELEASE_NOTES//'%'/'%25'}"
+          RELEASE_NOTES="${RELEASE_NOTES//$'\n'/'%0A'}"
+          echo "changelog=${RELEASE_NOTES}" >> $GITHUB_OUTPUT
+          
       
       - name: Create Pull Request
-        if: steps.check-bump.outputs.bumped == 'true'
+        if: steps.check-bump.outputs.bumped == 'true' && steps.changelog.outputs.changelog = ''
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
           add-paths: '${{ matrix.package_info.path }}'
           branch: 'update-${{ matrix.package_info.package_name }}'
-          body: 'This Automated PR updates the version of ${{ matrix.package_info.package_name }} to ${{ steps.release-monitoring.outputs.latest-version }}'
+          body: |
+            ### 📦 Automated Package Update
+            
+            **Package:** ${{ matrix.package_info.package_name }}
+            **New Version:** ${{ matrix.package_info.version }}
+            **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
           commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
+          delete-branch: true
           sign-commits: true
           labels: |
             automated-pr
             version-bump
+
+      - name: Create Pull Request with release notes
+        if: steps.check-bump.outputs.bumped == 'true' && steps.changelog.outputs.changelog != ''
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
+          add-paths: '${{ matrix.package_info.path }}'
+          branch: 'update-${{ matrix.package_info.package_name }}'
+          body: |
+            ### 📦 Automated Package Update
+            
+            **Package:** ${{ matrix.package_info.package_name }}
+            **New Version:** ${{ matrix.package_info.version }}
+            **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
+            
+            <details>
+            <summary><b>📜 Release Notes</b></summary>
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            </details>
+          commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
+          delete-branch: true
+          sign-commits: true
+          labels: |
+            automated-pr
+            version-bump  
