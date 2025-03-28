@@ -159,7 +159,7 @@ jobs:
           current_version="${{ matrix.package_info.version }}"
           echo "Current version: $current_version"
           
-          latest_version=$(get_and_transform_version "${{ matrix.package_info.version_transform }}")          
+          latest_version=$(apply_version_transform "${{ matrix.package_info.version_transform }}")          
           compare_and_bump "$latest_version" "$current_version" "${{ matrix.package_info.path }}"
       
       - name: Create a PR
