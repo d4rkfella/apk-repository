@@ -1,6 +1,6 @@
 package:
   name: radarr
-  version: "5.20.2.9777"
+  version: "5.21.1.9799"
   epoch: 0
   description: Movie download automation for usenet and torrents.
   copyright:
@@ -31,12 +31,10 @@ pipeline:
       expected-commit: ""
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
-  
   - name: Install dependancies
     runs: |
       curl -sSL https://get.volta.sh | bash
       curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $(yq '.variables.dotnetVersion' azure-pipelines.yml)
-  
   - name: Build backend
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
@@ -45,12 +43,11 @@ pipeline:
       _platform="Posix"
       _slnFile="src/Radarr.sln"
       ulimit -n 4096
-      
+
       echo "Updating Version Info"
       sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
       sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
       dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
-  
   - name: Build frontend
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
@@ -60,7 +57,6 @@ pipeline:
       yarn lint
       yarn stylelint-linux
       yarn run build --env production
-  
   - name: Prepare package
     runs: |
       _dotnet_arch="x64"
@@ -69,21 +65,21 @@ pipeline:
       _output="_output"
       _artifacts="$_output/$_framework/$_runtime/publish"
       _destdir="${{targets.destdir}}/usr/lib/Radarr/bin"
-      
+
       mkdir -p $_destdir
       printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > ${{targets.destdir}}/usr/lib/Radarr/package_info
 
       chmod +x "$_artifacts"/ffprobe
-      
+
       cp -r $_artifacts/* $_destdir
       cp -r $_output/UI $_destdir
 
       rm -f $_destdir/ServiceUninstall.*
       rm -f $_destdir/ServiceInstall.*
-  
+
       echo "Removing Radarr.Windows"
       rm $_destdir/Radarr.Windows.*
-  
+
       echo "Adding LICENSE"
       cp LICENSE $_destdir
 test:
