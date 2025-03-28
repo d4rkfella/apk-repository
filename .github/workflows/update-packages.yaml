@@ -169,7 +169,7 @@ jobs:
           compare_and_bump "$latest_version" "$current_version" "${{ matrix.package_info.path }}"
 
       - name: Get changelog
-        if: steps.check-bump.outputs.bumped == 'true' && matrix.package_info.repo
+        if: steps.check-bump.outputs.bumped == "true" && matrix.package_info.repo != ""
         id: changelog
         run: |
           REPO_PATH=$(echo "${{ matrix.package_info.repo }}" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
@@ -197,7 +197,7 @@ jobs:
           
       
       - name: Create Pull Request
-        if: steps.check-bump.outputs.bumped == 'true' && steps.changelog.outputs.changelog = ''
+        if: steps.check-bump.outputs.bumped == "true" && steps.changelog.outputs.changelog == ""
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
@@ -217,7 +217,7 @@ jobs:
             version-bump
 
       - name: Create Pull Request with release notes
-        if: steps.check-bump.outputs.bumped == 'true' && steps.changelog.outputs.changelog != ''
+        if: steps.check-bump.outputs.bumped == "true" && steps.changelog.outputs.changelog != ""
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
