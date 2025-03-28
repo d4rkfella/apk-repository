@@ -30,7 +30,7 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
           yq --version
 
-      - name: Construct package info json array
+      - name: Construct matrix
         id: extract-info
         run: |
           declare -a package_info_array=()
@@ -51,9 +51,8 @@ jobs:
             version=$(yq ".package.version" "$file")
             identifier=$(yq '.update.release-monitor.identifier' "$file")
             transform=$(yq '."var-transforms"[] | select(.from | test("package\\.version"))' "$file")
-            repo=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.repository' "$file")
-            echo $transform
-          
+            repo=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.repository' "$file")          
+            
             json_base=$(jq -n \
               --arg package_name "$package_name" \
               --arg path "$file" \
@@ -81,14 +80,12 @@ jobs:
             fi
 
             if [[ -n "$transform" ]] && [ "$transform" != "null" ]; then
-              match=$(echo "$transform" | yq '.match' -)
-              replace=$(echo "$transform" | yq '.replace' -)
+              match2=$(echo "$transform" | yq '.match')
+              replace2=$(echo "$transform" | yq '.replace')
               
               json_base=$(jq -n --argjson base "$json_base" \
-                --arg match "$match" --arg replace "$replace" \
-                '$base + {var_transforms: {match: $match, replace: $replace}}')
-            else
-              echo "No transform rules were applied"
+                --arg match2 "$match2" --arg replace2 "$replace2" \
+                '$base + {var_transforms: {match2: $match2, replace2: $replace2}}')
             fi
           
             package_info_array+=("$json_base")
