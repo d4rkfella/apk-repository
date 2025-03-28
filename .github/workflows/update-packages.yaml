@@ -122,8 +122,8 @@ jobs:
         id: check-bump
         run: |
           function apply_version_transform() {
-            local latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
-            local transform_info="${{ matrix.package_info.version_transform }}"
+            local latest_version="$1"
+            local transform_info="$2"
           
             if [[ "$transform_info" != "" ]]; then
               echo "Processing version transform..." >&2
@@ -149,69 +149,34 @@ jobs:
             if version_gt "$latest_version" "$current_version"; then
               echo "New version available: $latest_version > $current_version. Proceeding with version bump."
               melange bump "$package_path" "$latest_version"
-              echo "bumped=true" >> $GITHUB_ENV
+              echo "bumped=true" >> $GITHUB_OUTPUT
             else
               echo "No new version available. $current_version = $latest_version."
-              echo "bumped=false" >> $GITHUB_ENV
+              echo "bumped=false" >> $GITHUB_OUTPUT
             fi
           }
 
           current_version="${{ matrix.package_info.version }}"
-          latest_version=$(apply_version_transform)
+          latest_version=$(apply_version_transform "${{ steps.release-monitoring.outputs.latest-version }}" "${{ matrix.package_info.version_transform }}")
           
           echo "Current version: $current_version"
           echo "Latest version: $latest_version"
           
           compare_and_bump "$latest_version" "$current_version" "${{ matrix.package_info.path }}"
-      
-      - name: Create a PR
-        if: env.bumped == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          package_name=${{ matrix.package_info.package_name }}
-          branch_name="update-$package_name"
-          
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git fetch --all         
-          
-          if git rev-parse --verify origin/$branch_name >/dev/null 2>&1; then
-            echo "Branch $branch_name already exists, force pushing changes."
-            git stash
-            
-            git checkout $branch_name
-
-            git checkout stash -- "${{ matrix.package_info.path }}"
-            
-            if git diff --quiet origin/$branch_name -- "${{ matrix.package_info.path }}"; then
-              echo "No changes detected in ${{ matrix.package_info.path }}. Skipping commit and push."
-            else
-              echo "Changes detected in ${{ matrix.package_info.path }}. Proceeding with commit and force push."
-              git add "${{ matrix.package_info.path }}"
-              git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
-              git push origin $branch_name
-            fi
-          else
-            echo "Creating new branch $branch_name"
-            git checkout -b $branch_name
-            git add "${{ matrix.package_info.path }}"
-            git commit -m "Bump $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}"
-            git push origin $branch_name
-          fi
+      - name: Set up gitsign
+        if: steps.check-bump.outputs.bumped == 'true'
+        uses: d4rkfella/actions/setup-gitsign@main
       
-          pr_exists=$(gh pr list --base main --head "$branch_name" --json number --jq 'length')
-      
-          if [ "$pr_exists" -eq 0 ]; then
-            echo "Creating new PR..."
-            gh pr create \
-              --base main \
-              --head "$branch_name" \
-              --title "Update $package_name version to ${{ steps.release-monitoring.outputs.latest-version }}" \
-              --body "This Automated PR updates the version of $package_name to ${{ steps.release-monitoring.outputs.latest-version }}" \
-              --label version-bump
-              --label automated-pr
-          else
-            echo "PR already exists."
-          fi
+      - name: Create Pull Request
+        if: steps.check-bump.outputs.bumped == 'true'
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
+          add-paths: '${{ matrix.package_info.path }}'
+          branch: 'update-${{ matrix.package_info.package_name }}'
+          body: 'This Automated PR updates the version of ${{ matrix.package_info.package_name }} to ${{ steps.release-monitoring.outputs.latest-version }}'
+          commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
+          labels: |
+            automated-pr
+            version-bump
