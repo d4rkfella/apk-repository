@@ -129,11 +129,8 @@ jobs:
               echo "Processing version transform..."
               match="${{ matrix.package_info.version_transform.match }}"
               replace="${{ matrix.package_info.version_transform.replace }}"
-              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
-              echo "Transformed version: $latest_version"
-              echo "$latest_version"
+              echo latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
             else
-              echo "No version transform to apply"
               echo "$latest_version"
             fi
           }
