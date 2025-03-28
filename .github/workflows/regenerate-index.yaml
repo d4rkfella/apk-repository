@@ -1,0 +1,35 @@
+name: Regenerate INDEX
+
+on: 
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:    
+  regenerate-index:
+    runs-on: ubuntu-24.04
+    steps:     
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      
+      - name: Install Melange
+        run: |
+          brew install melange
+      
+      - name: Save private key
+        run: |
+          set +x
+          echo -n "${{ secrets.MELANGE_PRIVATE_KEY }}" > ${{ github.workspace }}/melange.rsa
+          chmod 400 ${{ github.workspace }}/melange.rsa
+          set -x
+          
+      - name: Regenerate index and upload back to S3
+        run: |
+          aws s3 cp s3://packages/x86_64/ /tmp/packages/ --endpoint-url=$ENDPOINT_URL --recursive --exclude "*" --include "*.apk"
+          melange index --signing-key ${{ github.workspace }}/melange.rsa --output /tmp/APKINDEX.tar.gz /tmp/packages/*.apk
+          aws s3 cp /tmp/APKINDEX.tar.gz s3://packages/x86_64/APKINDEX.tar.gz --endpoint-url $ENDPOINT_URL --checksum-algorithm CRC32
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}

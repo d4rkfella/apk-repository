@@ -1,0 +1,70 @@
+package:
+  name: luarocks
+  version: 3.11.1
+  epoch: 0
+  description: A package manager for Lua modules
+  copyright:
+    - license: MIT
+  dependencies:
+    runtime:
+      - gcc
+      - glibc-dev
+      - luajit-dev-custom
+      - wget
+
+environment:
+  contents:
+    keyring:
+      - https://packages.darkfellanetwork.com/melange.rsa.pub
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.darkfellanetwork.com
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - busybox
+      - luajit-dev-custom
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://luarocks.github.io/luarocks/releases/luarocks-${{package.version}}.tar.gz
+      expected-sha256: c3fb3d960dffb2b2fe9de7e3cb004dc4d0b34bb3d342578af84f84325c669102
+
+  - uses: build/gpg-verify
+    with:
+      signature-uri: https://luarocks.github.io/luarocks/releases/luarocks-${{package.version}}.tar.gz.asc
+      public-key-uri: https://hisham.hm/public_key
+      filename: luarocks-${{package.version}}.tar.gz
+  
+  - runs: |
+      ./configure \
+        --prefix=/usr \
+        --with-lua-include=/usr/include/lua \
+        --force-config
+  
+  - uses: autoconf/make
+ 
+  - uses: autoconf/make-install
+
+  - uses: strip
+  
+test:
+  pipeline:
+    - uses: test/ldd-check
+      with:
+        packages: ${{package.name}}
+    
+    - name: Check if luarocks utility is available
+      runs: |
+        luarocks --version
+        luarocks-admin --version
+    
+    - name: Test if compiling a C luarock works
+      runs: |
+         luarocks install lua-cjson
+
+update:
+  enabled: true
+  release-monitor:
+    identifier: 1856

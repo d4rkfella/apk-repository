@@ -1,0 +1,287 @@
+name: Update Melange Packages
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  configure-matrix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      package_info: ${{ steps.extract-info.outputs.package_info }}
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install yq
+        shell: bash
+        run: |
+          echo "Installing yq..."
+          sudo apt-get update
+          sudo apt-get install -y jq
+          wget https://github.com/mikefarah/yq/releases/download/v4.18.1/yq_linux_amd64 -O /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+          yq --version
+
+      - name: Extract and Configure Package Info for Matrix
+        id: extract-info
+        shell: bash
+        run: |
+          declare -a package_info_array=()
+      
+          while IFS= read -r -d '' file; do
+            if ! yq -e '.update' "$file" >/dev/null 2>&1; then
+                echo "Skipping $file - no update section"
+                continue
+            fi
+            
+            enabled=$(yq '.update.enabled' "$file")
+            if [[ "$enabled" == "false" ]]; then
+                echo "Skipping $file - updates disabled"
+                continue
+            fi
+            
+            package_name=$(yq ".package.name" "$file")
+            version=$(yq ".package.version" "$file")
+            identifier=$(yq '.update.release-monitor.identifier' "$file")
+            transform=$(yq '."var-transforms"[] | select(.from | test("package\.version"))' "$file")
+            repo=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.repository' "$file")          
+            
+            json_base=$(jq -n \
+              --arg package_name "$package_name" \
+              --arg path "$file" \
+              --arg identifier "$identifier" \
+              --arg version "$version" \
+              '{
+                package_name: $package_name,
+                path: $path,
+                identifier: $identifier,
+                version: $version
+              }')
+                   
+            if yq -e ".update.version-transform" "$file" >/dev/null 2>&1; then
+              match=$(yq ".update.version-transform[0].match" "$file")
+              replace=$(yq ".update.version-transform[0].replace" "$file")
+              json_base=$(jq -n --argjson base "$json_base" \
+                --arg match "$match" \
+                --arg replace "$replace" \
+                '$base + {version_transform: {match: $match, replace: $replace}}')
+            fi
+            
+            if [ -n "$repo" ] && [ "$repo" != "null" ]; then
+              json_base=$(jq -n --argjson base "$json_base" \
+                --arg repo "$repo" \
+                '$base + {repo: $repo}')
+            fi
+
+            if [[ -n "$transform" ]] && [ "$transform" != "null" ]; then
+              match=$(echo "$transform" | yq '.match')
+              replace=$(echo "$transform" | yq '.replace')
+              
+              json_base=$(jq -n --argjson base "$json_base" \
+                --arg match "$match" \
+                --arg replace "$replace" \
+                '$base + {var_transform: {match: $match, replace: $replace}}')
+            fi
+          
+            package_info_array+=("$json_base")
+          done < <(find . -name "melange.yaml" -print0)
+          
+          json_output=$(printf "%s\n" "${package_info_array[@]}" | jq -cs '.')
+          echo $json_output
+          echo "package_info=$json_output" >> "$GITHUB_OUTPUT"
+
+  release-monitoring:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    needs: configure-matrix
+    strategy:
+      matrix:
+        package_info: ${{ fromJson(needs.configure-matrix.outputs.package_info) }}
+      fail-fast: false
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      
+      - name: Install Melange
+        run: |
+          brew install melange
+
+      - name: Get latest version
+        id: release-monitoring
+        uses: chainguard-images/actions/release-monitoring@0c41b080c7a4d6f7caf510a1c6f67d593f687789 # main
+        with:
+          project-id: ${{ matrix.package_info.identifier }}
+          api-token: ${{ secrets.RELEASE_MONITORING_TOKEN }}
+
+      - name: Compare versions and bump
+        id: check-bump
+        shell: bash
+        run: |
+          function apply_version_transform() {
+            local latest_version="$1"
+            local transform_info="$2"
+          
+            if [[ "$transform_info" != "" ]]; then
+              echo "Processing version transform..." >&2
+              match='${{ matrix.package_info.version_transform.match }}'
+              replace='${{ matrix.package_info.version_transform.replace }}'
+              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
+              echo "$latest_version"
+            else
+              echo "No version transform regex to apply..." >&2
+              echo "$latest_version"
+            fi
+          }
+          
+          function compare_and_bump() {
+            local latest_version="$1"
+            local current_version="$2"
+            local package_path="$3"
+          
+            function version_gt() {
+              [ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" ]
+            }
+          
+            if version_gt "$latest_version" "$current_version"; then
+              echo "New version available: $latest_version > $current_version. Proceeding with version bump."
+              melange bump "$package_path" "$latest_version"
+              echo "bumped=true" >> $GITHUB_OUTPUT
+            else
+              echo "No new version available. $current_version = $latest_version."
+              echo "bumped=false" >> $GITHUB_OUTPUT
+            fi
+          }
+
+          current_version="${{ matrix.package_info.version }}"
+          latest_version=$(apply_version_transform "${{ steps.release-monitoring.outputs.latest-version }}" "${{ matrix.package_info.version_transform }}")
+          
+          echo "Current version: $current_version"
+          echo "Latest version: $latest_version"
+          
+          compare_and_bump "$latest_version" "$current_version" "${{ matrix.package_info.path }}"
+
+      - name: Create changelog
+        if: steps.check-bump.outputs.bumped == 'true' && matrix.package_info.repo != ''
+        id: changelog
+        shell: bash
+        run: |
+          function apply_version_transform() {
+              local current_version="$1"
+              local transform_info="$2"
+            
+              if [[ "$transform_info" != "" ]]; then
+                  echo "Processing version transform..." >&2
+                  match='${{ matrix.package_info.var_transform.match }}'
+                  replace='${{ matrix.package_info.var_transform.replace }}'
+                         
+                  current_version=$(echo "$current_version" | perl -pe "s/$match/$replace/")
+                  echo "Transformed version: $current_version" >&2
+                  echo "$current_version"
+              else
+                  echo "No version transform regex to apply..." >&2
+                  echo "$current_version"
+              fi
+          }
+          
+          CURRENT_VERSION=v$(apply_version_transform "${{ matrix.package_info.version }}" "${{ matrix.package_info.var_transform }}")
+          REPO_PATH=$(echo "${{ matrix.package_info.repo }}" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
+          LATEST_VERSION="v${{ steps.release-monitoring.outputs.latest-version}}"
+          
+          HEADERS=()
+          if [ -n "${{ secrets.GITHUB_TOKEN }}" ]; then
+            HEADERS=(-H "Authorization: token ${{ secrets.GITHUB_TOKEN }}")
+          fi
+          
+          RELEASE_NOTES=$(curl -sfL "${HEADERS[@]}" \
+            "https://api.github.com/repos/$REPO_PATH/releases/tags/$LATEST_VERSION" | \
+            jq -r '.body // empty' 2>/dev/null)
+
+          if [ -n "$RELEASE_NOTES" ]; then
+            CLEAN_NOTES=$(echo "$RELEASE_NOTES" | sed 's/%0A/\n/g' | sed 's/\\r\\n/\n/g')
+            echo "changelog<<EOF" >> $GITHUB_OUTPUT
+            echo "$CLEAN_NOTES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            COMPARE_URL="https://github.com/$REPO_PATH/compare/$CURRENT_VERSION...$LATEST_VERSION"
+            echo "compare_url=$COMPARE_URL" >> $GITHUB_OUTPUT
+          fi
+
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Prepare PR body
+        if: steps.changelog.outputs.changelog != null || steps.changelog.outputs.compare_url != null
+        id: prepare-pr-body
+        shell: bash
+        run: |
+          echo "### 📦 Automated Package Update" > pr_body.md
+          echo "" >> pr_body.md
+          echo "**Package:** ${{ matrix.package_info.package_name }}" >> pr_body.md
+          echo "**Change:** ${{ steps.changelog.outputs.current_version }} → ${{ steps.release-monitoring.outputs.latest-version }}" >> pr_body.md
+          echo "**Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "<details>" >> pr_body.md
+          echo "<summary><b>📜 Release Notes</b></summary>" >> pr_body.md
+          echo "" >> pr_body.md
+      
+          if [ -n "${{ steps.changelog.outputs.changelog }}" ]; then
+            echo "${{ steps.changelog.outputs.changelog }}" >> pr_body.md
+          else
+            echo '<h3 dir="auto"><a href="${{ steps.changelog.outputs.compare_url }}"><code class="notranslate">v${{ steps.release-monitoring.outputs.latest-version }}</code></a></h3>' >> pr_body.md
+          fi
+      
+          echo "" >> pr_body.md
+          echo "</details>" >> pr_body.md
+      
+          echo "body_path=pr_body.md" >> "$GITHUB_OUTPUT"
+      
+      - name: Create Pull Request
+        if: steps.check-bump.outputs.bumped == 'true' && steps.prepare-pr-body.outputs.body_path == ''
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
+          add-paths: '${{ matrix.package_info.path }}'
+          branch: 'update-${{ matrix.package_info.package_name }}'
+          body: |
+            ### 📦 Automated Package Update
+            
+            **Package:** ${{ matrix.package_info.package_name }}
+            **Change:** ${{ steps.changelog.outputs.current_version }} → ${{ steps.release-monitoring.outputs.latest-version }}
+            **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
+          commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
+          sign-commits: true
+          labels: |
+            automated-pr
+            version-bump
+
+      - name: Create Pull Request with release notes
+        if: steps.check-bump.outputs.bumped == 'true' && steps.prepare-pr-body.outputs.body_path != ''
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
+          add-paths: '${{ matrix.package_info.path }}'
+          branch: 'update-${{ matrix.package_info.package_name }}'
+          body-path: "${{ steps.prepare-pr-body.outputs.body_path }}"
+          commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
+          sign-commits: true
+          labels: |
+            automated-pr
+            version-bump

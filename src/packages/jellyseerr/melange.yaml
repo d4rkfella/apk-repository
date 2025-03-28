@@ -1,0 +1,94 @@
+package:
+  name: jellyseerr
+  version: "2.5.1"
+  epoch: 0
+  description: Open-source media request and discovery manager for Jellyfin, Plex, and Emby.
+  copyright:
+    - license: MIT
+  dependencies:
+    runtime:
+      - nodejs-22
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - wolfi-baselayout
+      - build-base
+      - busybox
+      - bash
+      - curl
+      - yq
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: ""
+      repository: https://github.com/fallenbagel/jellyseerr
+      tag: v${{package.version}}
+      destination: Jellyseerr
+  - name: Install dependancies
+    runs: |
+      PATH="$HOME/.volta/bin:$PATH"
+      curl -sSL https://get.volta.sh | bash
+      volta install "node@$(yq -r '.engines.node' Jellyseerr/package.json)"
+      volta install "pnpm@$(yq -r '.engines.pnpm' Jellyseerr/package.json)"
+  - name: Clean source directory
+    working-directory: /home/build/Jellyseerr
+    runs: |
+      grep -E '^\*\*/' .dockerignore | while IFS= read -r pattern; do
+        base_pattern="${pattern#\*\*/}"
+        
+        echo "Processing Dockerignore pattern: $pattern → $base_pattern"
+        
+        find . -name "$base_pattern" -exec rm -rf {} + 2>/dev/null
+        
+        [ -e "./$base_pattern" ] && rm -rf "./$base_pattern"
+        
+        find . -path "./*/$base_pattern" -exec rm -rf {} + 2>/dev/null
+      done
+      
+      grep -vE '^(#|$|^\*\*/)' .dockerignore | while IFS= read -r pattern; do
+        find . -path "./${pattern#/}" -exec rm -rf {} + 2>/dev/null
+      done  
+  - name: Build
+    working-directory: /home/build/Jellyseerr
+    runs: |
+      PATH="$HOME/.volta/bin:$PATH"
+      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
+      pnpm build
+      pnpm prune --prod --ignore-scripts
+  - name: Delete linux-musl node-modules and other unneeded files
+    working-directory: /home/build/Jellyseerr
+    runs: |
+      find node_modules -type d \
+        -name "*musl*" \
+        -print \
+        -exec rm -rf {} + \
+        -prune
+      rm -rf src server .next/cache charts gen-docs docs
+  - name: Prepare package
+    runs: |
+      mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
+      cp -a /home/build/Jellyseerr/. ${{targets.destdir}}/usr/lib/Jellyseerr/
+      chmod 755 ${{targets.destdir}}/usr/lib/Jellyseerr
+test:
+  environment:
+    contents:
+      packages:
+        - curl
+        - bash
+        - jq
+  pipeline:
+    - name: Check for missing dependancies
+      uses: test/tw/ldd-check
+      with:
+        packages: ${{package.name}}
+    - name: Run test script
+      runs: |
+        EXPECTED_VERSION="${{package.version}}" test/test.sh
+update:
+  enabled: true
+  release-monitor:
+    identifier: 376442

@@ -1,0 +1,55 @@
+package:
+  name: autobrr
+  version: "1.60.0"
+  epoch: 0
+  description: "Autobrr download automation tool"
+  copyright:
+    - license: GPL-2.0-or-later
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - ca-certificates-bundle
+      - nodejs-20
+      - corepack
+      - go-1.23
+      - git
+      - build-base
+      - tzdata
+      - jq
+      - busybox
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/autobrr/autobrr
+      tag: v${{package.version}}
+
+  - runs: |
+      corepack enable
+      cd web
+      pnpm install --frozen-lockfile
+      pnpm run build
+
+  - runs: |
+      mkdir -p ${{targets.destdir}}/usr/bin
+      
+      export VERSION=${{package.version}}
+      export REVISION=$(git -C . rev-parse --short HEAD 2>/dev/null || echo "unknown")
+      export BUILDTIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      export GOOS=linux
+      export CGO_ENABLED=0
+      
+      go mod download
+      go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${REVISION} -X main.date=${BUILDTIME}" \
+        -o ${{targets.destdir}}/usr/bin/autobrr cmd/autobrr/main.go
+      go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${REVISION} -X main.date=${BUILDTIME}" \
+        -o ${{targets.destdir}}/usr/bin/autobrrctl cmd/autobrrctl/main.go
+update:
+  enabled: true
+  release-monitor:
+    identifier: 377310
