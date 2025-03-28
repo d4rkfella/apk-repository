@@ -81,8 +81,8 @@ jobs:
             fi
 
             if [[ -n "$transform" ]] && [ "$transform" != "null" ]; then
-              match=$(echo "$transform" | yq '.match')
-              replace=$(echo "$transform" | yq '.replace')
+              match=$(echo "$transform" | yq '.match' -)
+              replace=$(echo "$transform" | yq '.replace' -)
               
               json_base=$(jq -n --argjson base "$json_base" \
                 --arg match "$match" --arg replace "$replace" \
