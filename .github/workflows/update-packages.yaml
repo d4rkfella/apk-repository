@@ -78,6 +78,14 @@ jobs:
                 --arg repo "$repo" \
                 '$base + {repo: $repo}')
             fi
+
+            if yq -e '.var-transforms[0] | select(.from == "${{package.version}}")' "$file" >/dev/null 2>&1; then
+              match=$(yq ".var-transforms[0].match" "$file")
+              replace=$(yq ".var-transforms[0].replace" "$file")
+              json_base=$(jq -n --argjson base "$json_base" \
+                --arg match "$match" --arg replace "$replace" \
+                '$base + {var-transforms: {match: $match, replace: $replace}}')
+            fi
           
             package_info_array+=("$json_base")
           done < <(find . -name "melange.yaml" -print0)
@@ -170,9 +178,25 @@ jobs:
         if: steps.check-bump.outputs.bumped == 'true' && matrix.package_info.repo != ''
         id: changelog
         run: |
+          function apply_version_transform() {
+            local current_version="$1"
+            local transform_info="$2"
+          
+            if [[ "$transform_info" != "" ]]; then
+              echo "Processing version transform..." >&2
+              match='${{ matrix.package_info.version_transform.match }}'
+              replace='${{ matrix.package_info.version_transform.replace }}'
+              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
+              echo "$latest_version"
+            else
+              echo "No version transform regex to apply..." >&2
+              echo "$latest_version"
+            fi
+          }
+
+          CURRENT_VERSION=v$(apply_version_transform "${{ matrix.package_info.version }}" "${{ matrix.package_info.vars_transforms }}")
           REPO_PATH=$(echo "${{ matrix.package_info.repo }}" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
           LATEST_VERSION="v${{ steps.release-monitoring.outputs.latest-version}}"
-          CURRENT_VERSION="v${{ matrix.package_info.version}}"
           
           HEADERS=()
           if [ -n "${{ secrets.GITHUB_TOKEN }}" ]; then
