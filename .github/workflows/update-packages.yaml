@@ -126,13 +126,12 @@ jobs:
             local transform_info="${{ matrix.package_info.version_transform }}"
           
             if [[ "$transform_info" != "" ]]; then
-              echo "Processing version transform..."
+              echo "Processing version transform..." >&2
               match="${{ matrix.package_info.version_transform.match }}"
               replace="${{ matrix.package_info.version_transform.replace }}"
-              echo latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
-            else
-              echo "$latest_version"
+              latest_version=$(echo "$latest_version" | perl -pe "s/$match/$replace/")
             fi
+            echo "$latest_version"
           }
           function compare_and_bump() {
             local latest_version="$1"
