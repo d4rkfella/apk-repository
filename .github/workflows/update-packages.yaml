@@ -176,7 +176,6 @@ jobs:
           branch: 'update-${{ matrix.package_info.package_name }}'
           body: 'This Automated PR updates the version of ${{ matrix.package_info.package_name }} to ${{ steps.release-monitoring.outputs.latest-version }}'
           commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
-          delete-branch: true
           sign-commits: true
           labels: |
             automated-pr
