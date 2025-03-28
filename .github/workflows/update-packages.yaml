@@ -50,7 +50,7 @@ jobs:
             package_name=$(yq ".package.name" "$file")
             version=$(yq ".package.version" "$file")
             identifier=$(yq '.update.release-monitor.identifier' "$file")
-            transform=$(yq '."var-transforms"[] | select(.from | test("package\\.version"))' "$file")
+            transform=$(yq '."var-transforms"[] | select(.from | test("package\.version"))' "$file")
             repo=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.repository' "$file")          
             
             json_base=$(jq -n \
