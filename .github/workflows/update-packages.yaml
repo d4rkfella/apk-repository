@@ -166,10 +166,6 @@ jobs:
           echo "Latest version: $latest_version"
           
           compare_and_bump "$latest_version" "$current_version" "${{ matrix.package_info.path }}"
-
-      - name: Set up gitsign
-        if: steps.check-bump.outputs.bumped == 'true'
-        uses: d4rkfella/actions/setup-gitsign@main
       
       - name: Create Pull Request
         if: steps.check-bump.outputs.bumped == 'true'
@@ -180,6 +176,8 @@ jobs:
           branch: 'update-${{ matrix.package_info.package_name }}'
           body: 'This Automated PR updates the version of ${{ matrix.package_info.package_name }} to ${{ steps.release-monitoring.outputs.latest-version }}'
           commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
+          delete-branch: true
+          sign-commits: true
           labels: |
             automated-pr
             version-bump
