@@ -189,12 +189,9 @@ jobs:
               jq -r '.commits[] | "- \(.commit.message | split("\n")[0])"')
             
             RELEASE_NOTES="## Commit Log\n$COMMITS"
-          fi
+          fi          
           
-          RELEASE_NOTES="${RELEASE_NOTES//'%'/'%25'}"
-          RELEASE_NOTES="${RELEASE_NOTES//$'\n'/'%0A'}"
-          echo "changelog=${RELEASE_NOTES}" >> $GITHUB_OUTPUT
-          
+          echo "changelog=${RELEASE_NOTES}" >> $GITHUB_OUTPUT       
       
       - name: Create Pull Request
         if: steps.check-bump.outputs.bumped == 'true' && steps.changelog.outputs.changelog == ''
