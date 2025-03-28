@@ -96,7 +96,6 @@ jobs:
     strategy:
       matrix:
         package_info: ${{ fromJson(needs.construct-array.outputs.package_info) }}
-      max-parallel: 4
       fail-fast: false
     steps:
       - name: Harden the runner (Audit all outbound calls)
