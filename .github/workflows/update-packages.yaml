@@ -52,6 +52,7 @@ jobs:
             identifier=$(yq '.update.release-monitor.identifier' "$file")
             transform=$(yq '."var-transforms"[] | select(.from | test("package\\.version"))' "$file")
             repo=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.repository' "$file")
+            echo $transform
           
             json_base=$(jq -n \
               --arg package_name "$package_name" \
@@ -86,6 +87,8 @@ jobs:
               json_base=$(jq -n --argjson base "$json_base" \
                 --arg match "$match" --arg replace "$replace" \
                 '$base + {var_transforms: {match: $match, replace: $replace}}')
+            else
+              echo "No transform rules were applied"
             fi
           
             package_info_array+=("$json_base")
