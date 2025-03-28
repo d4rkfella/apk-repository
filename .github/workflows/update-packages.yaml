@@ -189,12 +189,7 @@ jobs:
                   echo "Processing version transform..." >&2
                   match='${{ matrix.package_info.var_transform.match }}'
                   replace='${{ matrix.package_info.var_transform.replace }}'
-                  
-                  # Debug output
-                  echo "Match pattern: $match" >&2
-                  echo "Replace pattern: $replace" >&2
-                  echo "Original version: $current_version" >&2
-                  
+                         
                   current_version=$(echo "$current_version" | perl -pe "s/$match/$replace/")
                   echo "Transformed version: $current_version" >&2
                   echo "$current_version"
@@ -204,7 +199,6 @@ jobs:
               fi
           }
           
-          # Usage remains the same
           CURRENT_VERSION=v$(apply_version_transform "${{ matrix.package_info.version }}" "${{ matrix.package_info.var_transform }}")
           REPO_PATH=$(echo "${{ matrix.package_info.repo }}" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
           LATEST_VERSION="v${{ steps.release-monitoring.outputs.latest-version}}"
@@ -217,60 +211,29 @@ jobs:
           RELEASE_NOTES=$(curl -sfL "${HEADERS[@]}" \
             "https://api.github.com/repos/$REPO_PATH/releases/tags/$LATEST_VERSION" | \
             jq -r '.body // empty' 2>/dev/null)
-          
-          if [ -z "$RELEASE_NOTES" ]; then
-            COMPARE=$(curl -sfL "${HEADERS[@]}" \
-              "https://api.github.com/repos/$REPO_PATH/compare/$CURRENT_VERSION...$LATEST_VERSION")
-            
-            if [ -n "$COMPARE" ]; then
-              COMMITS=$(echo "$COMPARE" | \
-                jq -r '.commits[] | select(.commit.message | startswith("Merge") | not) | "- \(.sha[0:7]): \(.commit.message | split("\n")[0])"')
-              
-              COMMIT_COUNT=$(echo "$COMPARE" | jq -r '.commits | length')
-              RELEASE_NOTES="## Changelog ($COMMIT_COUNT commits)\n$COMMITS\n\n[Full Comparison](https://github.com/$REPO_PATH/compare/$CURRENT_VERSION...$LATEST_VERSION)"
-            else
-              RELEASE_NOTES="⚠️ Could not retrieve changelog"
-            fi
-          fi
-          
-          CLEAN_NOTES=$(echo "$RELEASE_NOTES" | sed 's/%0A/\n/g' | sed 's/\\r\\n/\n/g')
-          
-          EOF=$(openssl rand -hex 16)
-          echo "changelog<<EOF_$EOF" >> $GITHUB_OUTPUT
-          echo "$CLEAN_NOTES" >> $GITHUB_OUTPUT
-          echo "EOF_$EOF" >> $GITHUB_OUTPUT
-      
-      - name: Create Pull Request
-        if: steps.check-bump.outputs.bumped == 'true' && steps.changelog.outputs.changelog == ''
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
-        with:
-          title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
-          add-paths: '${{ matrix.package_info.path }}'
-          branch: 'update-${{ matrix.package_info.package_name }}'
-          body: |
-            ### 📦 Automated Package Update
-            
-            **Package:** ${{ matrix.package_info.package_name }}
-            **New Version:** ${{ matrix.package_info.version }}
-          commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
-          delete-branch: true
-          sign-commits: true
-          labels: |
-            automated-pr
-            version-bump
 
-      - name: Create Pull Request with release notes
-        if: steps.check-bump.outputs.bumped == 'true' && steps.changelog.outputs.changelog != ''
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
-        with:
-          title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
-          add-paths: '${{ matrix.package_info.path }}'
-          branch: 'update-${{ matrix.package_info.package_name }}'
-          body: |
+          if [ -n "$RELEASE_NOTES" ]; then
+            CLEAN_NOTES=$(echo "$RELEASE_NOTES" | sed 's/%0A/\n/g' | sed 's/\\r\\n/\n/g')
+            echo "changelog<<EOF" >> $GITHUB_OUTPUT
+            echo "$CLEAN_NOTES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            COMPARE_URL="https://github.com/$REPO_PATH/compare/$CURRENT_VERSION...$LATEST_VERSION"
+            echo "compare_url<<EOF" >> $GITHUB_OUTPUT
+            echo "$COMPARE_URL" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Prepare PR body
+        if: steps.changelog.outputs.changelog != null || steps.changelog.outputs.compare_url != null
+        id: prepare-pr-body
+        run: |
+          if [ -n "${{ steps.changelog.outputs.changelog }}" ]; then
+            cat << 'EOF' > pr_body.md
             ### 📦 Automated Package Update
             
             **Package:** ${{ matrix.package_info.package_name }}
-            **New Version:** ${{ matrix.package_info.version }}
+            **Change:** ${{ matrix.package_info.version }} → ${{ steps.release-monitoring.outputs.latest-version }}
             **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
             
             <details>
@@ -279,6 +242,55 @@ jobs:
             ${{ steps.changelog.outputs.changelog }}
             
             </details>
+            EOF
+          else
+            cat << 'EOF' > pr_body.md
+            ### 📦 Automated Package Update
+            
+            **Package:** ${{ matrix.package_info.package_name }}
+            **Change:** ${{ matrix.package_info.version }} → ${{ steps.release-monitoring.outputs.latest-version }}
+            **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
+
+            <details>
+            <summary><b>📜 Release Notes</b></summary>
+            
+            ${{ steps.changelog.outputs.compare_url }}
+            [v${{ matrix.package_info.repo }}](${{ steps.changelog.outputs.compare_url }})
+            
+            </details>
+            EOF
+          fi
+          
+          echo "body_path=pr_body.md" >> $GITHUB_OUTPUT
+      
+      - name: Create Pull Request
+        if: steps.check-bump.outputs.bumped == 'true' && steps.prepare-pr-body.outputs.body_path == ''
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
+          add-paths: '${{ matrix.package_info.path }}'
+          branch: 'update-${{ matrix.package_info.package_name }}'
+          body: |
+            ### 📦 Automated Package Update
+            
+            **Package:** ${{ matrix.package_info.package_name }}
+            **Change:** ${{ matrix.package_info.version }} → ${{ steps.release-monitoring.outputs.latest-version }}
+            **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
+          commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
+          delete-branch: true
+          sign-commits: true
+          labels: |
+            automated-pr
+            version-bump
+
+      - name: Create Pull Request with release notes
+        if: steps.check-bump.outputs.bumped == 'true' && steps.prepare-pr-body.outputs.body_path != ''
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
+          add-paths: '${{ matrix.package_info.path }}'
+          branch: 'update-${{ matrix.package_info.package_name }}'
+          body-path: "${{ steps.prepare-pr-body.outputs.body_path }}"
           commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
           delete-branch: true
           sign-commits: true
