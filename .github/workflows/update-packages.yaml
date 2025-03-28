@@ -123,7 +123,7 @@ jobs:
         run: |
           function apply_version_transform() {
             local latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
-            local transform_info="$2"
+            local transform_info="${{ matrix.package_info.version_transform }}"
           
             if [[ "$transform_info" != "" ]]; then
               echo "Processing version transform..."
@@ -159,7 +159,7 @@ jobs:
           current_version="${{ matrix.package_info.version }}"
           echo "Current version: $current_version"
           
-          latest_version=$(apply_version_transform "${{ matrix.package_info.version_transform }}")          
+          latest_version=$(apply_version_transform)       
           compare_and_bump "$latest_version" "$current_version" "${{ matrix.package_info.path }}"
       
       - name: Create a PR
