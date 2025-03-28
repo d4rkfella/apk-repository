@@ -172,28 +172,39 @@ jobs:
         id: changelog
         run: |
           REPO_PATH=$(echo "${{ matrix.package_info.repo }}" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
-          VERSION="v${{ matrix.package_info.version }}"
+          LATEST_VERSION="v${{ steps.release-monitoring.outputs.latest-version}}"
+          CURRENT_VERSION="v${{ matrix.package_info.version}}"
           
-          RELEASE_NOTES=$(curl -s \
-            "https://api.github.com/repos/$REPO_PATH/releases/tags/$VERSION" | \
-            jq -r '.body // empty')
+          HEADERS=()
+          if [ -n "${{ secrets.GITHUB_TOKEN }}" ]; then
+            HEADERS=(-H "Authorization: token ${{ secrets.GITHUB_TOKEN }}")
+          fi
+          
+          RELEASE_NOTES=$(curl -sfL "${HEADERS[@]}" \
+            "https://api.github.com/repos/$REPO_PATH/releases/tags/$LATEST_VERSION" | \
+            jq -r '.body // empty' 2>/dev/null)
           
           if [ -z "$RELEASE_NOTES" ]; then
-            echo "Fetching commits..."
-            PREV_TAG=$(git ls-remote --tags ${{ matrix.package_info.repo }} \
-              | grep -v '{}' | cut -d'/' -f3 | sort -V | grep -B1 "$VERSION" | head -n1)
+            COMPARE=$(curl -sfL "${HEADERS[@]}" \
+              "https://api.github.com/repos/$REPO_PATH/compare/$CURRENT_VERSION...$LATEST_VERSION")
             
-            COMMITS=$(curl -s \
-              "https://api.github.com/repos/$REPO_PATH/compare/$PREV_TAG...$VERSION" | \
-              jq -r '.commits[] | "- \(.commit.message | split("\n")[0])"')
-            
-            RELEASE_NOTES="## Commit Log\n$COMMITS"
-          fi          
+            if [ -n "$COMPARE" ]; then
+              COMMITS=$(echo "$COMPARE" | \
+                jq -r '.commits[] | select(.commit.message | startswith("Merge") | not) | "- \(.sha[0:7]): \(.commit.message | split("\n")[0])"')
+              
+              COMMIT_COUNT=$(echo "$COMPARE" | jq -r '.commits | length')
+              RELEASE_NOTES="## Changelog ($COMMIT_COUNT commits)\n$COMMITS\n\n[Full Comparison](https://github.com/$REPO_PATH/compare/$CURRENT_VERSION...$LATEST_VERSION)"
+            else
+              RELEASE_NOTES="⚠️ Could not retrieve changelog"
+            fi
+          fi
           
-          CLEAN_NOTES=$(echo "$RELEASE_NOTES" | sed 's/%0A/\n/g')  
-          echo "changelog<<EOF_NOTES" >> $GITHUB_OUTPUT
+          CLEAN_NOTES=$(echo "$RELEASE_NOTES" | sed 's/%0A/\n/g' | sed 's/\\r\\n/\n/g')
+          
+          EOF=$(openssl rand -hex 16)
+          echo "changelog<<EOF_$EOF" >> $GITHUB_OUTPUT
           echo "$CLEAN_NOTES" >> $GITHUB_OUTPUT
-          echo "EOF_NOTES" >> $GITHUB_OUTPUT
+          echo "EOF_$EOF" >> $GITHUB_OUTPUT
       
       - name: Create Pull Request
         if: steps.check-bump.outputs.bumped == 'true' && steps.changelog.outputs.changelog == ''
