@@ -18,6 +18,6 @@ pipeline:
       expected-commit: c255db4734ef3945eb62fe1d6155186a7a2ccaca
   - uses: go/build
     with:
-      packages: postgres-init.go
+      packages: main.go
       output: postgres-init
       strip: "-s -w"
