@@ -12,11 +12,10 @@ environment:
       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     repositories:
       - https://packages.wolfi.dev/os
-    packages:
-      - ca-certificates-bundle
-      - go
-      - build-base
-      - busybox
 pipeline:
-  - runs: |
-      GOOS=linux CGO_ENABLED=0 GOAMD64=amd64 go build -o "${{targets.contextdir}}"/usr/bin/postgres-init -ldflags "-s -w" -trimpath resources/postgres-init.go
+  - uses: go/build
+    with:
+      packages: resources/postgres-init.go
+      output: postgres-init
+      strip: "-s -w"
+      tidy: true
