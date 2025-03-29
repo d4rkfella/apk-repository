@@ -14,7 +14,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      repository: https://github.com/autobrr/autobrr
+      repository: https://github.com/d4rkfella/vault-backup
       branch: main
       expected-commit: aa5128204f5dcc1407f60c53e5314f5c1caf5d3d
   
