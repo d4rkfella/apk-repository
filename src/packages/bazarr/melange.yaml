@@ -52,11 +52,42 @@ pipeline:
       curl -fsSL "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz" | \
       tar xJ --strip-components=2 --exclude='**/LICENSE.txt' --exclude='**/doc' --exclude='**/man' --exclude='**/bin/ffplay' --directory=${{targets.destdir}}/usr/bin
   - runs: |
-     pip download --no-deps --dest=/tmp waitress==3.0.1
-     pip download --no-deps --dest=/tmp jinja2==3.1.6
-     rm -rf /libs/waitress-3.0.0.dist-info libs/jinja2-3.1.5.dist-info
-     python3 -m zipfile -e /tmp/waitress-3.0.1-py3-none-any.whl libs/
-     python3 -m zipfile -e /tmp/jinja2-3.1.6-py3-none-any.whl libs/
+     #!/bin/bash
+      set -euo pipefail  # Exit immediately on error, undefined variables, or failed pipes
+      
+      # Define paths
+      DEST_DIR="/tmp"
+      LIBS_DIR="libs"
+      
+      pip download --no-deps --dest="$DEST_DIR" waitress==3.0.1
+      pip download --no-deps --dest="$DEST_DIR" jinja2==3.1.6
+      
+      if [ -d "$LIBS_DIR/waitress-3.0.0.dist-info" ]; then
+          rm -rf "$LIBS_DIR/waitress-3.0.0.dist-info"
+      else
+          echo "Warning: $LIBS_DIR/waitress-3.0.0.dist-info not found, skipping"
+      fi
+      
+      if [ -d "$LIBS_DIR/jinja2-3.1.5.dist-info" ]; then
+          rm -rf "$LIBS_DIR/jinja2-3.1.5.dist-info"
+      else
+          echo "Warning: $LIBS_DIR/jinja2-3.1.5.dist-info not found, skipping"
+      fi
+      
+      if [ ! -f "$DEST_DIR/waitress-3.0.1-py3-none-any.whl" ]; then
+          echo "Error: Wheel file for waitress not found!"
+          exit 1
+      fi
+      
+      if [ ! -f "$DEST_DIR/jinja2-3.1.6-py3-none-any.whl" ]; then
+          echo "Error: Wheel file for jinja2 not found!"
+          exit 1
+      fi
+      
+      python3 -m zipfile -e "$DEST_DIR/waitress-3.0.1-py3-none-any.whl" "$LIBS_DIR/"
+      python3 -m zipfile -e "$DEST_DIR/jinja2-3.1.6-py3-none-any.whl" "$LIBS_DIR/"
+      
+      echo "✅ All tasks completed successfully!"
   - name: Enable SSL verification
     runs: |
       set -euo pipefail
