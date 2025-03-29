@@ -46,7 +46,7 @@ inputs:
     description:
       Set of strip ldflags passed to the go compiler
     # Note symbols tables are useful for cryptography audits and govulncheck
-    default: "-w"
+    default: "-s -w"
 
   install-dir:
     description: |
