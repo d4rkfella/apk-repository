@@ -18,8 +18,5 @@ environment:
       - build-base
       - busybox
 pipeline:
-  - uses: go/build
-    with:
-      packages: resources/postgres-init.go
-      output: postgres-init
-      strip: "-s -w"
+  - runs: |
+      GOOS=linux CGO_ENABLED=0 GOAMD64=amd64 go build -o "${{targets.contextdir}}"/usr/bin/postgres-init -ldflags "-s -w" -trimpath resources/postgres-init.go
