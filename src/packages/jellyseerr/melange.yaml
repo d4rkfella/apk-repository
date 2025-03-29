@@ -57,6 +57,7 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       pnpm audit --fix
+      CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
