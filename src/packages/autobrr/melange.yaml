@@ -16,6 +16,7 @@ environment:
       - busybox
       - bash
       - jq
+      - curl
 pipeline:
   - uses: git-checkout
     with:
@@ -26,7 +27,7 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
-      volta install "node@$(grep -oP 'node:\K\d+' Dockerfile)"
+      volta install "node@$(sed -n 's/.*node:\([0-9]\+\)\..*/\1/p' Dockerfile)"
       volta install "$(jq -r '.packageManager' web/package.json)"
 
   - name: Build frontend
