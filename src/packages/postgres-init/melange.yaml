@@ -23,4 +23,3 @@ pipeline:
       packages: postgres-init.go
       output: postgres-init
       strip: "-s -w"
-      modroot: resources
