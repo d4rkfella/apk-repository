@@ -1,0 +1,26 @@
+package:
+  name: vault-backup
+  version: "1.0.0"
+  epoch: 0
+  copyright:
+    - license: MIT
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/autobrr/autobrr
+      branch: main
+      expected-commit: aa5128204f5dcc1407f60c53e5314f5c1caf5d3d
+  
+  - uses: go/build
+    with:
+      packages: main.go
+      output: vault-backup
+      strip: "-s -w"
+      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")'
