@@ -13,9 +13,14 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
 pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/d4rkfella/postgres-init
+      branch: main
+      expected-commit: c1ada4e6afca07073c54140e900caf6b565e2867
   - uses: go/build
     with:
-      packages: resources/postgres-init.go
+      packages: postgres-init.go
       output: postgres-init
       strip: "-s -w"
       modroot: resources
