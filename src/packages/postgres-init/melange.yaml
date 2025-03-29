@@ -18,4 +18,8 @@ environment:
       - build-base
       - busybox
 pipeline:
-  - runs: |
+  - uses: go/build
+    with:
+      packages: resources/postgres-init.go
+      output: postgres-init
+      strip: "-s -w"
