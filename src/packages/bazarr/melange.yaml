@@ -54,7 +54,7 @@ pipeline:
   - runs: |
      pip download --no-deps --dest=/tmp waitress==3.0.1
      pip download --no-deps --dest=/tmp jinja2==3.1.6
-     rm -rf waitress-3.0.0.dist-info libs/jinja2-3.1.5.dist-info
+     rm -rf /libs/waitress-3.0.0.dist-info libs/jinja2-3.1.5.dist-info
      python3 -m zipfile -e /tmp/waitress-3.0.1-py3-none-any.whl libs/
      python3 -m zipfile -e /tmp/jinja2-3.1.6-py3-none-any.whl libs/
   - name: Enable SSL verification
