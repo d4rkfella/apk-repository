@@ -47,7 +47,7 @@ pipeline:
   - uses: go/build
     with:
       packages: cmd/autobrrctl/main.go
-      output: autobrr
+      output: autobrrctl
       strip: "-s -w"
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")'
 
