@@ -51,6 +51,12 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/bin
       curl -fsSL "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz" | \
       tar xJ --strip-components=2 --exclude='**/LICENSE.txt' --exclude='**/doc' --exclude='**/man' --exclude='**/bin/ffplay' --directory=${{targets.destdir}}/usr/bin
+  - runs: |
+     pip download --no-deps --dest=/tmp waitress==3.0.1
+     pip download --no-deps --dest=/tmp jinja2==3.1.6
+     rm -rf waitress-3.0.0.dist-info libs/jinja2-3.1.5.dist-info
+     python3 -m zipfile -e /tmp/waitress-3.0.1-py3-none-any.whl libs/
+     python3 -m zipfile -e /tmp/jinja2-3.1.6-py3-none-any.whl libs/
   - name: Enable SSL verification
     runs: |
       set -euo pipefail
