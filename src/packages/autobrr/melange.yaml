@@ -29,7 +29,6 @@ pipeline:
       curl -sSL https://get.volta.sh | bash
       volta install "node@$(sed -n 's/.*node:\([0-9]\+\)\..*/\1/p' Dockerfile)"
       volta install "$(jq -r '.packageManager' web/package.json)"
-      export CGO_ENABLED=0
 
   - name: Build frontend
     working-directory: /home/build/web
@@ -37,16 +36,15 @@ pipeline:
       PATH="$HOME/.volta/bin:$PATH"
       pnpm install --frozen-lockfile
       pnpm run build
-      echo $CGO_ENABLED
 
-  - uses: go/build
+  - uses: build/go-build-new
     with:
       packages: cmd/autobrr/main.go
       output: autobrr
       strip: "-s -w"
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")'
   
-  - uses: go/build
+  - uses: build/go-build-new
     with:
       packages: cmd/autobrrctl/main.go
       output: autobrrctl
