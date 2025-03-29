@@ -33,6 +33,7 @@ pipeline:
   - name: Build frontend
     working-directory: /home/build/web
     runs: |
+      PATH="$HOME/.volta/bin:$PATH"
       pnpm install --frozen-lockfile
       pnpm run build
 
