@@ -13,42 +13,41 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
-      - ca-certificates-bundle
-      - nodejs-20
-      - corepack
-      - go-1.23
-      - git
-      - build-base
-      - tzdata
-      - jq
       - busybox
-
+      - jq
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/autobrr/autobrr
       tag: v${{package.version}}
 
-  - runs: |
-      corepack enable
-      cd web
+  - name: Install dependancies
+    runs: |
+      PATH="$HOME/.volta/bin:$PATH"
+      curl -sSL https://get.volta.sh | bash
+      volta install "node@$(grep -oP 'node:\K\d+' Dockerfile)"
+      volta install "$(jq -r '.packageManager' web/package.json)"
+
+  - name: Build frontend
+    working-directory: /home/build/web
+    runs: |
       pnpm install --frozen-lockfile
       pnpm run build
 
-  - runs: |
-      mkdir -p ${{targets.destdir}}/usr/bin
-      
-      export VERSION=${{package.version}}
-      export REVISION=$(git -C . rev-parse --short HEAD 2>/dev/null || echo "unknown")
-      export BUILDTIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-      export GOOS=linux
-      export CGO_ENABLED=0
-      
-      go mod download
-      go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${REVISION} -X main.date=${BUILDTIME}" \
-        -o ${{targets.destdir}}/usr/bin/autobrr cmd/autobrr/main.go
-      go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${REVISION} -X main.date=${BUILDTIME}" \
-        -o ${{targets.destdir}}/usr/bin/autobrrctl cmd/autobrrctl/main.go
+  - uses: go/build
+    with:
+      packages: cmd/autobrr/main.go
+      output: autobrr
+      strip: "-s -w"
+      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")'
+  
+  - uses: go/build
+    with:
+      packages: cmd/autobrrctl/main.go
+      output: autobrr
+      strip: "-s -w"
+      ldflags: ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")'
+
 update:
   enabled: true
   release-monitor:
