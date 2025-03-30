@@ -13,11 +13,11 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      repository: https://github.com/d4rkfella/jwt-oidc-fetcher
+      repository: https://github.com/d4rkfella/oidc-jwt-fetcher
       branch: main
       expected-commit: 7a9b0f3e9ce7978b5790995d29f307b90b6f03e6
   - uses: go/build
     with:
       packages: main.go
-      output: jwt-oidc-fetcher
+      output: oidc-jwt-fetcher
       strip: "-s -w"
