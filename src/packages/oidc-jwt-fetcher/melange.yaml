@@ -1,0 +1,23 @@
+package:
+  name: oidc-jwt-fetcher
+  version: "1.0.0"
+  epoch: 0
+  copyright:
+    - license: MIT
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/d4rkfella/oidc-jwt-fetcher
+      branch: main
+      expected-commit: fb3859b125f7e98dfb0f41834fc7f1216298f0e1
+  - uses: go/build
+    with:
+      packages: main.go
+      output: oidc-jwt-fetcher
+      strip: "-s -w"
