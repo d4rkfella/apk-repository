@@ -15,7 +15,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/postgres-init
       branch: main
-      expected-commit: 9d475fc399c711e3e7e1204a84bf824a1858c6cd
+      expected-commit: ae08a272bd0135a793d29318335f14bce1b23962
   - uses: go/build
     with:
       packages: main.go
