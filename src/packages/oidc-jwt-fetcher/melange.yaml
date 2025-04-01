@@ -15,7 +15,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/oidc-jwt-fetcher
       branch: main
-      expected-commit: 75ad096e46a482c4e37aaaf448b6d748a8794c77
+      expected-commit: facae0289161c5d1a818614225e7dd3bc875f887
   - uses: go/build
     with:
       packages: main.go
