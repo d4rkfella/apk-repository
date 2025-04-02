@@ -16,7 +16,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/vault-backup
       branch: main
-      expected-commit: a5ba35465eb4fb3fd6fa2d2068135bb8a187fa94
+      expected-commit: 9215d59776fde478979170571a8f6de9b41125c4
   
   - uses: go/build
     with:
