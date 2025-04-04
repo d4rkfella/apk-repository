@@ -1,6 +1,6 @@
 package:
   name: jellyseerr
-  version: "2.5.1"
+  version: "2.5.2"
   epoch: 0
   description: Open-source media request and discovery manager for Jellyfin, Plex, and Emby.
   copyright:
@@ -36,22 +36,7 @@ pipeline:
       volta install "pnpm@$(yq -r '.engines.pnpm' Jellyseerr/package.json)"
   - name: Clean source directory
     working-directory: /home/build/Jellyseerr
-    runs: |
-      grep -E '^\*\*/' .dockerignore | while IFS= read -r pattern; do
-        base_pattern="${pattern#\*\*/}"
-        
-        echo "Processing Dockerignore pattern: $pattern → $base_pattern"
-        
-        find . -name "$base_pattern" -exec rm -rf {} + 2>/dev/null
-        
-        [ -e "./$base_pattern" ] && rm -rf "./$base_pattern"
-        
-        find . -path "./*/$base_pattern" -exec rm -rf {} + 2>/dev/null
-      done
-      
-      grep -vE '^(#|$|^\*\*/)' .dockerignore | while IFS= read -r pattern; do
-        find . -path "./${pattern#/}" -exec rm -rf {} + 2>/dev/null
-      done  
+    runs: "grep -E '^\\*\\*/' .dockerignore | while IFS= read -r pattern; do\n  base_pattern=\"${pattern#\\*\\*/}\"\n  \n  echo \"Processing Dockerignore pattern: $pattern → $base_pattern\"\n  \n  find . -name \"$base_pattern\" -exec rm -rf {} + 2>/dev/null\n  \n  [ -e \"./$base_pattern\" ] && rm -rf \"./$base_pattern\"\n  \n  find . -path \"./*/$base_pattern\" -exec rm -rf {} + 2>/dev/null\ndone\n\ngrep -vE '^(#|$|^\\*\\*/)' .dockerignore | while IFS= read -r pattern; do\n  find . -path \"./${pattern#/}\" -exec rm -rf {} + 2>/dev/null\ndone  \n"
   - name: Build
     working-directory: /home/build/Jellyseerr
     runs: |
