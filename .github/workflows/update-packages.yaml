@@ -216,25 +216,19 @@ jobs:
             jq -r '.body // empty' 2>/dev/null)
 
           if [ -n "$RELEASE_NOTES" ]; then
-            CLEAN_NOTES=$(echo "$RELEASE_NOTES" | 
-              sed -e 's/"/\\"/g'
-                  -e 's/\\/\\\\/g')
-            echo "changelog<<EOF" >> $GITHUB_OUTPUT
-            echo "$CLEAN_NOTES" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            echo "$RELEASE_NOTES" | sed 's/\\r\\n/\n/g' > changelog.md
+            echo "changelog_path=changelog.md" >> $GITHUB_OUTPUT
           else
             COMPARE_URL="https://github.com/$REPO_PATH/compare/$CURRENT_VERSION...$LATEST_VERSION"
             echo "compare_url=$COMPARE_URL" >> $GITHUB_OUTPUT
           fi
-
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
       
       - name: Prepare PR body
-        if: steps.changelog.outputs.changelog != null || steps.changelog.outputs.compare_url != null
+        if: steps.changelog.outputs.changelog_path != null || steps.changelog.outputs.compare_url != null
         id: prepare-pr-body
         shell: bash
         run: |
-          # Create PR body with proper Markdown formatting
           {
             echo "### 📦 Automated Package Update"
             echo ""
@@ -242,21 +236,23 @@ jobs:
             echo "**Change:** ${{ steps.changelog.outputs.current_version }} → ${{ steps.release-monitoring.outputs.latest-version }}"
             echo "**Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})"
             echo ""
-            
-            if [ -n "${{ steps.changelog.outputs.changelog }}" ]; then
+          } > pr_body.md
+      
+          if [ -f "${{ steps.changelog.outputs.changelog_path }}" ]; then
+            {
               echo "<details>"
               echo "<summary><b>📜 Release Notes</b></summary>"
               echo ""
-              # Preserve original Markdown formatting
-              echo "${{ steps.changelog.outputs.changelog }}"
+              cat "${{ steps.changelog.outputs.changelog_path }}"
               echo ""
               echo "</details>"
-            else
-              echo "<h3 dir=\"auto\"><a href=\"${{ steps.changelog.outputs.compare_url }}\">"
-              echo "<code class=\"notranslate\">v${{ steps.release-monitoring.outputs.latest-version }}</code>"
-              echo "</a></h3>"
-            fi
-          } > pr_body.md
+            } >> pr_body.md
+          elif [ -n "${{ steps.changelog.outputs.compare_url }}" ]; then
+            {
+              echo ""
+              echo "**Compare Changes:** [${{ steps.changelog.outputs.current_version }} → ${{ steps.release-monitoring.outputs.latest-version }}](${{ steps.changelog.outputs.compare_url }})"
+            } >> pr_body.md
+          fi
       
           echo "body_path=pr_body.md" >> $GITHUB_OUTPUT
       
