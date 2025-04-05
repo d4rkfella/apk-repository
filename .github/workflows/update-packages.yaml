@@ -246,7 +246,7 @@ jobs:
           compare_url="${{ steps.changelog.outputs.compare_url }}"
           
           if [ -n "$changelog" ]; then
-            echo "$changelog" >> pr_body.md
+            printf "%s\n" "$changelog" >> pr_body.md
           elif [ -n "$compare_url" ]; then
             echo "<h3 dir=\"auto\"><a href=\"$compare_url\"><code class=\"notranslate\">v${{ steps.release-monitoring.outputs.latest-version }}</code></a></h3>" >> pr_body.md
           else
