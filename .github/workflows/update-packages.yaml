@@ -241,11 +241,16 @@ jobs:
           echo "<details>" >> pr_body.md
           echo "<summary><b>📜 Release Notes</b></summary>" >> pr_body.md
           echo "" >> pr_body.md
-      
-          if [ -n "${{ steps.changelog.outputs.changelog }}" ]; then
-            echo "${{ steps.changelog.outputs.changelog }}" >> pr_body.md
+
+          changelog="${{ steps.changelog.outputs.changelog }}"
+          compare_url="${{ steps.changelog.outputs.compare_url }}"
+          
+          if [ -n "$changelog" ]; then
+            echo "$changelog" >> pr_body.md
+          elif [ -n "$compare_url" ]; then
+            echo "<h3 dir=\"auto\"><a href=\"$compare_url\"><code class=\"notranslate\">v${{ steps.release-monitoring.outputs.latest-version }}</code></a></h3>" >> pr_body.md
           else
-            echo "<h3 dir=\"auto\"><a href=\"${{ steps.changelog.outputs.compare_url }}\"><code class=\"notranslate\">v${{ steps.release-monitoring.outputs.latest-version }}</code></a></h3>" >> pr_body.md
+            echo "<h3 dir=\"auto\"><code class=\"notranslate\">No release notes available</code></h3>" >> pr_body.md
           fi
       
           echo "" >> pr_body.md
