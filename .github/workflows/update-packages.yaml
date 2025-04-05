@@ -245,7 +245,7 @@ jobs:
           if [ -n "${{ steps.changelog.outputs.changelog }}" ]; then
             echo "${{ steps.changelog.outputs.changelog }}" >> pr_body.md
           else
-            echo '<h3 dir="auto"><a href="${{ steps.changelog.outputs.compare_url }}"><code class="notranslate">v${{ steps.release-monitoring.outputs.latest-version }}</code></a></h3>' >> pr_body.md
+            echo "<h3 dir=\"auto\"><a href=\"${{ steps.changelog.outputs.compare_url }}\"><code class=\"notranslate\">v${{ steps.release-monitoring.outputs.latest-version }}</code></a></h3>" >> pr_body.md
           fi
       
           echo "" >> pr_body.md
