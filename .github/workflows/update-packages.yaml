@@ -216,12 +216,18 @@ jobs:
             jq -r '.body // empty' 2>/dev/null)
 
           if [ -n "$RELEASE_NOTES" ]; then
-            CLEAN_NOTES=$(echo "$RELEASE_NOTES" | sed 's/%0A/\n/g' | sed 's/\\r\\n/\n/g' | sed 's/`/'"'"'/g')
+            CLEAN_NOTES=$(echo "$RELEASE_NOTES" | 
+              sed 's/%0A/\n/g' |
+              sed 's/\\r\\n/\n/g' |
+              sed -e 's/["]/\\"/g' \
+                  -e 's/[`]/\\`/g' \
+                  -e 's/[*]/\\*/g' \
+                  -e 's/[[]/\\[/g' \
+                  -e 's/[]]/\\]/g')
             {
-              echo 'changelog<<EOF_CHANGELOG'
-              printf "%s" "$CLEAN_NOTES"
-              echo
-              echo 'EOF_CHANGELOG'
+              echo 'changelog<<CHANGELOG_EOF'
+              echo "$CLEAN_NOTES"
+              echo 'CHANGELOG_EOF'
             } >> $GITHUB_OUTPUT
           else
             COMPARE_URL="https://github.com/$REPO_PATH/compare/$CURRENT_VERSION...$LATEST_VERSION"
@@ -235,31 +241,37 @@ jobs:
         id: prepare-pr-body
         shell: bash
         run: |
-          echo "### 📦 Automated Package Update" > pr_body.md
-          echo "" >> pr_body.md
-          echo "**Package:** ${{ matrix.package_info.package_name }}" >> pr_body.md
-          echo "**Change:** ${{ steps.changelog.outputs.current_version }} → ${{ steps.release-monitoring.outputs.latest-version }}" >> pr_body.md
-          echo "**Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})" >> pr_body.md
-          echo "" >> pr_body.md
-          echo "<details>" >> pr_body.md
-          echo "<summary><b>📜 Release Notes</b></summary>" >> pr_body.md
-          echo "" >> pr_body.md
-
-          changelog="${{ steps.changelog.outputs.changelog }}"
-          compare_url="${{ steps.changelog.outputs.compare_url }}"
-          
-          if [ -n "$changelog" ]; then
-            printf "%s\n" "$changelog" >> pr_body.md
-          elif [ -n "$compare_url" ]; then
-            echo "<h3 dir=\"auto\"><a href=\"$compare_url\"><code class=\"notranslate\">v${{ steps.release-monitoring.outputs.latest-version }}</code></a></h3>" >> pr_body.md
-          else
-            echo "<h3 dir=\"auto\"><code class=\"notranslate\">No release notes available</code></h3>" >> pr_body.md
+          # Create PR body with safe content handling
+          {
+            echo "### 📦 Automated Package Update"
+            echo ""
+            echo "**Package:** ${{ matrix.package_info.package_name }}"
+            echo "**Change:** ${{ steps.changelog.outputs.current_version }} → ${{ steps.release-monitoring.outputs.latest-version }}"
+            echo "**Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})"
+            echo ""
+            echo "<details>"
+            echo "<summary><b>📜 Release Notes</b></summary>"
+            echo ""
+            echo '```markdown'
+            
+            # Safe output using printf with format specifier
+            printf "%s\n" "${{ steps.changelog.outputs.changelog }}"
+            
+            echo '```'
+            echo ""
+            echo "</details>"
+          } > pr_body.md
+      
+          if [ -z "${{ steps.changelog.outputs.changelog }}" ] && [ -n "${{ steps.changelog.outputs.compare_url }}" ]; then
+            {
+              echo ""
+              echo "<h3 dir=\"auto\"><a href=\"${{ steps.changelog.outputs.compare_url }}\">"
+              echo "<code class=\"notranslate\">v${{ steps.release-monitoring.outputs.latest-version }}</code>"
+              echo "</a></h3>"
+            } >> pr_body.md
           fi
       
-          echo "" >> pr_body.md
-          echo "</details>" >> pr_body.md
-      
-          echo "body_path=pr_body.md" >> "$GITHUB_OUTPUT"
+          echo "body_path=pr_body.md" >> $GITHUB_OUTPUT
       
       - name: Create Pull Request
         if: steps.check-bump.outputs.bumped == 'true' && steps.prepare-pr-body.outputs.body_path == ''
