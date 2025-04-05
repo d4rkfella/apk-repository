@@ -16,7 +16,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/ext-authz
       branch: main
-      expected-commit: e33ca6ca86aa9103f30efa8ae76cb5436d66868c
+      expected-commit: 8e8ca02686cd87026f082539711c92fc5a57454b
   
   - uses: go/build
     with:
