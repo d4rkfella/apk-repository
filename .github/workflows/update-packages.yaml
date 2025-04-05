@@ -216,7 +216,7 @@ jobs:
             jq -r '.body // empty' 2>/dev/null)
 
           if [ -n "$RELEASE_NOTES" ]; then
-            CLEAN_NOTES=$(echo "$RELEASE_NOTES" | sed 's/%0A/\n/g' | sed 's/\\r\\n/\n/g')
+            CLEAN_NOTES=$(echo "$RELEASE_NOTES" | sed 's/%0A/\n/g' | sed 's/\\r\\n/\n/g' | sed 's/"/\\"/g')
             echo "changelog<<EOF" >> $GITHUB_OUTPUT
             echo "$CLEAN_NOTES" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
