@@ -217,18 +217,11 @@ jobs:
 
           if [ -n "$RELEASE_NOTES" ]; then
             CLEAN_NOTES=$(echo "$RELEASE_NOTES" | 
-              sed 's/%0A/\n/g' |
-              sed 's/\\r\\n/\n/g' |
-              sed -e 's/["]/\\"/g' \
-                  -e 's/[`]/\\`/g' \
-                  -e 's/[*]/\\*/g' \
-                  -e 's/[[]/\\[/g' \
-                  -e 's/[]]/\\]/g')
-            {
-              echo 'changelog<<CHANGELOG_EOF'
-              echo "$CLEAN_NOTES"
-              echo 'CHANGELOG_EOF'
-            } >> $GITHUB_OUTPUT
+              sed -e 's/"/\\"/g'
+                  -e 's/\\/\\\\/g')
+            echo "changelog<<EOF" >> $GITHUB_OUTPUT
+            echo "$CLEAN_NOTES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
             COMPARE_URL="https://github.com/$REPO_PATH/compare/$CURRENT_VERSION...$LATEST_VERSION"
             echo "compare_url=$COMPARE_URL" >> $GITHUB_OUTPUT
@@ -241,7 +234,7 @@ jobs:
         id: prepare-pr-body
         shell: bash
         run: |
-          # Create PR body with safe content handling
+          # Create PR body with proper Markdown formatting
           {
             echo "### 📦 Automated Package Update"
             echo ""
@@ -249,27 +242,21 @@ jobs:
             echo "**Change:** ${{ steps.changelog.outputs.current_version }} → ${{ steps.release-monitoring.outputs.latest-version }}"
             echo "**Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})"
             echo ""
-            echo "<details>"
-            echo "<summary><b>📜 Release Notes</b></summary>"
-            echo ""
-            echo '```markdown'
             
-            # Safe output using printf with format specifier
-            printf "%s\n" "${{ steps.changelog.outputs.changelog }}"
-            
-            echo '```'
-            echo ""
-            echo "</details>"
-          } > pr_body.md
-      
-          if [ -z "${{ steps.changelog.outputs.changelog }}" ] && [ -n "${{ steps.changelog.outputs.compare_url }}" ]; then
-            {
+            if [ -n "${{ steps.changelog.outputs.changelog }}" ]; then
+              echo "<details>"
+              echo "<summary><b>📜 Release Notes</b></summary>"
               echo ""
+              # Preserve original Markdown formatting
+              echo "${{ steps.changelog.outputs.changelog }}"
+              echo ""
+              echo "</details>"
+            else
               echo "<h3 dir=\"auto\"><a href=\"${{ steps.changelog.outputs.compare_url }}\">"
               echo "<code class=\"notranslate\">v${{ steps.release-monitoring.outputs.latest-version }}</code>"
               echo "</a></h3>"
-            } >> pr_body.md
-          fi
+            fi
+          } > pr_body.md
       
           echo "body_path=pr_body.md" >> $GITHUB_OUTPUT
       
