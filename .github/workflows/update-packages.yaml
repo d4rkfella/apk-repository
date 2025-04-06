@@ -225,7 +225,7 @@ jobs:
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
       
       - name: Prepare PR body
-        if: steps.changelog.outputs.changelog_path != null || steps.changelog.outputs.compare_url != null
+        if: steps.check-bump.outputs.bumped == 'true'
         id: prepare-pr-body
         shell: bash
         run: |
@@ -250,33 +250,14 @@ jobs:
           elif [ -n "${{ steps.changelog.outputs.compare_url }}" ]; then
             {
               echo ""
-              echo "**Compare Changes:** [${{ steps.changelog.outputs.current_version }} → ${{ steps.release-monitoring.outputs.latest-version }}](${{ steps.changelog.outputs.compare_url }})"
+              echo "<h3 dir="auto"><a href="${{ steps.changelog.outputs.compare_url }}"><code class="notranslate">v${{ steps.release-monitoring.outputs.latest-version }}</code></a></h3>"
             } >> pr_body.md
           fi
       
           echo "body_path=pr_body.md" >> $GITHUB_OUTPUT
-      
-      - name: Create Pull Request
-        if: steps.check-bump.outputs.bumped == 'true' && steps.prepare-pr-body.outputs.body_path == ''
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
-        with:
-          title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
-          add-paths: '${{ matrix.package_info.path }}'
-          branch: 'update-${{ matrix.package_info.package_name }}'
-          body: |
-            ### 📦 Automated Package Update
-            
-            **Package:** ${{ matrix.package_info.package_name }}
-            **Change:** ${{ steps.changelog.outputs.current_version }} → ${{ steps.release-monitoring.outputs.latest-version }}
-            **Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})
-          commit-message: 'Update ${{ matrix.package_info.package_name }} version to ${{ steps.release-monitoring.outputs.latest-version }}'
-          sign-commits: true
-          labels: |
-            automated-pr
-            version-bump
 
-      - name: Create Pull Request with release notes
-        if: steps.check-bump.outputs.bumped == 'true' && steps.prepare-pr-body.outputs.body_path != ''
+      - name: Create Pull Request
+        if: steps.check-bump.outputs.bumped == 'true'
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           title: 'Update "${{ matrix.package_info.package_name }}" version to "${{ steps.release-monitoring.outputs.latest-version }}"'
