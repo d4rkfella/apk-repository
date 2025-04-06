@@ -202,7 +202,7 @@ jobs:
               fi
           }
           
-          CURRENT_VERSION=$(apply_version_transform "${{ matrix.package_info.version }}" "${{ matrix.package_info.var_transform }}")
+          CURRENT_VERSION=v$(apply_version_transform "${{ matrix.package_info.version }}" "${{ matrix.package_info.var_transform }}")
           REPO_PATH=$(echo "${{ matrix.package_info.repo }}" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
           LATEST_VERSION="v${{ steps.release-monitoring.outputs.latest-version}}"
           
@@ -222,7 +222,7 @@ jobs:
             COMPARE_URL="https://github.com/$REPO_PATH/compare/$CURRENT_VERSION...$LATEST_VERSION"
             echo "compare_url=$COMPARE_URL" >> $GITHUB_OUTPUT
           fi
-          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "current_version=${CURRENT_VERSION#v}" >> $GITHUB_OUTPUT
       
       - name: Prepare PR body
         if: steps.check-bump.outputs.bumped == 'true'
