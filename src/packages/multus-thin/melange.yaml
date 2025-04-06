@@ -77,6 +77,7 @@ test:
   environment:
     contents:
       packages:
+        - busybox
         - multus-cni-compat
   pipeline:
     - runs: |
