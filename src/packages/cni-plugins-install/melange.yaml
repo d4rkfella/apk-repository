@@ -16,7 +16,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/cni-plugins-install
       branch: main
-      expected-commit: 54271bcb15ec4a234e436305bc8743ca3e4a5f1a
+      expected-commit: eb098f4414edaea369b88d225795558185418c77
   
   - uses: go/build
     with:
