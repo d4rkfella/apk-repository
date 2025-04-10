@@ -40,7 +40,7 @@ pipeline:
   - name: Prepare package
     runs: |
       mkdir -p "${{targets.destdir}}/usr/lib/Byparr"
-      cp -R .venv main.py src ${{targets.destdir}}/usr/lib/Byparr
+      cp -R .venv tests pyproject.toml uv.lock test.sh main.py src ${{targets.destdir}}/usr/lib/Byparr
 test:
   pipeline:
     - name: Check for missing dependancies
