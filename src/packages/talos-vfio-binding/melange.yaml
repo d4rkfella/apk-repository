@@ -16,7 +16,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/talos-vfio-binding
       branch: main
-      expected-commit: 399aea9e11c5e005ecc5677cc6e28f0ec7593f8e
+      expected-commit: 4b55027410b18461fb7688c749e5bcdcf9199769
   
   - uses: go/build
     with:
