@@ -29,4 +29,4 @@ pipeline:
   - name: Prepare package
     runs: |
       mkdir -p "${{targets.destdir}}/usr/lib/Byparr"
-      cp -R ./* ${{targets.destdir}}/usr/lib/Byparr
+      cp -R .venv main.py src ${{targets.destdir}}/usr/lib/Byparr
