@@ -10,6 +10,10 @@ package:
       - python-3.13
       - uv
       - chromium
+      - curl
+      - scrot
+      - Xvfb
+      - xauth
 environment:
   contents:
     keyring:
