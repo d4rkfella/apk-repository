@@ -33,8 +33,9 @@ pipeline:
   - name: Build frontend
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
+      mkdir -p ${{targets.destdir}}/usr/bin ${{targets.destdir}}/usr/lib/node_modules
+      npm config set prefix ${{targets.destdir}}/usr
       npm ci --no-fund
       npm run build
       npm prune --omit=dev
-      npm config set prefix ${{targets.destdir}}/usr
       npm link
