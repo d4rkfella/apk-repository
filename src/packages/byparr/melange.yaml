@@ -32,7 +32,7 @@ pipeline:
       export PYTHONUNBUFFERED=1
       export PYTHONDONTWRITEBYTECODE=1
       uv sync
-      ln -s /usr/bin/chromedriver .venv/lib/*/site-packages/seleniumbase/drivers/uc_driver
+      cd .venv/lib/*/site-packages/seleniumbase/drivers && ln -s /usr/sbin/chromedriver
   - name: Prepare package
     runs: |
       mkdir -p "${{targets.destdir}}/usr/lib/Byparr"
