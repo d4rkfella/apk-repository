@@ -1,0 +1,43 @@
+package:
+  name: scrot
+  version: 1.12.1
+  epoch: 0
+  description: Simple command-line screenshot utility for X
+  copyright:
+    - license: MIT
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - libbsd-dev
+      - imlib2-dev
+      - libx11-dev
+      - libxcomposite-dev
+      - libxfixes-dev
+      - libxinerama-dev
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 7a169bc19d5a63707ea73d88210e7e8b72a1cd08
+      repository: https://github.com/resurrecting-open-source-projects/scrot
+      tag: ${{package.version}}
+  - uses: autoconf/configure
+  - uses: autoconf/make
+  - uses: autoconf/make-install
+  - uses: strip
+subpackages:
+  - name: scrot-doc
+    pipeline:
+      - uses: split/manpages
+    description: scrot manpages
+test:
+  environment: {}
+  pipeline:
+    - name: Test
+      runs: scrot --version || exit 1
