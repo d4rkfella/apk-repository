@@ -21,8 +21,7 @@ environment:
       - libxcomposite-dev
       - libxfixes-dev
       - libxinerama-dev
-      - pkgconf
-      - m4
+      - pkgconf-dev
 pipeline:
   - uses: git-checkout
     with:
