@@ -7,6 +7,7 @@ package:
     - license: GPL-3.0
   dependencies:
     runtime:
+      - python-3.13
       - uv
       - chromium
 environment:
@@ -30,13 +31,11 @@ pipeline:
       export UV_SYSTEM_PYTHON=true
       export PYTHONUNBUFFERED=1
       export PYTHONDONTWRITEBYTECODE=1
-      uv venv .venv -- --copies
       uv sync
   - name: Prepare package
     runs: |
       mkdir -p "${{targets.destdir}}/usr/lib/Byparr"
       cp -R .venv main.py src ${{targets.destdir}}/usr/lib/Byparr
-
 test:
   pipeline:
     - name: Check for missing dependancies
