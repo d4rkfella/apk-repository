@@ -25,7 +25,7 @@ pipeline:
       tag: v${{package.version}}
   - name: Build
     runs: |
-      export UV_LINK_MODE=copy
+      export UV_PYTHON_INSTALL_DIR=/usr/bin
       export PYTHONUNBUFFERED=1
       export PYTHONDONTWRITEBYTECODE=1
       uv sync
