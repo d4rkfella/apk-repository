@@ -1,6 +1,6 @@
 package:
   name: bazarr
-  version: "1.5.2_beta34"
+  version: "1.5.2_beta35"
   epoch: 0
   description: Bazarr is a companion application to Sonarr and Radarr. It manages and downloads subtitles based on your requirements. You define your preferences by TV show or movie and Bazarr takes care of everything for you.
   copyright:
@@ -53,7 +53,7 @@ pipeline:
       tar xJ --strip-components=2 --exclude='**/LICENSE.txt' --exclude='**/doc' --exclude='**/man' --exclude='**/bin/ffplay' --directory=${{targets.destdir}}/usr/bin
   - runs: |
      #!/bin/bash
-      set -euo pipefail  # Exit immediately on error, undefined variables, or failed pipes
+      set -euo pipefail
       
       # Define paths
       DEST_DIR="/tmp"
