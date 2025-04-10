@@ -36,9 +36,10 @@ pipeline:
       npm ci --no-fund
       npm run build
       npm prune --omit=dev
-      npm link --prefix "${{targets.destdir}}/usr"
+      npm link
 
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/cross-seed ${{targets.destdir}}/usr/bin
       cp -R dist node_modules package-lock.json package.json ${{targets.destdir}}/usr/lib/cross-seed
+      cp /usr/local/bin/cross-seed ${{targets.destdir}}/usr/bin/cross-seed
