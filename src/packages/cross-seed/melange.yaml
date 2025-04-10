@@ -5,7 +5,9 @@ package:
   description: "Fully-automatic cross-seeding with Torznab"
   copyright:
     - license: Apache-2.0
-
+  dependencies:
+    runtime:
+      - nodejs-20
 environment:
   contents:
     keyring:
@@ -23,19 +25,19 @@ pipeline:
     with:
       repository: https://github.com/cross-seed/cross-seed
       tag: v${{package.version}}
-
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
       volta install node@$(cat .nvmrc)
-
   - name: Build frontend
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       mkdir -p ${{targets.destdir}}/usr/bin ${{targets.destdir}}/usr/lib/node_modules
-      npm config set prefix ${{targets.destdir}}/usr
       npm ci --no-fund
       npm run build
       npm prune --omit=dev
-      npm link
+  - name: Prepare package
+    runs: |
+      mkdir -p ${{targets.destdir}}/usr/lib/cross-seed
+      cp -R node_modules dist package-lock.json package.json ${{targets.destdir}}/usr/lib/cross-seed
