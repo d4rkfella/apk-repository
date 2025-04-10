@@ -1,1 +1,31 @@
-
+package:
+  name: byparr
+  version: "1.1.1"
+  epoch: 0
+  description: FlareSolverr drop-in replacement with FastAPI and nodriver.
+  copyright:
+    - license: GPL-3.0
+  dependencies:
+    runtime:
+      - chromium
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - uv
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: ""
+      repository: https://github.com/ThePhaseless/Byparr
+      tag: v${{package.version}}
+  - name: Build
+    runs: |
+      uv sync
+  - name: Prepare package
+    runs: |
+      mkdir -p "${{targets.destdir}}/usr/lib/Byparr"
+      cp -R ./* ${{targets.destdir}}/usr/lib/Byparr
