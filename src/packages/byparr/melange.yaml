@@ -15,6 +15,7 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
+      - busybox
       - uv
 pipeline:
   - uses: git-checkout
