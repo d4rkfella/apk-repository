@@ -25,6 +25,9 @@ pipeline:
       tag: v${{package.version}}
   - name: Build
     runs: |
+      export UV_LINK_MODE=copy
+      export PYTHONUNBUFFERED=1
+      export PYTHONDONTWRITEBYTECODE=1
       uv sync
   - name: Prepare package
     runs: |
