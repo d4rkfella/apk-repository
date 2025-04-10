@@ -13,6 +13,8 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
+      - wolfi-baselayout
+      - build-base
       - busybox
       - bash
       - curl
