@@ -32,7 +32,7 @@ var-transforms:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: "84ebcf7a378bfae2a07fa3c6633b0e3b2c384637"
+      expected-commit: "2c7294de0de5620e9c33ff1cfb99f6e6b6278dbb"
       repository: https://github.com/morpheus65535/bazarr
       tag: v${{vars.transformed-version}}
   - name: Install volta
