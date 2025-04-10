@@ -22,6 +22,7 @@ environment:
       - libxfixes-dev
       - libxinerama-dev
       - pkgconf-dev
+      - autoconf-archive
 pipeline:
   - uses: git-checkout
     with:
