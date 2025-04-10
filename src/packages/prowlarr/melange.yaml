@@ -1,6 +1,6 @@
 package:
   name: prowlarr
-  version: "1.32.2.4987"
+  version: "1.33.3.5008"
   epoch: 0
   description: Prowlarr is an indexer manager/proxy built on the popular *arr .net/reactjs base stack to integrate with your various PVR apps. Prowlarr supports management of both Torrent Trackers and Usenet Indexers. It integrates seamlessly with Lidarr, Mylar3, Radarr, Readarr, and Sonarr offering complete management of your indexers with no per app Indexer setup required (we do it all).
   copyright:
@@ -31,12 +31,10 @@ pipeline:
       expected-commit: ""
       repository: https://github.com/Prowlarr/Prowlarr
       tag: v${{package.version}}
-  
   - name: Install dependancies
     runs: |
       curl -sSL https://get.volta.sh | bash
       curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $(yq '.variables.dotnetVersion' azure-pipelines.yml)
-  
   - name: Build backend
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
@@ -45,12 +43,11 @@ pipeline:
       _platform="Posix"
       _slnFile="src/Prowlarr.sln"
       ulimit -n 4096
-      
+
       echo "Updating Version Info"
       sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
       sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
       dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
-  
   - name: Build frontend
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
@@ -61,7 +58,6 @@ pipeline:
       yarn lint
       yarn stylelint-linux
       yarn run build --env production
-  
   - name: Prepare package
     runs: |
       _dotnet_arch="x64"
@@ -70,20 +66,20 @@ pipeline:
       _output="_output"
       _artifacts="$_output/$_framework/$_runtime/publish"
       _destdir="${{targets.destdir}}/usr/lib/Prowlarr/bin"
-      
+
       mkdir -p $_destdir
       printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > ${{targets.destdir}}/usr/lib/Prowlarr/package_info
 
-      
+
       cp -r $_artifacts/* $_destdir
       cp -r $_output/UI $_destdir
 
       rm -f $_destdir/ServiceUninstall.*
       rm -f $_destdir/ServiceInstall.*
-  
+
       echo "Removing Prowlarr.Windows"
       rm $_destdir/Prowlarr.Windows.*
-  
+
       echo "Adding LICENSE"
       cp LICENSE $_destdir
 test:
@@ -103,7 +99,6 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" test/test.sh
-
 update:
   enabled: true
   release-monitor:
