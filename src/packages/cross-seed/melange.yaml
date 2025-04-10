@@ -1,1 +1,36 @@
+package:
+  name: cross-seed
+  version: "6.11.2"
+  epoch: 0
+  description: "Fully-automatic cross-seeding with Torznab"
+  copyright:
+    - license: Apache-2.0
 
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - busybox
+      - bash
+      - curl
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/cross-seed/cross-seed
+      tag: v${{package.version}}
+
+  - name: Install dependancies
+    runs: |
+      PATH="$HOME/.volta/bin:$PATH"
+      curl -sSL https://get.volta.sh | bash
+      volta install node@$(cat .nvmrc)
+
+  - name: Build frontend
+    runs: |
+      PATH="$HOME/.volta/bin:$PATH"
+      npm ci --no-fund
+      npm run build
+      npm prune --omit=dev
