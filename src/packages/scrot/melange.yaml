@@ -22,7 +22,6 @@ environment:
       - libxfixes-dev
       - libxinerama-dev
       - pkgconf
-      - gettext
       - m4
 pipeline:
   - uses: git-checkout
