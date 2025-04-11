@@ -19,6 +19,7 @@ environment:
     packages:
       - build-base
       - python-3.13
+      - python-3.13-dev
       - py3.13-pip
       - libxml2-dev
       - libxslt-dev
