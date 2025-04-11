@@ -48,7 +48,7 @@ pipeline:
       npx update-browserslist-db@latest
       npm install
       npm run build
-  - name: Download ffmpeg-static binaries
+  - name: ffmpeg-static binaries
     runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       curl -fsSL "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz" | \
