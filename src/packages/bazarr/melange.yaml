@@ -8,10 +8,6 @@ package:
   dependencies:
     runtime:
       - unrar
-data:
-  - name: py-versions
-    items:
-      3.13: '313'
 environment:
   contents:
     keyring:
@@ -24,8 +20,9 @@ environment:
       - build-base
       - cython
       - gcc
-      - py3-supported-build-base-dev
-      - py3-supported-cython
+      - py3-3.13-build-base-dev
+      - py3-3.13-cython
+      - py3.13-pip
       - libxml2-dev
       - libxslt-dev
       - busybox
