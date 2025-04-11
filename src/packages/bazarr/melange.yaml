@@ -18,13 +18,11 @@ environment:
       - https://packages.wolfi.dev/os
     packages:
       - build-base
-      - cython
-      - gcc
-      - py3-3.13-build-base-dev
-      - py3-3.13-cython
+      - python-3.13-dev
       - py3.13-pip
-      - libxml2-dev
+      - libxml2
       - libxslt-dev
+      - cython
       - busybox
       - bash
       - ca-certificates-bundle
@@ -120,7 +118,7 @@ pipeline:
       mkdir -p /usr/lib/Bazarr/bin
       
       python -m venv --copies /usr/lib/Bazarr/bin/venv
-      pip install --upgrade setuptools wheel pip --no-cache-dir \
+      pip install --upgrade --no-cache-dir \
       -r requirements.txt \
       -r postgres-requirements.txt
       
