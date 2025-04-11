@@ -151,6 +151,24 @@ jobs:
               echo "$latest_version"
             fi
           }
+
+          function get_commit_for_tag() {
+            local repo="$1"
+            local tag="$2"
+      
+            api_url="https://api.github.com/repos/${repo}/git/ref/tags/${tag}"
+            ref_response=$(curl -s "$api_url")
+      
+            object_type=$(echo "$ref_response" | jq -r '.object.type')
+            object_url=$(echo "$ref_response" | jq -r '.object.url')
+      
+            if [[ "$object_type" == "tag" ]]; then
+              tag_obj=$(curl -s "$object_url")
+              echo "$tag_obj" | jq -r '.object.sha'
+            else
+              echo "$ref_response" | jq -r '.object.sha'
+            fi
+          }
           
           function compare_and_bump() {
             local latest_version="$1"
@@ -163,7 +181,16 @@ jobs:
           
             if version_gt "$latest_version" "$current_version"; then
               echo "New version available: $latest_version > $current_version. Proceeding with version bump."
-              melange bump "$package_path" "$latest_version"
+            
+              if [[ -n "${{ matrix.package_info.repo }}" ]]; then
+                owner_repo=$(echo "${{ matrix.package_info.repo }}" | sed -E 's#https://github.com/([^/]+/[^/]+).*#\1#')
+                raw_latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
+                commit=$(get_commit_for_tag "$owner_repo" "$raw_latest_version")
+                echo "Resolved commit for $latest_version: $commit"
+                melange bump "$package_path" "$latest_version" --expected-commit "$commit"
+              else
+                melange bump "$package_path" "$latest_version"
+              fi
               echo "bumped=true" >> $GITHUB_OUTPUT
             else
               echo "No new version available. $current_version = $latest_version."
