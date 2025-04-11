@@ -118,7 +118,7 @@ pipeline:
       mkdir -p /usr/lib/Bazarr/bin
       
       python -m venv --copies /usr/lib/Bazarr/bin/venv
-      pip install --upgrade --no-cache-dir \
+      pip install --upgrade setuptools wheel pip --no-cache-dir \
       -r requirements.txt \
       -r postgres-requirements.txt
       
