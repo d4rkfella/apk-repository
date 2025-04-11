@@ -20,6 +20,8 @@ environment:
       - build-base
       - python-3.13
       - py3.13-pip
+      - libxml2-dev
+      - libxslt-dev
       - busybox
       - bash
       - ca-certificates-bundle
