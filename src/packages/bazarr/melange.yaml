@@ -8,6 +8,10 @@ package:
   dependencies:
     runtime:
       - unrar
+data:
+  - name: py-versions
+    items:
+      3.13: '313'
 environment:
   contents:
     keyring:
@@ -18,9 +22,10 @@ environment:
       - https://packages.wolfi.dev/os
     packages:
       - build-base
-      - python-3.13
-      - python-3.13-dev
-      - py3.13-pip
+      - cython
+      - gcc
+      - py3-supported-build-base-dev
+      - py3-supported-cython
       - libxml2-dev
       - libxslt-dev
       - busybox
