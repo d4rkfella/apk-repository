@@ -1,6 +1,6 @@
 package:
   name: bazarr
-  version: "1.5.2_beta35"
+  version: "1.5.2_beta36"
   epoch: 0
   description: Bazarr is a companion application to Sonarr and Radarr. It manages and downloads subtitles based on your requirements. You define your preferences by TV show or movie and Bazarr takes care of everything for you.
   copyright:
@@ -18,8 +18,8 @@ environment:
       - https://packages.wolfi.dev/os
     packages:
       - build-base
-      - python-3.12
-      - py3.12-pip
+      - python-3.13
+      - py3.13-pip
       - busybox
       - bash
       - ca-certificates-bundle
@@ -32,7 +32,7 @@ var-transforms:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: "2c7294de0de5620e9c33ff1cfb99f6e6b6278dbb"
+      expected-commit: "4642db334a8b94a865cbf811ab90fc5316c74db0"
       repository: https://github.com/morpheus65535/bazarr
       tag: v${{vars.transformed-version}}
   - name: Install volta
