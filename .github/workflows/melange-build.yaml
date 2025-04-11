@@ -53,7 +53,6 @@ jobs:
           s3-bucket-name: packages
           tests-repository-append: https://packages.darkfellanetwork.com,https://packages.wolfi.dev/os
           tests-keyring-append: https://packages.darkfellanetwork.com/melange.rsa.pub,https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-          build-date: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
