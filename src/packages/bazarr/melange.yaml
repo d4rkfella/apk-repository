@@ -20,9 +20,8 @@ environment:
       - build-base
       - python-3.13-dev
       - py3.13-pip
-      - libxml2
+      - libxml2-dev
       - libxslt-dev
-      - cython
       - busybox
       - bash
       - ca-certificates-bundle
@@ -118,6 +117,7 @@ pipeline:
       mkdir -p /usr/lib/Bazarr/bin
       
       python -m venv --copies /usr/lib/Bazarr/bin/venv
+      pip install "lxml>=5.0.0" --no-deps
       pip install --upgrade --no-cache-dir \
       -r requirements.txt \
       -r postgres-requirements.txt
