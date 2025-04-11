@@ -115,7 +115,7 @@ pipeline:
       mkdir -p /usr/lib/Bazarr/bin
       
       python -m venv --copies /usr/lib/Bazarr/bin/venv
-      sed -i 's/lxml<5.0.0,>=4.3.0/lxml>=5.0.0/' requirements.txt
+      sed -i '/lxml/ s/lxml>=4.3.0, <5.0.0/lxml>=5.0.0/' requirements.txt
       pip install --upgrade --no-cache-dir \
       -r requirements.txt \
       -r postgres-requirements.txt
