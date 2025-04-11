@@ -97,7 +97,6 @@ pipeline:
       else
         echo "'import ssl' is already present in the file."
       fi
-      
       sed -i 's/cert_reqs=self\.cert_reqs/cert_reqs=ssl.CERT_REQUIRED/' "libs/urllib3/connectionpool.py"  
   - name: Prepare package
     runs: |
