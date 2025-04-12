@@ -2,7 +2,7 @@
 set -eo pipefail
 
 # Configuration
-TARGET_DIR="/usr/lib/Bazarr"
+TARGET_DIR="/usr/lib/bazarr"
 EXPECTED_VERSION="${EXPECTED_VERSION}"
 SERVER_PORT=6767
 STARTUP_TIMEOUT=20
@@ -30,7 +30,7 @@ run_tests() {
     
     
     echo "Starting server (expecting version: ${EXPECTED_VERSION})..."
-    bin/venv/bin/python bin/bazarr.py --no-update >/tmp/server.log 2>&1 &
+    app/venv/bin/python app/bazarr.py --no-update >/tmp/server.log 2>&1 &
 
     echo "Waiting for server readiness (max ${STARTUP_TIMEOUT}s)..."
     timeout $STARTUP_TIMEOUT bash -c "
