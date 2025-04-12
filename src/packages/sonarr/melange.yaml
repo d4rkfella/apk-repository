@@ -92,7 +92,7 @@ pipeline:
       rm "$_destdir"/Sonarr.Windows.*
 
       mkdir -p "${{targets.destdir}}"/usr/bin
-      ln -s /usr/lib/Radarr/bin/Sonarr "${{targets.destdir}}"/usr/bin/Sonarr
+      ln -s /usr/lib/Sonarr/bin/Sonarr "${{targets.destdir}}"/usr/bin/Sonarr
   - uses: strip
 test:
   environment:
