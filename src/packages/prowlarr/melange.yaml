@@ -35,53 +35,61 @@ pipeline:
     runs: |
       curl -sSL https://get.volta.sh | bash
       curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $(yq '.variables.dotnetVersion' azure-pipelines.yml)
-  - name: Build backend
+  - name: Build
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
       _dotnet_arch="x64"
       _runtime="linux-$_dotnet_arch"
       _platform="Posix"
       _slnFile="src/Prowlarr.sln"
-      ulimit -n 4096
+      _framework="net6.0"
+      _output="_output"
+      _artifacts="$_output/$_framework/$_runtime/publish"
+      _destdir="${{targets.destdir}}/usr/lib/Prowlarr/bin"
 
-      echo "Updating Version Info"
-      sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
-      sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
-      dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
-  - name: Build frontend
-    runs: |
-      PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
-      BROWSERSLIST_IGNORE_OLD_DATA="true"
+      echo "Building frontend"
+      
       volta install node@$(yq '.variables.nodeVersion' azure-pipelines.yml)
       volta install yarn@1.22.*
       yarn install --frozen-lockfile --network-timeout 120000
       yarn lint
       yarn stylelint-linux
       yarn run build --env production
-  - name: Prepare package
-    runs: |
-      _dotnet_arch="x64"
-      _framework="net6.0"
-      _runtime="linux-$_dotnet_arch"
-      _output="_output"
-      _artifacts="$_output/$_framework/$_runtime/publish"
-      _destdir="${{targets.destdir}}/usr/lib/Prowlarr/bin"
 
-      mkdir -p $_destdir
-      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > ${{targets.destdir}}/usr/lib/Prowlarr/package_info
+      echo "Building backend"
+      
+      sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
+      sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
+      
+      ulimit -n 4096
+      dotnet msbuild -restore "$_slnFile" \
+       -p:SentryCliExecutable= \
+       -p:SentryUploadSymbols=false \
+       -p:SentryIncludeSources=false \
+       -p:EmbedAllSources=false \
+       -p:Configuration=Release \
+       -p:TargetFramework="$_framework" \
+       -p:Platform="$_platform" \
+       -p:RuntimeIdentifier="$_runtime" \
+       -t:Publish \
+       -p:DebugSymbols=false \
+       -p:DebugType=none
+      
+      echo "Preparing package"
 
+      mkdir -p "$_destdir"
+      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > "${{targets.destdir}}"/usr/lib/Prowlarr/package_info
 
-      cp -r $_artifacts/* $_destdir
-      cp -r $_output/UI $_destdir
+      cp -r "$_artifacts"/* "$_destdir"
+      cp -r "$_output"/UI "$_destdir"
+      cp LICENSE "$_destdir"
 
-      rm -f $_destdir/ServiceUninstall.*
-      rm -f $_destdir/ServiceInstall.*
+      rm -f "$_destdir"/ServiceUninstall.*
+      rm -f "$_destdir"/ServiceInstall.*
+      rm "$_destdir"/Prowlarr.Windows.*
 
-      echo "Removing Prowlarr.Windows"
-      rm $_destdir/Prowlarr.Windows.*
-
-      echo "Adding LICENSE"
-      cp LICENSE $_destdir
+      mkdir -p "${{targets.destdir}}"/usr/bin
+      ln -s /usr/lib/Prowlarr/bin/Prowlarr "${{targets.destdir}}"/usr/bin/Prowlarr
 test:
   environment:
     contents:
@@ -98,7 +106,7 @@ test:
         packages: ${{package.name}}
     - name: Run test script
       runs: |
-        EXPECTED_VERSION="${{package.version}}" test/test.sh
+        EXPECTED_VERSION="${{package.version}}" ./test.sh
 update:
   enabled: true
   release-monitor:

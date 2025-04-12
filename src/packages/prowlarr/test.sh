@@ -26,11 +26,9 @@ verify_permissions() {
 # Function: Start and Test Server
 # --------------------------------------------------
 run_tests() {
-    cd "$TARGET_DIR" || exit 1
-    
-    
+
     echo "Starting server (expecting version: ${EXPECTED_VERSION})..."
-    bin/Prowlarr --nobrowser --data=/config >/tmp/server.log 2>&1 &
+    Prowlarr --nobrowser --data=/config >/tmp/server.log 2>&1 &
 
     echo "Waiting for server readiness (max ${STARTUP_TIMEOUT}s)..."
     timeout $STARTUP_TIMEOUT bash -c "

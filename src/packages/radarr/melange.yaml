@@ -60,7 +60,18 @@ pipeline:
       sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>"${{package.version}}"<\/AssemblyVersion>/g" src/Directory.Build.props
       sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
       
-      dotnet msbuild -restore "$_slnFile" -p:SentryCliExecutable= -p:SentryUploadSymbols=false -p:SentryIncludeSources=false -p:EmbedAllSources=false -p:Configuration=Release -p:TargetFramework="$_framework" -p:Platform="$_platform" -p:RuntimeIdentifier="$_runtime" -t:Publish -p:DebugSymbols=false -p:DebugType=none
+      dotnet msbuild -restore "$_slnFile" \
+       -p:SentryCliExecutable= \
+       -p:SentryUploadSymbols=false \
+       -p:SentryIncludeSources=false \
+       -p:EmbedAllSources=false \
+       -p:Configuration=Release \
+       -p:TargetFramework="$_framework" \
+       -p:Platform="$_platform" \
+       -p:RuntimeIdentifier="$_runtime" \
+       -t:Publish \
+       -p:DebugSymbols=false \
+       -p:DebugType=none
       
       echo "Preparing package"
       
@@ -97,7 +108,7 @@ test:
         packages: ${{package.name}}
     - name: Run test script
       runs: |
-        EXPECTED_VERSION="${{package.version}}" test.sh
+        EXPECTED_VERSION="${{package.version}}" ./test.sh
 update:
   enabled: true
   release-monitor:
