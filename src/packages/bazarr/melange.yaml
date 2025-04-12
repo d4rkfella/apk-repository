@@ -101,11 +101,11 @@ pipeline:
       export PYTHONHASHSEED=0
       export PYTHONDONTWRITEBYTECODE=1
       export PYTHONUNBUFFERED=1
+      
       APPDIR="${{targets.destdir}}/usr/lib/bazarr/app"
       FILE_LIST="$(cat .github/files_to_copy)"
       
-      mkdir -p "${APPDIR}"
-      
+      mkdir -p "${APPDIR}" 
       virtualenv --copies "${APPDIR}/venv"
       sed -i '/lxml/ s/lxml>=4.3.0, <5.0.0/lxml>=5.0.0/' requirements.txt
       sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir -r requirements.txt -r postgres-requirements.txt"    
