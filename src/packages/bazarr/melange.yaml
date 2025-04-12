@@ -20,7 +20,7 @@ environment:
       - build-base
       - python-3.13-dev
       - py3.13-pip
-      - py3.13-virtualenv
+      - py3.13-virtualenv-bin
       - busybox
       - bash
       - ca-certificates-bundle
