@@ -36,6 +36,7 @@ pipeline:
         --configuration Release Jellyfin.Server \
         --output publish \
         --runtime linux-x64 \
+        --self-contained true \
         -p:DebugSymbols=false \
         -p:DebugType=none
 
