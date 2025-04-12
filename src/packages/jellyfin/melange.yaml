@@ -11,7 +11,6 @@ package:
       - fontconfig
       - mesa
       - sqlite
-
 environment:
   contents:
     keyring:
@@ -23,18 +22,15 @@ environment:
       - busybox
       - dotnet-8-sdk
       - ffmpeg
-
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/jellyfin/jellyfin
       tag: v${{package.version}}
       expected-commit: aefb9b2cffca3ccb7a95d89af0d9fb2040de6ed3
-
   - uses: patch
     with:
       patches: GHSA-qrmm-w75w-3wpx.patch
-
   - runs: |
       dotnet publish \
         --configuration Release Jellyfin.Server \
@@ -48,9 +44,7 @@ pipeline:
 
       mkdir -p "${{targets.destdir}}"/usr/bin
       ln -s /usr/lib/jellyfin/jellyfin "${{targets.destdir}}"/usr/bin/jellyfin
-
   - uses: strip
-
 test:
   pipeline:
     - name: "Start Jellyfin server"
