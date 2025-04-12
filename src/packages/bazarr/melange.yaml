@@ -119,13 +119,11 @@ pipeline:
       
       git describe --abbrev=0 > VERSION
 
-      ls -la
-      
-      for f in "$FILE_LIST"
+      while IFS= read -r f
       do
           echo "**** copying $f to release ****"
           cp -r --parents "$f" "$APPDIR"
-      done
+      done < .github/files_to_copy
       
       find "${APPDIR}"/venv -name "*.pc" -delete
       
