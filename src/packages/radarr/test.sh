@@ -26,16 +26,14 @@ verify_permissions() {
 # Function: Start and Test Server
 # --------------------------------------------------
 run_tests() {
-    cd "$TARGET_DIR" || exit 1
-    
     
     echo "Starting server (expecting version: ${EXPECTED_VERSION})..."
-    bin/Radarr --nobrowser --data=/config >/tmp/server.log 2>&1 &
+    Radarr --nobrowser --data=/config > /tmp/server.log 2>&1 &
 
     echo "Waiting for server readiness (max ${STARTUP_TIMEOUT}s)..."
     timeout $STARTUP_TIMEOUT bash -c "
         while ! curl -sSf http://localhost:$SERVER_PORT >/dev/null 2>&1; do
-            sleep 1
+            sleep 5
         done
     " || {
         echo "❌ Server failed to start within ${STARTUP_TIMEOUT}s" >&2

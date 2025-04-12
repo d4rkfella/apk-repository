@@ -36,55 +36,63 @@ pipeline:
       curl -sSL https://get.volta.sh | bash
       curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --jsonfile global.json
   
-  - name: Build backend
+  - name: Build
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
       _dotnet_arch="x64"
       _runtime="linux-$_dotnet_arch"
       _platform="Posix"
+      _framework="net6.0"
       _slnFile="src/Sonarr.sln"
-      ulimit -n 4096
-      
-      echo "Updating Version Info"
-      sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
-      sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>main<\/AssemblyConfiguration>/g" src/Directory.Build.props
-      dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifiers=$_runtime -t:PublishAllRids
-  
-  - name: Build frontend
-    runs: |
-      PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
-      BROWSERSLIST_IGNORE_OLD_DATA="true"
+      _output="_output"
+      _artifacts="$_output/$_framework/$_runtime/publish"
+      _destdir="${{targets.destdir}}/usr/lib/Sonarr/bin"
+
+      echo "Building frontend"
       
       yarn install --frozen-lockfile --network-timeout 120000
       yarn lint
       yarn stylelint -f github
       yarn run build --env production
-  
-  - name: Prepare package
-    runs: |
-      _dotnet_arch="x64"
-      _framework="net6.0"
-      _runtime="linux-$_dotnet_arch"
-      _output="_output"
-      _artifacts="$_output/$_framework/$_runtime/publish"
-      _destdir="${{targets.destdir}}/usr/lib/Sonarr/bin"
+
+      echo "Building backend"
       
-      mkdir -p $_destdir
-      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "main" "${{package.version}}" > ${{targets.destdir}}/usr/lib/Sonarr/package_info
+      ulimit -n 4096
+      
+      sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>"${{package.version}}"<\/AssemblyVersion>/g" src/Directory.Build.props
+      sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>main<\/AssemblyConfiguration>/g" src/Directory.Build.props
+      
+      dotnet msbuild -restore "$_slnFile" \
+       -p:SentryCliExecutable= \
+       -p:SentryUploadSymbols=false \
+       -p:SentryIncludeSources=false \
+       -p:EmbedAllSources=false \
+       -p:Configuration=Release \
+       -p:TargetFramework="$_framework" \
+       -p:Platform=$_platform \
+       -p:RuntimeIdentifier="$_runtime" \
+       -t:Publish \
+       -p:DebugSymbols=false \
+       -p:DebugType=none
+      
+      echo "Preparing package"
+
+      mkdir -p "$_destdir"
+      
+      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "main" "${{package.version}}" > "${{targets.destdir}}"/usr/lib/Sonarr/package_info
 
       chmod +x "$_artifacts"/ffprobe
       
-      cp -r $_artifacts/* $_destdir
-      cp -r $_output/UI $_destdir
+      cp -r "$_artifacts"/* "$_destdir"
+      cp -r "$_output"/UI "$_destdir"
+      cp LICENSE.md "$_destdir"
+      
+      rm -f "$_destdir"/ServiceUninstall.*
+      rm -f "$_destdir"/ServiceInstall.*
+      rm "$_destdir"/Sonarr.Windows.*
 
-      rm -f $_destdir/ServiceUninstall.*
-      rm -f $_destdir/ServiceInstall.*
-  
-      echo "Removing Sonarr.Windows"
-      rm $_destdir/Sonarr.Windows.*
-  
-      echo "Adding LICENSE"
-      cp LICENSE.md $_destdir
+      ln -s /usr/lib/Radarr/bin/Sonarr "${{targets.destdir}}"/usr/bin/Sonarr
+  - uses: strip
 test:
   environment:
     contents:
@@ -101,7 +109,7 @@ test:
         packages: ${{package.name}}
     - name: Run test script
       runs: |
-        EXPECTED_VERSION="${{package.version}}" test/test.sh
+        EXPECTED_VERSION="${{package.version}}" test.sh
 update:
   enabled: true
   release-monitor:

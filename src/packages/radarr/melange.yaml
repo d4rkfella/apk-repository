@@ -35,7 +35,7 @@ pipeline:
     runs: |
       curl -sSL https://get.volta.sh | bash
       curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $(yq '.variables.dotnetVersion' azure-pipelines.yml)
-  - name: Build backend
+  - name: Build
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
       _dotnet_arch="x64"
@@ -57,29 +57,28 @@ pipeline:
       
       echo "Building backend"
       
-      sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
+      sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>"${{package.version}}"<\/AssemblyVersion>/g" src/Directory.Build.props
       sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
       
-      dotnet msbuild -restore $_slnFile -p:SentryCliExecutable= -p:SentryUploadSymbols=false -p:SentryIncludeSources=false -p:EmbedAllSources=false -p:Configuration=Release -p:TargetFramework=$_framework -p:Platform=$_platform -p:RuntimeIdentifier=$_runtime -t:Publish -p:DebugSymbols=false -p:DebugType=none
+      dotnet msbuild -restore "$_slnFile" -p:SentryCliExecutable= -p:SentryUploadSymbols=false -p:SentryIncludeSources=false -p:EmbedAllSources=false -p:Configuration=Release -p:TargetFramework="$_framework" -p:Platform="$_platform" -p:RuntimeIdentifier="$_runtime" -t:Publish -p:DebugSymbols=false -p:DebugType=none
       
       echo "Preparing package"
       
-      mkdir -p $_destdir
-      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > ${{targets.destdir}}/usr/lib/Radarr/package_info
+      mkdir -p "$_destdir"
+      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > "${{targets.destdir}}"/usr/lib/Radarr/package_info
 
       chmod +x "$_artifacts"/ffprobe
 
-      cp -r $_artifacts/* $_destdir
-      cp -r $_output/UI $_destdir
+      cp -r "$_artifacts"/* "$_destdir"
+      cp -r "$_output"/UI "$_destdir"
+      cp LICENSE "$_destdir"
+      
+      rm -f "$_destdir"/ServiceUninstall.*
+      rm -f "$_destdir"/ServiceInstall.*
+      rm "$_destdir"/Radarr.Windows.*
 
-      rm -f $_destdir/ServiceUninstall.*
-      rm -f $_destdir/ServiceInstall.*
-
-      echo "Removing Radarr.Windows"
-      rm $_destdir/Radarr.Windows.*
-
-      echo "Adding LICENSE"
-      cp LICENSE $_destdir
+      
+      ln -s /usr/lib/Radarr/bin/Radarr "${{targets.destdir}}"/usr/bin/Radarr
   
   - uses: strip
 
@@ -99,7 +98,7 @@ test:
         packages: ${{package.name}}
     - name: Run test script
       runs: |
-        EXPECTED_VERSION="${{package.version}}" test/test.sh
+        EXPECTED_VERSION="${{package.version}}" test.sh
 update:
   enabled: true
   release-monitor:
