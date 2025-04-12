@@ -45,6 +45,7 @@ pipeline:
       export NODE_ENV=production
       pnpm audit --fix
       pnpm install
+      pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
   - name: Delete linux-musl node-modules and other unneeded files
