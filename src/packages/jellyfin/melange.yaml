@@ -1,0 +1,94 @@
+package:
+  name: jellyfin
+  version: "10.10.7"
+  epoch: 0
+  description: The Free Software Media System
+  copyright:
+    - license: GPL-2.0-only
+  dependencies:
+    runtime:
+      - ffmpeg
+      - fontconfig
+      - mesa
+      - sqlite
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - aspnet-8-runtime
+      - busybox
+      - dotnet-8-sdk
+      - ffmpeg
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/jellyfin/jellyfin
+      tag: v${{package.version}}
+      expected-commit: aefb9b2cffca3ccb7a95d89af0d9fb2040de6ed3
+
+  - uses: patch
+    with:
+      patches: GHSA-qrmm-w75w-3wpx.patch
+
+  - runs: |
+      dotnet publish \
+        --configuration Release Jellyfin.Server \
+        --output publish \
+        --runtime linux-x64 \
+        -p:DebugSymbols=false \
+        -p:DebugType=none
+
+      mkdir -p "${{targets.destdir}}"/usr/lib
+      cp -dr publish "${{targets.destdir}}"/usr/lib/jellyfin
+
+      mkdir -p "${{targets.destdir}}"/usr/bin
+      ln -s /usr/lib/jellyfin/jellyfin "${{targets.destdir}}"/usr/bin/jellyfin
+
+  - uses: strip
+
+test:
+  pipeline:
+    - name: "Start Jellyfin server"
+      runs: |
+        jellyfin --nowebclient > /tmp/jellyfin.log 2>&1 &
+        JELLYFIN_PID=$!
+
+        # Wait a few seconds to let Jellyfin attempt to start
+        sleep 10
+
+        # Check if Jellyfin process is still running
+        if ! ps | grep -q "$JELLYFIN_PID"; then
+          echo "Test failed: Jellyfin failed to start."
+          echo "----- Jellyfin Debug Logs -----"
+          cat /tmp/jellyfin.log
+          exit 1
+        else
+          echo "Test passed: Jellyfin started successfully."
+        fi
+    - name: "Verify Jellyfin HTTP service on port 8096"
+      runs: |
+        echo "Checking if Jellyfin is listening on port 8096..."
+        for i in {1..5}; do
+          if netstat -tuln | grep -q ":8096"; then
+            echo "Port 8096 is open for Jellyfin."
+            exit 0
+          else
+            echo "Port 8096 not yet open. Retrying in 5 seconds..."
+            sleep 5
+          fi
+        done
+
+        # Final check after retries
+        if ! netstat -tuln | grep -q ":8096"; then
+          echo "Test failed: Jellyfin is not listening on port 8096."
+          echo "----- Jellyfin Debug Logs -----"
+          cat /tmp/jellyfin.log
+          kill $JELLYFIN_PID || true
+          exit 1
+        fi
+    - uses: test/tw/ldd-check
