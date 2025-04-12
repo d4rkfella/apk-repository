@@ -102,6 +102,7 @@ pipeline:
       set -euo pipefail
       
       export LANG=C.UTF-8
+      export PYTHONHASHSEED=0
       export PYTHONDONTWRITEBYTECODE=1
       export PYTHONUNBUFFERED=1
       EXECDIR="${{targets.destdir}}/usr/bin"
@@ -115,7 +116,7 @@ pipeline:
       chmod +x "${EXECDIR}/Bazarr"
       virtualenv "${APPDIR}/venv"
       sed -i '/lxml/ s/lxml>=4.3.0, <5.0.0/lxml>=5.0.0/' requirements.txt
-      sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir -r requirements.txt -r postgres-requirements.txt"    
+      sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir --require-hashes -r requirements.txt -r postgres-requirements.txt"    
       
       git describe --abbrev=0 > VERSION
 
