@@ -47,13 +47,8 @@ pipeline:
       echo "Updating Version Info"
       sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
       sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
-      dotnet new sln -n Radarr.NoTests
-      
-      find src -name '*.csproj' | grep -v -i '\.Test' | while read proj; do
-          dotnet sln Radarr.NoTests.sln add "$proj"
-      done
-      
-      dotnet msbuild -restore Radarr.NoTests.sln -p:SentryCliExecutable= -p:SentryUploadSymbols=false -p:SentryIncludeSources=false -p:EmbedAllSources=false -p:Configuration=Release -p:TargetFramework=net6.0 -p:Platform=$_platform -p:RuntimeIdentifier=$_runtime -t:Publish -p:DebugSymbols=false -p:DebugType=none
+      ./test.sh $_slnFile
+      dotnet msbuild -restore $_slnFile -p:SentryCliExecutable= -p:SentryUploadSymbols=false -p:SentryIncludeSources=false -p:EmbedAllSources=false -p:Configuration=Release -p:TargetFramework=net6.0 -p:Platform=$_platform -p:RuntimeIdentifier=$_runtime -t:Publish -p:DebugSymbols=false -p:DebugType=none
   - name: Build frontend
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
