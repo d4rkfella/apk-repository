@@ -12,6 +12,7 @@ environment:
     packages:
       - busybox
       - dpkg
+      - curl
 
 pipeline:
   - runs: |
