@@ -20,6 +20,7 @@ environment:
       - build-base
       - python-3.13-dev
       - py3.13-pip
+      - py3.13-virtualenv
       - busybox
       - bash
       - ca-certificates-bundle
@@ -105,32 +106,30 @@ pipeline:
       export LANG=C.UTF-8
       export PYTHONDONTWRITEBYTECODE=1
       export PYTHONUNBUFFERED=1
-      PATH="/usr/lib/Bazarr/bin/venv/bin:$PATH"
-      to_dist=${{targets.destdir}}/usr/lib/Bazarr/bin
-      file_list=$(cat .github/files_to_copy)
+      EXECDIR="${{targets.destdir}}/usr/bin"
+      APPDIR="${{targets.destdir}}/usr/lib/Bazarr/bin"
+      FILE_LIST="$(cat .github/files_to_copy)"
       
-      mkdir -p $to_dist
-      mkdir -p /usr/lib/Bazarr/bin
+      mkdir -p "${EXECDIR}" "${APPDIR}"
       
-      python -m venv --copies /usr/lib/Bazarr/bin/venv
-      sed -i '/lxml/ s/lxml>=4.3.0, <5.0.0/lxml>=5.0.0/' requirements.txt
-      pip install --upgrade --no-cache-dir \
-      -r requirements.txt \
-      -r postgres-requirements.txt
+      echo "#!/usr/lib/Bazarr/bin/venv/bin/python3" > "${EXECDIR}/Bazarr"
+      cat main.py >> "${EXECDIR}/Bazarr"
+      chmod +x "${EXECDIR}/Bazarr"
+      virtualenv "${APPDIR}/venv"
+      sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir -r requirements.txt -r postgres-requirements.txt"    
       
       git describe --abbrev=0 > VERSION
       
-      for f in $file_list
+      for f in "$FILE_LIST"
       do
           echo "**** copying $f to release ****"
-          cp -r --parents "$f" $to_dist
+          cp -r --parents "$f" "$APPDIR"
       done
       
-      find /usr/lib/Bazarr/bin/venv -name "*.pc" -delete
+      find "${APPDIR}"/venv -name "*.pc" -delete
       
-      cp VERSION $to_dist
-      cp -r /usr/lib/Bazarr/bin/venv $to_dist
-
+      cp VERSION "${APPDIR}"
+      
       printf "UpdateMethod=docker\nBranch=master\nPackageVersion=${{package.version}}\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)" > ${{targets.destdir}}/usr/lib/Bazarr/package_info
 test:
   environment:
