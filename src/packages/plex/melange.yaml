@@ -10,6 +10,7 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
+      - busybox
       - dpkg
 
 pipeline:
