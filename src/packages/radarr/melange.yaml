@@ -47,12 +47,11 @@ pipeline:
       echo "Updating Version Info"
       sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
       sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
-      dotnet msbuild -restore $_slnFile -p:SentryCliExecutable="" -p:EmbedAllSources=false -p:Configuration=Release -p:TargetFramework=net6.0 -p:Platform=$_platform -p:RuntimeIdentifier=$_runtime -t:Publish -p:DebugSymbols=false -p:DebugType=none
+      
+      dotnet msbuild -restore $_slnFile -p:SentryCliExecutable= -p:SentryUploadSymbols=false -p:SentryIncludeSources=false -p:EmbedAllSources=false -p:Configuration=Release -p:TargetFramework=net6.0 -p:Platform=$_platform -p:RuntimeIdentifier=$_runtime -t:Publish -p:DebugSymbols=false -p:DebugType=none
   - name: Build frontend
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
-      BROWSERSLIST_IGNORE_OLD_DATA="true"
-
       yarn install --frozen-lockfile --network-timeout 120000
       yarn lint
       yarn stylelint-linux
@@ -82,6 +81,7 @@ pipeline:
 
       echo "Adding LICENSE"
       cp LICENSE $_destdir
+  - uses: strip
 test:
   environment:
     contents:
