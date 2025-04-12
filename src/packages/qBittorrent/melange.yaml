@@ -5,6 +5,9 @@ package:
   description: The qbittorrent-nox-static project is a bash build script that compiles a static qbittorrent-nox binary using the latest available dependencies from their source.
   copyright:
     - license: Apache-2.0
+  dependencies:
+    runtime:
+      - qbittorrent-init
 environment:
   contents:
     repositories:
@@ -14,27 +17,18 @@ environment:
       - alpine-base
       - ca-certificates-bundle
       - apk-tools
+      - bash
 var-transforms:
   - from: ${{package.version}}
     match: _p(\d)(\d)(\d{2})$
     replace: _v$1.$2.$3
     to: qbittorrent-package-version
 pipeline:
-  - uses: fetch
+  - uses: git-checkout
     with:
-      uri: https://github.com/userdocs/qbittorrent-nox-static/archive/refs/tags/release-${{vars.qbittorrent-package-version}}.tar.gz
-      expected-sha256: 583cc7f58e8da72fc3192df3f53e2717513b2f2a0fe4c9a0b8b5c28956de14ab
-  - uses: build/go-build
-    with:
-      packages: resources/cross-seed.go
-      output: cross-seed
-  - uses: build/go-build
-    with:
-      packages: resources/qbittorrent-startup.go
-      output: qbittorrent-startup
-  - runs: |
-      apk update
-      apk add bash
+      repository: https://github.com/userdocs/qbittorrent-nox-static
+      tag: release-${{vars.qbittorrent-package-version}}
+      expected-commit: 8f2ce5079a406eb3e2d9fd71095286bb2d90f2ac
   - runs: |
       printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
       printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
@@ -72,10 +66,10 @@ pipeline:
       /usr/bin/env bash ./qbt-nox-static.bash qttools
       /usr/bin/env bash ./qbt-nox-static.bash qbittorrent
   - runs: |
-      mkdir -p ${{targets.destdir}}/usr/bin ${{targets.destdir}}/app
+      mkdir -p ${{targets.destdir}}/usr/bin
       mv qbt-build/bin/qbittorrent-nox ${{targets.destdir}}/usr/bin/qbittorrent-nox
       chmod 755 ${{targets.destdir}}/usr/bin/qbittorrent-nox
-      install -m444 -D resources/qBittorrent.conf ${{targets.destdir}}/app/qBittorrent.conf
+  
 update:
   enabled: true
   version-transform:
