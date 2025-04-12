@@ -47,8 +47,8 @@ pipeline:
         "@babel/runtime": "7.26.10",
         "next": "14.2.26"
       }' package.json > tmp.json && mv tmp.json package.json
-      CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile
       pnpm audit --fix
+      pnpm install --no-frozen-lockfile
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
