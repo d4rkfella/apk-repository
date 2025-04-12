@@ -47,7 +47,7 @@ pipeline:
       echo "Updating Version Info"
       sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
       sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
-      dotnet msbuild -restore $_slnFile -p:Configuration=Release -p:Platform=$_platform -p:RuntimeIdentifier=$_runtime -t:Publish -p:DebugSymbols=false -p:DebugType=none
+      dotnet msbuild -restore $_slnFile --filter "ProjectName!=*Test*" -p:SentryCliExecutable="" -p:EmbedAllSources=false -p:Configuration=Release -f net6.0 -p:Platform=$_platform -p:RuntimeIdentifier=$_runtime -t:Publish -p:DebugSymbols=false -p:DebugType=none
   - name: Build frontend
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
