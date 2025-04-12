@@ -19,3 +19,10 @@ pipeline:
       curl -fsSL -o plex.deb "https://downloads.plex.tv/plex-media-server-new/${{package.version}}/debian/plexmediaserver_${{package.version}}_amd64.deb"
       dpkg-deb -R plex.deb ${{targets.destdir}}
       rm -rf ${{targets.destdir}}/usr/share ${{targets.destdir}}/DEBIAN
+
+test:
+  pipeline:
+    - name: Check for missing dependancies
+      uses: test/tw/ldd-check
+      with:
+        packages: ${{package.name}}
