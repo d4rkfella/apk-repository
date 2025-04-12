@@ -10,7 +10,8 @@ package:
       - ffmpeg
       - fontconfig
       - mesa
-      - sqlite
+      - sqlite-libs
+      - icu-libs
 environment:
   contents:
     keyring:
