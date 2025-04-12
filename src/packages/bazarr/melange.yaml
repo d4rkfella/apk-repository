@@ -18,12 +18,9 @@ environment:
       - https://packages.darkfellanetwork.com
       - https://packages.wolfi.dev/os
     packages:
-      - build-base
       - python-3.13
       - py3.13-pip
       - py3.13-virtualenv-bin
-      - libxml2-dev
-      - libxslt-dev
       - busybox
       - bash
       - ca-certificates-bundle
