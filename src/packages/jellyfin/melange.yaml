@@ -52,7 +52,7 @@ test:
   environment:
     contents:
       packages:
-        - lttng-ust
+        - lttng-ust-dotnet6-compat
   pipeline:
     - name: "Start Jellyfin server"
       runs: |
