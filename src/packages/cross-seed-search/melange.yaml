@@ -20,7 +20,8 @@ pipeline:
   
   - uses: go/build
     with:
-      packages: ./cross-seed-search/main.go
+      packages: cross-seed-search/main.go
       output: cross-seed-search
+      modroot: cross-seed-search
       strip: "-s -w"
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")'
