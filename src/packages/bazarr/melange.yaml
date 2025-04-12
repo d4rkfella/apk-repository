@@ -50,7 +50,8 @@ pipeline:
       npm install
       npm run build
   - runs: |
-      set -euo pipefail
+      set -euo pipefail     
+      
       
       DEST_DIR="/tmp"
       LIBS_DIR="libs"
