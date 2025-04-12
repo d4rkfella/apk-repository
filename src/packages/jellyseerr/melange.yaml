@@ -42,14 +42,13 @@ pipeline:
     working-directory: /home/build/Jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
+      export NODE_ENV=production
+      export NEXT_TELEMETRY_DISABLED=1
+      export NEXT_PRIVATE_LOCAL_WEBPACK5=1
+      export NEXT_PUBLIC_DEBUG=false
       pnpm add image-size@1.2.1
-      jq '.pnpm.overrides = {
-        "@babel/runtime": "7.26.10",
-        "next": "14.2.26"
-      }' package.json > tmp.json && mv tmp.json package.json
       pnpm audit --fix
-      pnpm install --no-frozen-lockfile
-      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
+      pnpm install
       pnpm build
       pnpm prune --prod --ignore-scripts
   - name: Delete linux-musl node-modules and other unneeded files
