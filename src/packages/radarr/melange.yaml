@@ -43,7 +43,7 @@ pipeline:
       _platform="Posix"
       _slnFile="src/Radarr.sln"
       ulimit -n 4096
-      ./test.sh $_slnFile
+      ./clean_sln.sh $_slnFile
       echo "Updating Version Info"
       sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
       sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
