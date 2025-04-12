@@ -42,10 +42,14 @@ pipeline:
     working-directory: /home/build/Jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
-      pnpm update image-size@1.2.1
-      jq '.resolutions["@babel/runtime"] = "7.26.10" | .resolutions["next"] = "14.2.26"' package.json > tmp.json && mv tmp.json package.json
+      pnpm add image-size@1.2.1
+      jq '.pnpm.overrides = {
+        "@babel/runtime": "7.26.10",
+        "next": "14.2.26"
+      }' package.json > tmp.json && mv tmp.json package.json
       CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile
       pnpm audit --fix
+      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
   - name: Delete linux-musl node-modules and other unneeded files
