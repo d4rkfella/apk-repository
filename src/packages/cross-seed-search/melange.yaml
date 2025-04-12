@@ -16,7 +16,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/qbittorrent-distroless
       branch: main
-      expected-commit: 5a0236202758e3352ee7880bac7f41257e297be1
+      expected-commit: 29ea5e1e4476713ed7c526fefe70696f19434dfe
   
   - uses: go/build
     with:
@@ -24,4 +24,4 @@ pipeline:
       output: cross-seed-search
       modroot: ./cross-seed-search
       strip: "-s -w"
-      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")'
+      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
