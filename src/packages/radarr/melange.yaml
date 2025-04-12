@@ -77,7 +77,7 @@ pipeline:
       rm -f "$_destdir"/ServiceInstall.*
       rm "$_destdir"/Radarr.Windows.*
 
-      
+      mkdir -p "${{targets.destdir}}"/usr/bin
       ln -s /usr/lib/Radarr/bin/Radarr "${{targets.destdir}}"/usr/bin/Radarr
   
   - uses: strip
