@@ -20,6 +20,7 @@ pipeline:
 
   - uses: go/bump
     with:
+      modroot: ./cross-seed-search
       deps: |-
         golang.org/x/net@v0.36.0
   
