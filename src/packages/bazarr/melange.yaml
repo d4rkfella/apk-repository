@@ -113,7 +113,7 @@ pipeline:
       mkdir -p "${EXECDIR}" "${APPDIR}"
       
       echo "#!/usr/lib/Bazarr/bin/venv/bin/python3" > "${EXECDIR}/Bazarr"
-      cat main.py >> "${EXECDIR}/Bazarr"
+      cat bazarr.py >> "${EXECDIR}/Bazarr"
       chmod +x "${EXECDIR}/Bazarr"
       virtualenv "${APPDIR}/venv"
       sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir -r requirements.txt -r postgres-requirements.txt"    
