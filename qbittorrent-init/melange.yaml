@@ -1,0 +1,27 @@
+package:
+  name: qbittorrent-init
+  version: "1.0.0"
+  epoch: 0
+  copyright:
+    - license: MIT
+
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/d4rkfella/qbittorrent-distroless
+      branch: main
+      expected-commit: 29ea5e1e4476713ed7c526fefe70696f19434dfe
+  
+  - uses: go/build
+    with:
+      packages: main.go
+      output: qbittorrent-init
+      modroot: ./qbittorrent-init
+      strip: "-s -w"
+      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
