@@ -156,7 +156,7 @@ jobs:
             local repo="$1"
             local tag="$2"
       
-            api_url="https://api.github.com/repos/${repo}/git/ref/tags/${tag}"
+            api_url="https://api.github.com/repos/${repo}/git/ref/tags/v${tag}"
             ref_response=$(curl -s "$api_url")
       
             object_type=$(echo "$ref_response" | jq -r '.object.type')
