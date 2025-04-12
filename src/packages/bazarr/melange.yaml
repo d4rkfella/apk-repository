@@ -105,15 +105,11 @@ pipeline:
       export PYTHONHASHSEED=0
       export PYTHONDONTWRITEBYTECODE=1
       export PYTHONUNBUFFERED=1
-      EXECDIR="${{targets.destdir}}/usr/bin"
-      APPDIR="${{targets.destdir}}/usr/lib/Bazarr/bin"
+      APPDIR="${{targets.destdir}}/usr/lib/bazarr/app"
       FILE_LIST="$(cat .github/files_to_copy)"
       
-      mkdir -p "${EXECDIR}" "${APPDIR}"
+      mkdir -p "${APPDIR}"
       
-      echo "#!/usr/lib/Bazarr/bin/venv/bin/python3" > "${EXECDIR}/Bazarr"
-      cat bazarr.py >> "${EXECDIR}/Bazarr"
-      chmod +x "${EXECDIR}/Bazarr"
       virtualenv --copies "${APPDIR}/venv"
       sed -i '/lxml/ s/lxml>=4.3.0, <5.0.0/lxml>=5.0.0/' requirements.txt
       sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir -r requirements.txt -r postgres-requirements.txt"    
@@ -130,7 +126,7 @@ pipeline:
       
       cp VERSION "${APPDIR}"
       
-      printf "UpdateMethod=docker\nBranch=master\nPackageVersion=${{package.version}}\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)" > ${{targets.destdir}}/usr/lib/Bazarr/package_info
+      printf "UpdateMethod=docker\nBranch=master\nPackageVersion=${{package.version}}\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)" > ${{targets.destdir}}/usr/lib/bazarr/package_info
 test:
   environment:
     contents:
