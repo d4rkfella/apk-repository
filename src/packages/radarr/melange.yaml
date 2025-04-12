@@ -41,30 +41,29 @@ pipeline:
       _dotnet_arch="x64"
       _runtime="linux-$_dotnet_arch"
       _platform="Posix"
+      _framework="net6.0"
       _slnFile="src/Radarr.sln"
+      _output="_output"
+      _destdir="${{targets.destdir}}/usr/lib/Radarr/bin"
+      _artifacts="$_output/$_framework/$_runtime/publish"
       ulimit -n 4096
-      ./clean_sln.sh $_slnFile
-      echo "Updating Version Info"
-      sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
-      sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
-      
-      dotnet msbuild -restore $_slnFile -p:SentryCliExecutable= -p:SentryUploadSymbols=false -p:SentryIncludeSources=false -p:EmbedAllSources=false -p:Configuration=Release -p:TargetFramework=net6.0 -p:Platform=$_platform -p:RuntimeIdentifier=$_runtime -t:Publish -p:DebugSymbols=false -p:DebugType=none
-  - name: Build frontend
-    runs: |
-      PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
+
+      echo "Building frontend"
+
       yarn install --frozen-lockfile --network-timeout 120000
       yarn lint
       yarn stylelint-linux
       yarn run build --env production
-  - name: Prepare package
-    runs: |
-      _dotnet_arch="x64"
-      _framework="net6.0"
-      _runtime="linux-$_dotnet_arch"
-      _output="_output"
-      _artifacts="$_output/$_framework/$_runtime/publish"
-      _destdir="${{targets.destdir}}/usr/lib/Radarr/bin"
-
+      
+      echo "Building backend"
+      
+      sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
+      sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
+      
+      dotnet msbuild -restore $_slnFile -p:SentryCliExecutable= -p:SentryUploadSymbols=false -p:SentryIncludeSources=false -p:EmbedAllSources=false -p:Configuration=Release -p:TargetFramework=$_framework -p:Platform=$_platform -p:RuntimeIdentifier=$_runtime -t:Publish -p:DebugSymbols=false -p:DebugType=none
+      
+      echo "Preparing package"
+      
       mkdir -p $_destdir
       printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > ${{targets.destdir}}/usr/lib/Radarr/package_info
 
@@ -81,7 +80,9 @@ pipeline:
 
       echo "Adding LICENSE"
       cp LICENSE $_destdir
+  
   - uses: strip
+
 test:
   environment:
     contents:
