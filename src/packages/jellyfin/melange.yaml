@@ -47,7 +47,12 @@ pipeline:
       mkdir -p "${{targets.destdir}}"/usr/bin
       ln -s /usr/lib/jellyfin/jellyfin "${{targets.destdir}}"/usr/bin/jellyfin
   - uses: strip
+
 test:
+  environment:
+    contents:
+      packages:
+        - lttng-ust
   pipeline:
     - name: "Start Jellyfin server"
       runs: |
