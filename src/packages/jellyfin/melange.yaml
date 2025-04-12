@@ -45,6 +45,7 @@ pipeline:
       mkdir -p "${{targets.destdir}}"/usr/bin
       ln -s /usr/lib/jellyfin/jellyfin "${{targets.destdir}}"/usr/bin/jellyfin
   - uses: strip
+
 test:
   pipeline:
     - name: "Start Jellyfin server"
