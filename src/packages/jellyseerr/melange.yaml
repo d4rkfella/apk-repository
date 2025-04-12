@@ -21,6 +21,7 @@ environment:
       - bash
       - curl
       - yq
+      - jq
 pipeline:
   - uses: git-checkout
     with:
