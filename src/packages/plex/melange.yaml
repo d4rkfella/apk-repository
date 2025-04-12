@@ -1,0 +1,19 @@
+package:
+  name: plex
+  version: "1.41.6.9685-d301f511a"
+  epoch: 0
+  description: Plex Media Server
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - dpkg
+
+pipeline:
+  - runs: |
+      mkdir -p /usr/lib/plexmediaserver
+      curl -fsSL -o plex.deb "https://downloads.plex.tv/plex-media-server-new/${{package.version}}/debian/plexmediaserver_${{package.version}}_amd64.deb.deb"
+      dpkg-deb -R plex.deb ${{targets.destdir}}/usr
