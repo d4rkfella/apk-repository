@@ -47,7 +47,7 @@ pipeline:
       echo "Updating Version Info"
       sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>${{package.version}}<\/AssemblyVersion>/g" src/Directory.Build.props
       sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>master<\/AssemblyConfiguration>/g" src/Directory.Build.props
-      dotnet publish src/Radarr.sln -c Release --runtime linux-x64 --self-contained true -p:DebugSymbols=false -p:DebugType=none
+      dotnet publish src/Radarr.sln -c Release --runtime linux-x64 -f net6.0 --self-contained true -p:DebugSymbols=false -p:DebugType=none
   - name: Build frontend
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
