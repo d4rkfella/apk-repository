@@ -20,7 +20,7 @@ pipeline:
   
   - uses: go/build
     with:
-      packages: ./cross-seed-search/main.go
+      packages: main.go
       output: cross-seed-search
       modroot: ./cross-seed-search
       strip: "-s -w"
