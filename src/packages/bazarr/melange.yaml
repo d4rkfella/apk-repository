@@ -118,6 +118,8 @@ pipeline:
       sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir -r requirements.txt -r postgres-requirements.txt"    
       
       git describe --abbrev=0 > VERSION
+
+      ls -la
       
       for f in "$FILE_LIST"
       do
