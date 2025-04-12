@@ -35,6 +35,9 @@ pipeline:
       expected-commit: "759da8a111b5e403512bf581aba037575a92516f"
       repository: https://github.com/morpheus65535/bazarr
       tag: v${{vars.transformed-version}}
+  - uses: patch
+    with:
+      patches: GHSA-h95x-26f3-88hr.patch
   - name: Install volta
     runs: |
       curl -sSL https://get.volta.sh | bash 
