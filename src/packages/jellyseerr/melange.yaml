@@ -59,7 +59,7 @@ pipeline:
       rm -rf \
         .next/cache \
         .next/next-server.js.nft.json \
-        .next/next-minimal-server.js.nft.json
+        .next/next-minimal-server.js.nft.json \
         .next/server/pages-manifest.json \
         .next/prerender-manifest.json \
         node_modules/.modules.yaml \
