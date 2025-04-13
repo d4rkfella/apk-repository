@@ -56,7 +56,7 @@ pipeline:
         -print \
         -exec rm -rf {} + \
         -prune
-      rm -rf src server .next/cache charts gen-docs docs
+      rm -rf src server .next node_modules/.modules.yaml charts gen-docs docs
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
