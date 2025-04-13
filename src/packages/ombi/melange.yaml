@@ -37,8 +37,8 @@ pipeline:
       _runtime="linux-x64-$_dotnet_arch"
     	
       dotnet new tool-manifest
-    	dotnet tool install --local dotnet-setversion
-    	dotnet setversion -r "${{package.version}}"
+      dotnet tool install --local dotnet-setversion
+      dotnet setversion -r "${{package.version}}"
       
       dotnet publish "$_backend" \
     		-c Release \
