@@ -41,9 +41,9 @@ pipeline:
       dotnet setversion -r "${{package.version}}"
       
       dotnet publish "$_backend" \
-    		-c Release \
-    		-r "$_runtime" \
-    		--self-contained true
+        -c Release \
+        -r "$_runtime" \
+        --self-contained true
       
       mv "$_artifacts/$_runtime"/publish/* "$_artifacts" -f
       rm -r "${_artifacts:?}/${_runtime:?}"
