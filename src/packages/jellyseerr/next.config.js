@@ -1,12 +1,8 @@
-const { execSync } = require('child_process');
 /**
  * @type {import('next').NextConfig}
  */
 module.exports = {
-  generateBuildId: async () => {
-    const commitHash = execSync('git rev-parse --short HEAD').toString().trim()
-    return `build-${commitHash}`
-  },
+  generateBuildId: () => 'fixed',
   outputFileTracing: true,
   env: {
     commitTag: process.env.COMMIT_TAG || 'local',
