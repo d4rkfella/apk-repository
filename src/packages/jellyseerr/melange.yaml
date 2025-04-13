@@ -43,15 +43,18 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       export npm_config_build_from_source=true
-      sed -i '/module.exports = {/a\
-      generateBuildId: () => "fixed", // Fixed build ID to avoid randomness\n\
-      output: 'standalone',\n\
-      outputFileTracing: true,\n\
-      webpack(config) {\n\
-        config.optimization.moduleIds = "deterministic"; // Ensures deterministic chunk names\n\
-        config.optimization.chunkIds = "deterministic"; // Ensures deterministic chunk names\n\
-        return config;\n\
-      },\n' next.config.js
+      sed -i -e '/module.exports = {/r'<(
+      cat <<'EOF'
+        generateBuildId: () => 'fixed',
+        output: 'standalone',
+        experimental: { outputFileTracing: true },
+        webpack: (config) => {
+          config.optimization.moduleIds = 'deterministic';
+          config.optimization.chunkIds = 'deterministic';
+          return config;
+        },
+      EOF
+      ) next.config.js
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
