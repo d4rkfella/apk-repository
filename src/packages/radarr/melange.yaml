@@ -64,9 +64,9 @@ pipeline:
       chmod +x "$_artifacts"/ffprobe
       
       find "$_artifacts" \( \
-      -name "ServiceUninstall.*" -o \
-      -name "ServiceInstall.*" -o \
-      -name "Radarr.Windows.*" \) -delete
+        -name "ServiceUninstall.*" -o \
+        -name "ServiceInstall.*" -o \
+        -name "Radarr.Windows.*" \) -delete
       
       mv "$_output"/UI "$_artifacts"
       
@@ -75,9 +75,9 @@ pipeline:
       mkdir -p "$_destdir" "${{targets.destdir}}"/usr/bin
       printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > "$_destdir"/package_info
       
-      cp -af "$_artifacts" "$destdir"/bin"   
+      cp -af "$_artifacts" "$destdir"/bin
       
-      ln -s /usr/lib/Radarr/bin/Radarr "${{targets.destdir}}"/usr/bin/Radarr
+      ln -s /usr/lib/radarr/bin/Radarr "${{targets.destdir}}"/usr/bin/Radarr
   - uses: strip
 
 test:
