@@ -18,7 +18,6 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
-      packages:
       - libstdc++
       - icu-libs
       - busybox
