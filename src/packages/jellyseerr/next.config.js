@@ -5,7 +5,10 @@ const webpack = require("webpack");
  * @type {import('next').NextConfig}
  */
 module.exports = {
-  generateBuildId: () => 'fixed',
+  generateBuildId: async () => {
+    const commitHash = execSync('git rev-parse --short HEAD').toString().trim()
+    return `build-${commitHash}`
+  },
   outputFileTracing: true,
   env: {
     commitTag: process.env.COMMIT_TAG || 'local',
@@ -18,24 +21,15 @@ module.exports = {
       { hostname: 'plex.tv' },
     ],
   },
-  onDemandEntries: {
-    maxInactiveAge: 60 * 60 * 1000,
-    pagesBufferLength: 10,
-  },
   webpack(config) {
     config.output.hashFunction = 'xxhash64';
     config.optimization.moduleIds = 'deterministic';
     config.optimization.chunkIds = 'deterministic';
-    config.plugins.push(new webpack.ids.DeterministicModuleIdsPlugin({
-      maxLength: 5,
-      salt: crypto.createHash('sha256').update('fixed').digest('hex')
-    }));
     config.module.rules.push({
       test: /\.svg$/,
       issuer: /\.(js|ts)x?$/,
       use: ['@svgr/webpack'],
     });
-
     return config;
   },
   experimental: {
