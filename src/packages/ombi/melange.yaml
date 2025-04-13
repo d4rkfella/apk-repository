@@ -35,7 +35,7 @@ pipeline:
       _artifacts="$_backend/bin/Release/net8.0"
       _dotnet_arch="x64"
       _runtime="linux-x64-$_dotnet_arch"
-    	
+      
       dotnet new tool-manifest
       dotnet tool install --local dotnet-setversion
       dotnet setversion -r "${{package.version}}"
@@ -54,9 +54,9 @@ pipeline:
       
       mkdir -p "$_artifacts"/ClientApp
       mv "$_frontend"/dist "$_artifacts"/ClientApp
-
+      
       echo "Prepare package"
-    	
+      
       DESTDIR="${{targets.destdir}}"/usr/lib/ombi
       
       mkdir -p "$DESTDIR"
