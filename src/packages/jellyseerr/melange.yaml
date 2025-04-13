@@ -57,14 +57,15 @@ pipeline:
         -exec rm -rf {} + \
         -prune
       rm -rf \
+        .next/cache \
         .next/next-server.js.nft.json \
+        .next/next-minimal-server.js.nft.json
         .next/**/trace \
         .next/server/pages-manifest.json \
         .next/prerender-manifest.json \
         node_modules/.modules.yaml \
         src \
         server \
-        .next/cache \
         charts \
         gen-docs \
         docs
