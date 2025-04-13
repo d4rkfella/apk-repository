@@ -33,8 +33,8 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
-      volta install "node@$(yq -r '.engines.node' Jellyseerr/package.json)"
-      volta install "pnpm@$(yq -r '.engines.pnpm' Jellyseerr/package.json)"  
+      volta install "node@$(yq -r '.engines.node' package.json)"
+      volta install "pnpm@$(yq -r '.engines.pnpm' package.json)"  
   - name: Clean source directory
     runs: "grep -E '^\\*\\*/' .dockerignore | while IFS= read -r pattern; do\n  base_pattern=\"${pattern#\\*\\*/}\"\n  \n  echo \"Processing Dockerignore pattern: $pattern → $base_pattern\"\n  \n  find . -name \"$base_pattern\" -exec rm -rf {} + 2>/dev/null\n  \n  [ -e \"./$base_pattern\" ] && rm -rf \"./$base_pattern\"\n  \n  find . -path \"./*/$base_pattern\" -exec rm -rf {} + 2>/dev/null\ndone\n\ngrep -vE '^(#|$|^\\*\\*/)' .dockerignore | while IFS= read -r pattern; do\n  find . -path \"./${pattern#/}\" -exec rm -rf {} + 2>/dev/null\ndone  \n"
   - name: Build
@@ -42,7 +42,7 @@ pipeline:
       PATH="$HOME/.volta/bin:$PATH"
       export NEXT_TELEMETRY_DISABLED=1
       rm next.config.js
-      install -m444 -D /home/build/next.config.js ./next.config.js
+      install -m444 -D next.config.js next.config.js
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
