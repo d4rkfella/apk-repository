@@ -23,6 +23,7 @@ environment:
       - yq
       - jq
       - python-3.13-dev
+      - py3.13-pip
 pipeline:
   - uses: git-checkout
     with:
@@ -44,18 +45,20 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       export npm_config_build_from_source=true
-      sed -i -e '/module.exports = {/r'<(
-      cat <<'EOF'
-        generateBuildId: () => 'fixed',
-        output: 'standalone',
-        experimental: { outputFileTracing: true },
-        webpack: (config) => {
-          config.optimization.moduleIds = 'deterministic';
-          config.optimization.chunkIds = 'deterministic';
-          return config;
-        },
-      EOF
-      ) next.config.js
+      
+      pip install distutils
+      
+      sed -i '/module.exports = {/a\
+        generateBuildId: () => '"'"'fixed'"'"',\
+        output: '"'"'standalone'"'"',\' next.config.js
+
+      sed -i '/experimental: {/a\
+        outputFileTracing: true,\' next.config.js
+
+      sed -i '/webpack(config) {/a\
+        config.optimization.moduleIds = '"'"'deterministic'"'"';\
+        config.optimization.chunkIds = '"'"'deterministic'"'"';\' next.config.js
+      
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
