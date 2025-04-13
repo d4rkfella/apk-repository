@@ -32,9 +32,6 @@ pipeline:
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
-      export NEXT_BUILD_ID=fixed
-      export NEXT_TELEMETRY_DISABLED=1
-      export NODE_ENV=production
       curl -sSL https://get.volta.sh | bash
       volta install "node@$(yq -r '.engines.node' Jellyseerr/package.json)"
       volta install "pnpm@$(yq -r '.engines.pnpm' Jellyseerr/package.json)"
@@ -45,6 +42,9 @@ pipeline:
     working-directory: /home/build/Jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
+      export NEXT_BUILD_ID=fixed
+      export NEXT_TELEMETRY_DISABLED=1
+      export NODE_ENV=production
       pnpm audit --fix
       pnpm install
       pnpm build
