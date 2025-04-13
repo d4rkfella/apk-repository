@@ -5,28 +5,6 @@ const webpack = require("webpack");
  * @type {import('next').NextConfig}
  */
 module.exports = {
-  hooks: {
-    readPackage: (pkg) => {
-      const sortObject = (obj) => Object.keys(obj).sort().reduce((acc, key) => {
-        acc[key] = obj[key];
-        return acc;
-      }, {});
-      
-      pkg.dependencies = sortObject(pkg.dependencies);
-      pkg.peerDependencies = sortObject(pkg.peerDependencies);
-      return pkg;
-    }
-  },
-  prerenderManifest: {
-      version: 3,
-      routes: {},
-      dynamicRoutes: {},
-      notFoundRoutes: [],
-      preview: {
-        previewModeId: 'fixed-preview-id',
-        previewModeSigningKey: crypto.createHash('sha256').update('fixed-key').digest('hex')
-      }
-    },
   generateBuildId: () => 'fixed',
   outputFileTracing: true,
   env: {
