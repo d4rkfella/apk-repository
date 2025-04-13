@@ -27,7 +27,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: ""
+      expected-commit: "640e3e5d441b0f363d3b993f36dae3d22691608c"
       repository: https://github.com/Sonarr/Sonarr
       tag: v${{package.version}}
   
