@@ -46,12 +46,6 @@ pipeline:
       export NEXT_TELEMETRY_DISABLED=1
       sed -i "/};/i\  generateBuildId: async () => process.env.NEXT_BUILD_ID || 'ci-fixed'," next.config.js
       pnpm audit --fix
-      pnpm install @octokit/core@^6
-      pnpm install react@18.2.0
-      pnpm install react@17.0.2
-      pnpm install eslint@^8.56.0
-      pnpm install semantic-release@^17.0.0
-      pnpm install typeorm@^0.2.5
       CYPRESS_INSTALL_BINARY=0 pnpm install
       pnpm build
       pnpm prune --prod --ignore-scripts
@@ -63,7 +57,7 @@ pipeline:
         -print \
         -exec rm -rf {} + \
         -prune
-      rm -rf src server .next/prerender-manifest.json .next/cache .next/trace node_modules/.modules.yaml charts gen-docs docs
+      rm -rf src server .next/prerender-manifest.json .next/server/pages-manifest.json node_modules/.pnpm/lock.yaml .next/next-minimal-server.js.nft.json .next/next-server.js.nft.json pnpm-lock.yaml .next/cache .next/trace node_modules/.modules.yaml charts gen-docs docs
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
