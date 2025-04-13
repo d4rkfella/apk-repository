@@ -61,7 +61,9 @@ pipeline:
       sed -i '/webpack(config) {/a\
         config.optimization.moduleIds = '"'"'deterministic'"'"';\
         config.optimization.chunkIds = '"'"'deterministic'"'"';\' next.config.js
-      pnpm override add sharp@0.37.0
+      sed -i 's/"sharp": "\^0.33.4"/"sharp": "^0.37.0"/' package.json
+      sed -i '/"sharp":/a "resolutions": { "sharp": "0.37.0" },' package.json
+      
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
