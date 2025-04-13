@@ -43,15 +43,8 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       export NEXT_TELEMETRY_DISABLED=1
-      
-      sed -i '/module.exports = {/a\
-        generateBuildId: () => '"'"'fixed'"'"',\
-        outputFileTracing: true,\' next.config.js
-      
-      sed -i '/webpack(config) {/a\
-        config.output.hashFunction = '"'"'xxhash64'"'"';\
-        config.optimization.moduleIds = '"'"'deterministic'"'"';\
-        config.optimization.chunkIds = '"'"'deterministic'"'"';\' next.config.js
+      rm next.config.js
+      install -m444 -D next.config.js ./next.config.js
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
