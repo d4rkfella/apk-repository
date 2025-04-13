@@ -44,7 +44,7 @@ pipeline:
       PATH="$HOME/.volta/bin:$PATH"
       export NEXT_BUILD_ID=fixed
       export NEXT_TELEMETRY_DISABLED=1
-      pnpm install --frozen-lockfile
+      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
   - name: Delete linux-musl node-modules and other unneeded files
@@ -55,7 +55,7 @@ pipeline:
         -print \
         -exec rm -rf {} + \
         -prune
-      rm -rf src server .next/cache .next/*.nft.json charts gen-docs docs
+      rm -rf src server .next/cache charts gen-docs docs
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
