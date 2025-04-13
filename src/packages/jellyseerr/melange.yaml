@@ -45,6 +45,7 @@ pipeline:
       export NEXT_BUILD_ID=fixed
       export NEXT_TELEMETRY_DISABLED=1
       sed -i "/};/i\  generateBuildId: async () => process.env.NEXT_BUILD_ID || 'ci-fixed'," next.config.js
+      sed -i "/module.exports = {/a \  distDir: 'build_output'," next.config.js
       pnpm audit --fix
       CYPRESS_INSTALL_BINARY=0 pnpm install
       pnpm build
@@ -57,7 +58,7 @@ pipeline:
         -print \
         -exec rm -rf {} + \
         -prune
-      rm -rf src server .next/prerender-manifest.json .next/server/pages-manifest.json node_modules/.pnpm/lock.yaml .next/next-minimal-server.js.nft.json .next/next-server.js.nft.json pnpm-lock.yaml .next/cache .next/trace node_modules/.modules.yaml charts gen-docs docs
+      rm -rf src server .next charts gen-docs docs
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
