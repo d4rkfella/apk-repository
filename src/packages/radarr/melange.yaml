@@ -58,6 +58,8 @@ pipeline:
         -p:RuntimeIdentifiers="$_runtime" \
         -p:Configuration=Release \
         -p:SelfContained=true \
+        -p:DebugSymbols=false \
+        -p:DebugType=none \
         -t:PublishAllRids
       yarn build --env production --no-stats
       
