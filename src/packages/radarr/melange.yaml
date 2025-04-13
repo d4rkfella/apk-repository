@@ -60,6 +60,10 @@ pipeline:
         -p:SelfContained=true \
         -p:DebugSymbols=false \
         -p:DebugType=none \
+        -p:SentryCliExecutable= \
+        -p:SentryUploadSymbols=false \
+        -p:SentryIncludeSources=false \
+        -p:EmbedAllSources=false \
         -t:PublishAllRids
       yarn build --env production --no-stats
       
