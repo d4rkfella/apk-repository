@@ -2,7 +2,7 @@
 set -eo pipefail
 
 # Configuration
-TARGET_DIR="/usr/lib/Prowlarr"
+TARGET_DIR="/usr/lib/prowlarr"
 EXPECTED_VERSION="${EXPECTED_VERSION}"
 SERVER_PORT=9696
 STARTUP_TIMEOUT=20
