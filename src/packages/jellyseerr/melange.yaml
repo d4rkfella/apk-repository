@@ -62,6 +62,7 @@ pipeline:
         -exec rm -rf {} + \
         -prune
       rm -rf src server .next charts gen-docs docs
+      find . -name "*.node" -exec touch --date "2020-01-01 00:00:00" {} \;
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
