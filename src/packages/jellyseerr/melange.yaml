@@ -49,6 +49,7 @@ pipeline:
         outputFileTracing: true,\' next.config.js
       
       sed -i '/webpack(config) {/a\
+        config.output.hashFunction = '"'"'xxhash64'"'"';\
         config.optimization.moduleIds = '"'"'deterministic'"'"';\
         config.optimization.chunkIds = '"'"'deterministic'"'"';\' next.config.js
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
