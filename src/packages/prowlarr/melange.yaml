@@ -19,6 +19,7 @@ environment:
       - https://packages.wolfi.dev/os
     packages:
       - libstdc++
+      - icu-libs
       - busybox
       - bash
       - curl
