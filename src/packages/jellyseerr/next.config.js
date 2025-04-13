@@ -17,6 +17,16 @@ module.exports = {
       return pkg;
     }
   },
+  prerenderManifest: {
+      version: 3,
+      routes: {},
+      dynamicRoutes: {},
+      notFoundRoutes: [],
+      preview: {
+        previewModeId: 'fixed-preview-id',
+        previewModeSigningKey: crypto.createHash('sha256').update('fixed-key').digest('hex')
+      }
+    },
   generateBuildId: () => 'fixed',
   outputFileTracing: true,
   env: {
@@ -47,16 +57,6 @@ module.exports = {
     return config;
   },
   experimental: {
-    prerenderManifest: {
-      version: 3,
-      routes: {},
-      dynamicRoutes: {},
-      notFoundRoutes: [],
-      preview: {
-        previewModeId: 'fixed-preview-id',
-        previewModeSigningKey: crypto.createHash('sha256').update('fixed-key').digest('hex')
-      }
-    },
     scrollRestoration: true,
     largePageDataBytes: 256000,
   },
