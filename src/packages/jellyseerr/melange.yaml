@@ -23,7 +23,8 @@ environment:
       - yq
       - jq
       - python-3.13-dev
-      - py3.13-pip
+      - py3-setuptools
+      - libvips-dev
 pipeline:
   - uses: git-checkout
     with:
