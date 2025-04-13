@@ -3,7 +3,6 @@
  */
 module.exports = {
   generateBuildId: () => 'fixed',
-  distDir: ".next",
   env: {
     commitTag: process.env.COMMIT_TAG || 'local',
   },
