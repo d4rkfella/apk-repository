@@ -18,6 +18,10 @@ module.exports = {
       { hostname: 'plex.tv' },
     ],
   },
+  onDemandEntries: {
+    maxInactiveAge: 60 * 60 * 1000,
+    pagesBufferLength: 10,
+  },
   webpack(config) {
     config.output.hashFunction = 'xxhash64';
     config.optimization.moduleIds = 'deterministic';
