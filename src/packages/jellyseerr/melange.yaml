@@ -29,6 +29,7 @@ pipeline:
       repository: https://github.com/fallenbagel/jellyseerr
       tag: v${{package.version}}
       destination: Jellyseerr
+  
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
