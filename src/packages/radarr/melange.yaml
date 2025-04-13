@@ -81,7 +81,7 @@ pipeline:
       mkdir -p "$_destdir" "${{targets.destdir}}"/usr/bin
       printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > "$_destdir"/package_info
       
-      cp -af "$_artifacts" "$destdir"/bin
+      cp -af "$_artifacts" "$_destdir"/bin
       
       ln -s /usr/lib/radarr/bin/Radarr "${{targets.destdir}}"/usr/bin/Radarr
   - uses: strip
@@ -100,6 +100,9 @@ test:
       uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
+    - name: Run test script
+      runs: |
+        EXPECTED_VERSION="${{package.version}}" ./test.sh
 update:
   enabled: true
   release-monitor:
