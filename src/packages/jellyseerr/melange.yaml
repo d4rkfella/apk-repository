@@ -35,6 +35,7 @@ pipeline:
       curl -sSL https://get.volta.sh | bash
       volta install "node@$(yq -r '.engines.node' Jellyseerr/package.json)"
       volta install "pnpm@$(yq -r '.engines.pnpm' Jellyseerr/package.json)"
+  
   - name: Clean source directory
     working-directory: /home/build/Jellyseerr
     runs: "grep -E '^\\*\\*/' .dockerignore | while IFS= read -r pattern; do\n  base_pattern=\"${pattern#\\*\\*/}\"\n  \n  echo \"Processing Dockerignore pattern: $pattern → $base_pattern\"\n  \n  find . -name \"$base_pattern\" -exec rm -rf {} + 2>/dev/null\n  \n  [ -e \"./$base_pattern\" ] && rm -rf \"./$base_pattern\"\n  \n  find . -path \"./*/$base_pattern\" -exec rm -rf {} + 2>/dev/null\ndone\n\ngrep -vE '^(#|$|^\\*\\*/)' .dockerignore | while IFS= read -r pattern; do\n  find . -path \"./${pattern#/}\" -exec rm -rf {} + 2>/dev/null\ndone  \n"
