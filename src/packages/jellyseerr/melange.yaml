@@ -45,11 +45,8 @@ pipeline:
       
       sed -i '/module.exports = {/a\
         generateBuildId: () => '"'"'fixed'"'"',\
-        output: '"'"'standalone'"'"',\' next.config.js
-
-      sed -i '/experimental: {/a\
         outputFileTracing: true,\' next.config.js
-
+      
       sed -i '/webpack(config) {/a\
         config.optimization.moduleIds = '"'"'deterministic'"'"';\
         config.optimization.chunkIds = '"'"'deterministic'"'"';\' next.config.js
