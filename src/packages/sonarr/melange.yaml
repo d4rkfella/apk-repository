@@ -39,60 +39,51 @@ pipeline:
   - name: Build
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
+      
+      export BROWSERSLIST_IGNORE_OLD_DATA=true
+      
       _dotnet_arch="x64"
       _runtime="linux-$_dotnet_arch"
-      _platform="Posix"
       _framework="net6.0"
-      _slnFile="src/Sonarr.sln"
       _output="_output"
-      _artifacts="$_output/$_framework/$_runtime/publish"
-      _destdir="${{targets.destdir}}/usr/lib/Sonarr/bin"
-
-      echo "Building frontend"
+      _destdir="${{targets.destdir}}/usr/lib/sonarr"
+      _artifacts="$_output/$_framework/$_runtime/publish"    
       
-      yarn install --frozen-lockfile --network-timeout 120000
-      yarn lint
-      yarn stylelint -f github
-      yarn run build --env production
-
-      echo "Building backend"
+      yarn install --frozen-lockfile --network-timeout 120000       
       
       ulimit -n 4096
       
-      sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>"${{package.version}}"<\/AssemblyVersion>/g" src/Directory.Build.props
-      sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>main<\/AssemblyConfiguration>/g" src/Directory.Build.props
+      dotnet build src \
+        -p:AssemblyConfiguration="master" \
+        -p:AssemblyVersion="${{package.version}}" \
+        -p:RuntimeIdentifiers="$_runtime" \
+        -p:Configuration=Release \
+        -p:DebugSymbols=false \
+        -p:DebugType=none \
+        -p:SentryCliExecutable= \
+        -p:SentryUploadSymbols=false \
+        -p:SentryIncludeSources=false \
+        -p:EmbedAllSources=false \
+        -t:PublishAllRids
+      yarn build --env production --no-stats
       
-      dotnet msbuild -restore "$_slnFile" \
-       -p:SentryCliExecutable= \
-       -p:SentryUploadSymbols=false \
-       -p:SentryIncludeSources=false \
-       -p:EmbedAllSources=false \
-       -p:Configuration=Release \
-       -p:TargetFramework="$_framework" \
-       -p:Platform=$_platform \
-       -p:RuntimeIdentifier="$_runtime" \
-       -t:Publish \
-       -p:DebugSymbols=false \
-       -p:DebugType=none
-      
-      echo "Preparing package"
-
-      mkdir -p "$_destdir"
-      
-      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "main" "${{package.version}}" > "${{targets.destdir}}"/usr/lib/Sonarr/package_info
-
       chmod +x "$_artifacts"/ffprobe
       
-      cp -r "$_artifacts"/* "$_destdir"
-      cp -r "$_output"/UI "$_destdir"
-      cp LICENSE.md "$_destdir"
+      find "$_artifacts" \( \
+        -name "ServiceUninstall.*" -o \
+        -name "ServiceInstall.*" -o \
+        -name "Sonarr.Windows.*" \) -delete
       
-      rm -f "$_destdir"/ServiceUninstall.*
-      rm -f "$_destdir"/ServiceInstall.*
-      rm "$_destdir"/Sonarr.Windows.*
-
-      mkdir -p "${{targets.destdir}}"/usr/bin
-      ln -s /usr/lib/Sonarr/bin/Sonarr "${{targets.destdir}}"/usr/bin/Sonarr
+      mv "$_output"/UI "$_artifacts"
+      
+      echo "Preparing package"
+      
+      mkdir -p "$_destdir" "${{targets.destdir}}"/usr/bin
+      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > "$_destdir"/package_info
+      
+      cp -af "$_artifacts" "$_destdir"/bin
+      
+      ln -s /usr/lib/sonarr/bin/Sonarr "${{targets.destdir}}"/usr/bin/Sonarr
   - uses: strip
 test:
   environment:
