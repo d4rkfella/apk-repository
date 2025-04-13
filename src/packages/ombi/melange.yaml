@@ -1,0 +1,64 @@
+package:
+  name: ombi
+  version: "4.47.1"
+  epoch: 0
+  description: Friendly media request tool which automatically syncs with your media servers!
+  copyright:
+    - license: GPL-2.0-only
+environment:
+  contents:
+    packages:
+      - busybox
+      - curl
+      - bash
+      - icu-libs
+      - sqlite-libs
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: "c59becaa16e742f173140b9a8b3e5cfbe1f64b5e"
+      repository: https://github.com/Ombi-app/Ombi
+      tag: v${{package.version}}
+  - name: Install dependancies
+    runs: |
+      curl -sSL https://get.volta.sh | bash
+      curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version 8.0.408
+  - name: Build
+    runs: |
+      PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
+      
+      volta install node@22
+      volta install yarn@1.22
+      
+      _backend="src/Ombi"
+      _frontend="$_backend/ClientApp"
+      _artifacts="$_backend/bin/Release/net8.0"
+      _dotnet_arch="x64"
+      _runtime="linux-x64-$_dotnet_arch"
+    	
+      dotnet new tool-manifest
+    	dotnet tool install --local dotnet-setversion
+    	dotnet setversion -r "${{package.version}}"
+    
+    	dotnet publish "$_backend" \
+    		-c Release \
+    		-r "$_runtime" \
+    		--self-contained true
+    
+    	mv "$_artifacts/$_runtime"/publish/* "$_artifacts" -f
+    	rm -r "${_artifacts:?}/${_runtime:?}"
+    
+    	rm "$_artifacts"/appsettings.Development.json
+    
+    	yarn --cwd "$_frontend" install --network-timeout 120000 --frozen-lockfile
+    	yarn --cwd "$_frontend" build
+    
+    	mkdir -p "$_artifacts"/ClientApp
+    	mv "$_frontend"/dist "$_artifacts"/ClientApp
+
+      echo "Prepare package"
+    	
+      DESTDIR="${{targets.destdir}}"/usr/lib/ombi
+    
+    	mkdir -p "$DESTDIR"
+    	cp -af "$_artifacts"/* "$DESTDIR"
