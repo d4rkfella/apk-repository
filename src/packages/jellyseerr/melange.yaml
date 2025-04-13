@@ -43,7 +43,6 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       sed -i '/module.exports = {/a\
-      distDir: "build_output", // Use a consistent output folder name\n\
       generateBuildId: () => "fixed", // Fixed build ID to avoid randomness\n\
       webpack(config) {\n\
         config.optimization.moduleIds = "deterministic"; // Ensures deterministic chunk names\n\
@@ -52,7 +51,7 @@ pipeline:
       },\n' next.config.js
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
-      pnpm prune --prod --ignore-scripts
+      pnpm prune --prod
   - name: Delete linux-musl node-modules and other unneeded files
     working-directory: /home/build/Jellyseerr
     runs: |
@@ -61,8 +60,7 @@ pipeline:
         -print \
         -exec rm -rf {} + \
         -prune
-      rm -rf src server .next charts gen-docs docs
-      find . -name "*.node" -exec touch --date "2020-01-01 00:00:00" {} \;
+      rm -rf src server .next/cache charts gen-docs docs
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
