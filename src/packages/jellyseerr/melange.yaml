@@ -56,8 +56,18 @@ pipeline:
         -print \
         -exec rm -rf {} + \
         -prune
-      rm -rf src server .next/cache charts gen-docs docs
-      find . -exec touch -t 202201010000 {} +
+      rm -rf \
+        .next/**/*.nft.json \
+        .next/**/trace \
+        .next/server/pages-manifest.json \
+        .next/prerender-manifest.json \
+        node_modules/.modules.yaml \
+        src \
+        server \
+        .next/cache \
+        charts \
+        gen-docs \
+        docs
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
