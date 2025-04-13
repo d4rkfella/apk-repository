@@ -28,28 +28,25 @@ pipeline:
       expected-commit: "fac453878e3d55b93cfda78908403cce348bb9fa"
       repository: https://github.com/fallenbagel/jellyseerr
       tag: v${{package.version}}
-      destination: Jellyseerr
+      destination: jellyseerr
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
-      volta install "node@$(yq -r '.engines.node' Jellyseerr/package.json)"
-      volta install "pnpm@$(yq -r '.engines.pnpm' Jellyseerr/package.json)"  
+      volta install "node@$(yq -r '.engines.node' jellyseerr/package.json)"
+      volta install "pnpm@$(yq -r '.engines.pnpm' jellyseerr/package.json)"  
   - name: Clean source directory
-    working-directory: /home/build/Jellyseerr
+    working-directory: /home/build/jellyseerr
     runs: "grep -E '^\\*\\*/' .dockerignore | while IFS= read -r pattern; do\n  base_pattern=\"${pattern#\\*\\*/}\"\n  \n  echo \"Processing Dockerignore pattern: $pattern → $base_pattern\"\n  \n  find . -name \"$base_pattern\" -exec rm -rf {} + 2>/dev/null\n  \n  [ -e \"./$base_pattern\" ] && rm -rf \"./$base_pattern\"\n  \n  find . -path \"./*/$base_pattern\" -exec rm -rf {} + 2>/dev/null\ndone\n\ngrep -vE '^(#|$|^\\*\\*/)' .dockerignore | while IFS= read -r pattern; do\n  find . -path \"./${pattern#/}\" -exec rm -rf {} + 2>/dev/null\ndone  \n"
   - name: Build
-    working-directory: /home/build/Jellyseerr
+    working-directory: /home/build/jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
-      export NEXT_TELEMETRY_DISABLED=1
-      rm next.config.js
-      install -m444 -D /home/build/next.config.js ./next.config.js
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
   - name: Delete linux-musl node-modules and other unneeded files
-    working-directory: /home/build/Jellyseerr
+    working-directory: /home/build/jellyseerr
     runs: |
       find node_modules -type d \
         -name "*musl*" \
@@ -58,11 +55,6 @@ pipeline:
         -prune
       rm -rf \
         .next/cache \
-        .next/next-server.js.nft.json \
-        .next/next-minimal-server.js.nft.json \
-        .next/server/pages-manifest.json \
-        .next/prerender-manifest.json \
-        node_modules/.modules.yaml \
         src \
         server \
         charts \
@@ -70,9 +62,9 @@ pipeline:
         docs
   - name: Prepare package
     runs: |
-      mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
-      cp -a /home/build/Jellyseerr/. ${{targets.destdir}}/usr/lib/Jellyseerr/
-      chmod 755 ${{targets.destdir}}/usr/lib/Jellyseerr
+      mkdir -p ${{targets.destdir}}/usr/lib/jellyseerr
+      cp -r /home/build/jellyseerr/. ${{targets.destdir}}/usr/lib/jellyseerr/
+      chmod 755 ${{targets.destdir}}/usr/lib/jellyseerr
 test:
   environment:
     contents:
