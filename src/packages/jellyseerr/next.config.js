@@ -1,6 +1,4 @@
-const path = require("path");
-const crypto = require("crypto");
-const webpack = require("webpack");
+const { execSync } = require('child_process');
 /**
  * @type {import('next').NextConfig}
  */
