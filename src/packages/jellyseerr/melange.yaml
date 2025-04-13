@@ -22,13 +22,6 @@ environment:
       - curl
       - yq
       - jq
-      - python-3.13-dev
-      - py3-setuptools
-      - libvips-dev
-      - pkgconf
-      - glib-dev
-      - libexif-dev
-      - librsvg-dev
 pipeline:
   - uses: git-checkout
     with:
@@ -49,7 +42,6 @@ pipeline:
     working-directory: /home/build/Jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
-      export npm_config_build_from_source=true
       
       sed -i '/module.exports = {/a\
         generateBuildId: () => '"'"'fixed'"'"',\
@@ -61,8 +53,6 @@ pipeline:
       sed -i '/webpack(config) {/a\
         config.optimization.moduleIds = '"'"'deterministic'"'"';\
         config.optimization.chunkIds = '"'"'deterministic'"'"';\' next.config.js
-      sed -i 's/"sharp": "\^0.33.4"/"sharp": "^0.34.1"/' package.json
-      CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
