@@ -28,23 +28,28 @@ pipeline:
       expected-commit: "fac453878e3d55b93cfda78908403cce348bb9fa"
       repository: https://github.com/fallenbagel/jellyseerr
       tag: v${{package.version}}
-  
+      destination: Jellyseerr
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
-      volta install "node@$(yq -r '.engines.node' package.json)"
-      volta install "pnpm@$(yq -r '.engines.pnpm' package.json)"  
+      volta install "node@$(yq -r '.engines.node' Jellyseerr/package.json)"
+      volta install "pnpm@$(yq -r '.engines.pnpm' Jellyseerr/package.json)"  
   - name: Clean source directory
+    working-directory: /home/build/Jellyseerr
     runs: "grep -E '^\\*\\*/' .dockerignore | while IFS= read -r pattern; do\n  base_pattern=\"${pattern#\\*\\*/}\"\n  \n  echo \"Processing Dockerignore pattern: $pattern → $base_pattern\"\n  \n  find . -name \"$base_pattern\" -exec rm -rf {} + 2>/dev/null\n  \n  [ -e \"./$base_pattern\" ] && rm -rf \"./$base_pattern\"\n  \n  find . -path \"./*/$base_pattern\" -exec rm -rf {} + 2>/dev/null\ndone\n\ngrep -vE '^(#|$|^\\*\\*/)' .dockerignore | while IFS= read -r pattern; do\n  find . -path \"./${pattern#/}\" -exec rm -rf {} + 2>/dev/null\ndone  \n"
   - name: Build
+    working-directory: /home/build/Jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       export NEXT_TELEMETRY_DISABLED=1
+      rm next.config.js
+      install -m444 -D /home/build/next.config.js ./next.config.js
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
   - name: Delete linux-musl node-modules and other unneeded files
+    working-directory: /home/build/Jellyseerr
     runs: |
       find node_modules -type d \
         -name "*musl*" \
@@ -52,9 +57,6 @@ pipeline:
         -exec rm -rf {} + \
         -prune
       rm -rf src server .next/cache charts gen-docs docs
-      find .next -type f -name '*.json' -exec \
-        jq -S 'walk(if type == "object" then del(.totalPageBytes, .hashes) | to_entries | sort_by(.key) | from_entries else . end)' {} \
-        -o {} \;
       find .next dist -type f -exec touch -h -d "@${SOURCE_DATE_EPOCH}" {} +
   - name: Prepare package
     runs: |
