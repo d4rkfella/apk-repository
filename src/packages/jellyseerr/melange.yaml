@@ -46,6 +46,12 @@ pipeline:
       export NEXT_TELEMETRY_DISABLED=1
       sed -i "/};/i\  generateBuildId: async () => process.env.NEXT_BUILD_ID || 'ci-fixed'," next.config.js
       pnpm audit --fix
+      pnpm install @octokit/core@^6
+      pnpm install react@18.2.0
+      pnpm install react@17.0.2
+      pnpm install eslint@^8.56.0
+      pnpm install semantic-release@^17.0.0
+      pnpm install typeorm@^0.2.5
       CYPRESS_INSTALL_BINARY=0 pnpm install
       pnpm build
       pnpm prune --prod --ignore-scripts
