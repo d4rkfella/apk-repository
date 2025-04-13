@@ -2,7 +2,7 @@
 set -eo pipefail
 
 # Configuration
-TARGET_DIR="/usr/lib/Radarr"
+TARGET_DIR="/usr/lib/radarr"
 EXPECTED_VERSION="${EXPECTED_VERSION}"
 SERVER_PORT=7878
 STARTUP_TIMEOUT=20
