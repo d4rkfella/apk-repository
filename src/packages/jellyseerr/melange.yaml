@@ -42,12 +42,15 @@ pipeline:
     working-directory: /home/build/Jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
-      export NEXT_BUILD_ID=fixed
-      export NEXT_TELEMETRY_DISABLED=1
-      sed -i "/};/i\  generateBuildId: async () => process.env.NEXT_BUILD_ID || 'ci-fixed'," next.config.js
-      sed -i "/module.exports = {/a \  distDir: 'build_output'," next.config.js
-      pnpm audit --fix
-      CYPRESS_INSTALL_BINARY=0 pnpm install
+      sed -i '/module.exports = {/a\
+      distDir: "build_output", // Use a consistent output folder name\n\
+      generateBuildId: () => "fixed", // Fixed build ID to avoid randomness\n\
+      webpack(config) {\n\
+        config.optimization.moduleIds = "deterministic"; // Ensures deterministic chunk names\n\
+        config.optimization.chunkIds = "deterministic"; // Ensures deterministic chunk names\n\
+        return config;\n\
+      },\n' next.config.js
+      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
   - name: Delete linux-musl node-modules and other unneeded files
