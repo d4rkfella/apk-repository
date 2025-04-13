@@ -47,8 +47,6 @@ pipeline:
       PATH="$HOME/.volta/bin:$PATH"
       export npm_config_build_from_source=true
       
-      pip install disutils
-      
       sed -i '/module.exports = {/a\
         generateBuildId: () => '"'"'fixed'"'"',\
         output: '"'"'standalone'"'"',\' next.config.js
