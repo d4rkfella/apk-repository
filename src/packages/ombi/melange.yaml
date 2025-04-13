@@ -39,26 +39,25 @@ pipeline:
       dotnet new tool-manifest
     	dotnet tool install --local dotnet-setversion
     	dotnet setversion -r "${{package.version}}"
-    
-    	dotnet publish "$_backend" \
+      
+      dotnet publish "$_backend" \
     		-c Release \
     		-r "$_runtime" \
     		--self-contained true
-    
-    	mv "$_artifacts/$_runtime"/publish/* "$_artifacts" -f
-    	rm -r "${_artifacts:?}/${_runtime:?}"
-    
-    	rm "$_artifacts"/appsettings.Development.json
-    
-    	yarn --cwd "$_frontend" install --network-timeout 120000 --frozen-lockfile
+      
+      mv "$_artifacts/$_runtime"/publish/* "$_artifacts" -f
+      rm -r "${_artifacts:?}/${_runtime:?}"
+      rm "$_artifacts"/appsettings.Development.json
+      
+      yarn --cwd "$_frontend" install --network-timeout 120000 --frozen-lockfile
     	yarn --cwd "$_frontend" build
-    
-    	mkdir -p "$_artifacts"/ClientApp
+      
+      mkdir -p "$_artifacts"/ClientApp
     	mv "$_frontend"/dist "$_artifacts"/ClientApp
 
       echo "Prepare package"
     	
       DESTDIR="${{targets.destdir}}"/usr/lib/ombi
-    
-    	mkdir -p "$DESTDIR"
+      
+      mkdir -p "$DESTDIR"
     	cp -af "$_artifacts"/* "$DESTDIR"
