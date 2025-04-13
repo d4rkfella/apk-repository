@@ -28,7 +28,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: ""
+      expected-commit: "886db23c58f13e63537c99d0173c2bbfdd7af253"
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
   - name: Install dependancies
