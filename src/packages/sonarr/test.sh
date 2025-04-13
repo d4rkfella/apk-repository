@@ -2,7 +2,7 @@
 set -eo pipefail
 
 # Configuration
-TARGET_DIR="/usr/lib/Sonarr"
+TARGET_DIR="/usr/lib/sonarr"
 EXPECTED_VERSION="${EXPECTED_VERSION}"
 SERVER_PORT=8989
 STARTUP_TIMEOUT=20
