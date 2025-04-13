@@ -32,6 +32,7 @@ pipeline:
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
+      export NEXT_BUILD_ID=fixed
       curl -sSL https://get.volta.sh | bash
       volta install "node@$(yq -r '.engines.node' Jellyseerr/package.json)"
       volta install "pnpm@$(yq -r '.engines.pnpm' Jellyseerr/package.json)"
@@ -55,7 +56,7 @@ pipeline:
         -print \
         -exec rm -rf {} + \
         -prune
-      rm -rf src server .next/cache charts gen-docs docs
+      rm -rf src server .next/cache .next/*.nft.json charts gen-docs docs
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
