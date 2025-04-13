@@ -18,12 +18,8 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
-      - build-base
-      - busybox
-      - ca-certificates-bundle
       - bash
       - curl
-      - icu
       - yq
 pipeline:
   - uses: git-checkout
