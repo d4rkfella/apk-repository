@@ -54,7 +54,7 @@ pipeline:
       ulimit -n 4096
       
       dotnet build src \
-        -p:AssemblyConfiguration="master" \
+        -p:AssemblyConfiguration="main" \
         -p:AssemblyVersion="${{package.version}}" \
         -p:RuntimeIdentifiers="$_runtime" \
         -p:Configuration=Release \
