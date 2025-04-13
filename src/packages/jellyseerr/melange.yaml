@@ -58,6 +58,10 @@ pipeline:
         -exec rm -rf {} + \
         -prune
       rm -rf src server .next/cache charts gen-docs docs
+      find .next -type f -name '*.json' -exec \
+        jq -S 'walk(if type == "object" then del(.totalPageBytes, .hashes) | to_entries | sort_by(.key) | from_entries else . end)' {} \
+        -o {} \;
+      find .next dist -type f -exec touch -h -d "@${SOURCE_DATE_EPOCH}" {} +
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/Jellyseerr
