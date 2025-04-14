@@ -21,7 +21,6 @@ environment:
       - gmp-dev
       - imlib2-dev
       - lame-dev
-      - libass-dev
       - libbluray-dev
       - libdrm-dev
       - libopenmpt-dev
@@ -43,6 +42,7 @@ environment:
       - xz-dev
       - zimg-dev
       - zlib-dev
+      - onevpl-dev
 var-transforms:
   - from: ${{package.version}}
     match: _p(\d+)$
