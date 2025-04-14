@@ -60,7 +60,7 @@ jobs:
                 tag_prefix=""   
                 if [ -n "$tag" ] && [ "$tag" != "null" ]; then
                     if echo "$tag" | grep -q '^[^$][^$]*\${{'; then
-                        tag_prefix=$(echo "$tag" | sed 's/\$\{\{.*//')
+                        tag_prefix=$(echo "$tag" | sed 's/$$\{{.*//')
                         tag_prefix=$(echo "$tag_prefix" | xargs)
                     fi
                 fi
