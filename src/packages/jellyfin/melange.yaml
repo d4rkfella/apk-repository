@@ -16,9 +16,10 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
+      - dotnet-8-sdk
       - aspnet-8-runtime
       - busybox
-      - dotnet-8-sdk
+      - curl
 pipeline:
   - uses: git-checkout
     with:
