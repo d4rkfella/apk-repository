@@ -44,6 +44,7 @@ test:
   environment:
     contents:
       packages:
+        - busybox
         - python3
         - wget
   pipeline:
