@@ -34,7 +34,7 @@ environment:
       - opus-dev
       - perl-dev
       - shaderc
-      - vulkan-loader-dev
+      - vulkan-loader
       - x264-dev
       - x265-dev
       - xz-dev
