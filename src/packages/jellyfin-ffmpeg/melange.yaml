@@ -61,6 +61,7 @@ pipeline:
   - runs: |
       apk add --no-cache --allow-untrusted libass-dev
   - runs: |
+      patch -p1 < v4l-ioctl.patch
       for i in debian/patches/*.patch; do
         patch -p1 -i "$i"
       done
