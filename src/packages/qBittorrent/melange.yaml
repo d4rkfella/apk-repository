@@ -20,14 +20,14 @@ environment:
       - bash
 var-transforms:
   - from: ${{package.version}}
-    match: _p(\d)(\d)(\d{2})$
-    replace: _v$1.$2.$3
+    match: (.*?)_p(\d)(\d)(\d{2})$
+    replace: release-\1_v$2.$3.$4
     to: qbittorrent-package-version
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/userdocs/qbittorrent-nox-static
-      tag: release-${{vars.qbittorrent-package-version}}
+      tag: ${{vars.qbittorrent-package-version}}
       expected-commit: "8f2ce5079a406eb3e2d9fd71095286bb2d90f2ac"
   - runs: |
       printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
