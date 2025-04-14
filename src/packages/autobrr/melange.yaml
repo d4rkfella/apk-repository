@@ -22,6 +22,7 @@ pipeline:
     with:
       repository: https://github.com/autobrr/autobrr
       tag: v${{package.version}}
+      expected-commit: "48870044a2433792fc5b5a7fedd57f3c53f3e6ab"
 
   - name: Install dependancies
     runs: |
@@ -47,14 +48,14 @@ pipeline:
       packages: cmd/autobrr/main.go
       output: autobrr
       strip: "-s -w"
-      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")'
+      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
   
   - uses: build/go-build-new
     with:
       packages: cmd/autobrrctl/main.go
       output: autobrrctl
       strip: "-s -w"
-      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")'
+      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
 
 update:
   enabled: true
