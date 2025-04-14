@@ -52,7 +52,7 @@ var-transforms:
     replace: -$1
     to: jellyfin-ffmpeg-package-version
 pipeline:
-  - uses: melange/git-checkout
+  - uses: git-checkout
     with:
       expected-commit: "9ba6e9a7c905f06c4a895ffe9ef5d19e61f001c2"
       repository: https://github.com/jellyfin/jellyfin-ffmpeg
