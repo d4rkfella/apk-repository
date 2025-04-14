@@ -1,5 +1,5 @@
 package:
-  name: jellyfin
+  name: jellyfin-custom
   version: "10.10.7"
   epoch: 0
   description: The Free Software Media System
