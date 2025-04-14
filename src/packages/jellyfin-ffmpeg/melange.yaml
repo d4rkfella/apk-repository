@@ -14,7 +14,6 @@ environment:
       - alpine-base
       - alsa-lib-dev
       - bzip2-dev
-      - freetype-dev
       - chromaprint-dev
       - coreutils
       - dav1d-dev
