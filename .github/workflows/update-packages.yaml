@@ -58,7 +58,7 @@ jobs:
             if [ -n "$repo" ] && [ "$repo" != "null" ]; then
                 tag=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.tag' "$file")
                 if [[ -n "$tag" && "$tag" != "null" ]]; then
-                    tag_prefix=$(echo "$tag" | sed "s/\$\{'{'\{2\}.*//")
+                    tag_prefix=$(echo "$tag" | sed 's/\$\${\{.*//')
                     tag_prefix=$(echo "$tag_prefix" | xargs)
                 fi
             fi
