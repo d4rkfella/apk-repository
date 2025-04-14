@@ -28,7 +28,7 @@ pipeline:
     with:
       repository: https://github.com/userdocs/qbittorrent-nox-static
       tag: release-${{vars.qbittorrent-package-version}}
-      expected-commit: 8f2ce5079a406eb3e2d9fd71095286bb2d90f2ac
+      expected-commit: "8f2ce5079a406eb3e2d9fd71095286bb2d90f2ac"
   - runs: |
       printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
       printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
