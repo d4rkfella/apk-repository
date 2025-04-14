@@ -34,10 +34,6 @@ pipeline:
       PATH="$HOME/.volta/bin:$PATH"
       pnpm install --frozen-lockfile
       pnpm run build
-  - uses: go/bump
-    with:
-      deps: "github.com/go-jose/go-jose/v4@v4.0.5 golang.org/x/net@v0.36.0"
-      show-diff: true
   - uses: build/go-build-new
     with:
       packages: cmd/autobrr/main.go
