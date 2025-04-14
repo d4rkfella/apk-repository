@@ -33,7 +33,7 @@ environment:
       - openssl-dev
       - opus-dev
       - perl-dev
-      - shaderc-dev
+      - shaderc
       - vulkan-loader-dev
       - x264-dev
       - x265-dev
