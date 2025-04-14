@@ -7,32 +7,26 @@ package:
     - license: GPL-3.0-only
 environment:
   contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     repositories:
-      - https://dl-cdn.alpinelinux.org/alpine/edge/main
-      - https://dl-cdn.alpinelinux.org/alpine/edge/community
-      - https://dl-cdn.alpinelinux.org/alpine/edge/testing
+      - https://packages.wolfi.dev/os
     packages:
-      - alpine-base
-      - apk-tools
+      - wolfi-base
       - freetype-dev
       - build-base
       - alsa-lib-dev
       - bzip2-dev
-      - chromaprint-dev
       - coreutils
       - dav1d-dev
       - fribidi-dev
       - gmp-dev
       - fontconfig-dev
       - lame-dev
-      - libbluray-dev
       - libdrm-dev
-      - libopenmpt-dev
-      - libplacebo-dev
       - libtheora-dev
       - libva-dev
       - libvorbis-dev
-      - libvpx-dev
       - libwebp-dev
       - nasm
       - opencl-dev
@@ -44,9 +38,7 @@ environment:
       - x264-dev
       - x265-dev
       - xz-dev
-      - zimg-dev
       - zlib-dev
-      - onevpl-dev
 var-transforms:
   - from: ${{package.version}}
     match: _p(\d+)$
@@ -59,9 +51,6 @@ pipeline:
       repository: https://github.com/jellyfin/jellyfin-ffmpeg
       tag: v${{vars.jellyfin-ffmpeg-package-version}}
   - runs: |
-      apk add --no-cache --allow-untrusted libass-dev
-  - runs: |
-      patch -p1 < v4l-ioctl.patch
       for i in debian/patches/*.patch; do
         patch -p1 -i "$i"
       done
