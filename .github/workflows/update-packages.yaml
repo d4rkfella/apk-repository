@@ -153,7 +153,7 @@ jobs:
             local latest_version="$1"
             local transform_info="$2"
           
-            if [[ "$transform_info" != "" ]]; then
+            if [[ -n "$transform_info" ]]; then
               echo "Processing version transform..." >&2
               match='${{ matrix.package_info.version_transform.match }}'
               replace='${{ matrix.package_info.version_transform.replace }}'
@@ -197,7 +197,7 @@ jobs:
             
               if [[ -n "${{ matrix.package_info.repo }}" ]]; then
                 owner_repo=$(echo "${{ matrix.package_info.repo }}" | sed -E 's#https://github.com/([^/]+/[^/]+).*#\1#')
-                if [ -n "${{ matrix.package_info.tag_prefix }}" ] && [ "${{ matrix.package_info.tag_prefix }}" != "null" ]; then
+                if [ -n "${{ matrix.package_info.tag_prefix }}" ]; then
                     tag="${{ matrix.package_info.tag_prefix }}${{ steps.release-monitoring.outputs.latest-version }}"
                 else
                     tag="${{ steps.release-monitoring.outputs.latest-version }}"
@@ -216,10 +216,7 @@ jobs:
 
           current_version="${{ matrix.package_info.version }}"
           latest_version=$(apply_version_transform "${{ steps.release-monitoring.outputs.latest-version }}" "${{ matrix.package_info.version_transform }}")
-          
-          echo "Current version: $current_version"
-          echo "Latest version: $latest_version"
-          
+                 
           compare_and_bump "$latest_version" "$current_version" "${{ matrix.package_info.path }}"
 
       - name: Create changelog
@@ -231,7 +228,7 @@ jobs:
               local current_version="$1"
               local transform_info="$2"
             
-              if [[ "$transform_info" != "" ]]; then
+              if [[ -n "$transform_info" ]]; then
                   echo "Processing version transform..." >&2
                   match='${{ matrix.package_info.var_transform.match }}'
                   replace='${{ matrix.package_info.var_transform.replace }}'
@@ -248,10 +245,9 @@ jobs:
           CURRENT_VERSION=$(apply_version_transform "${{ matrix.package_info.version }}" "${{ matrix.package_info.var_transform }}")
           REPO_PATH=$(echo "${{ matrix.package_info.repo }}" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
 
-          if [ -n "${{ matrix.package_info.tag_prefix }}" ] && [ "${{ matrix.package_info.tag_prefix }}" != "null" ]; then
-              TAG_PREFIX="${{ matrix.package_info.tag_prefix }}"
-              CURRENT_VERSION="${TAG_PREFIX}${CURRENT_VERSION}"
-              LATEST_VERSION="${TAG_PREFIX}${{ steps.release-monitoring.outputs.latest-version }}"
+          if [ -n "${{ matrix.package_info.tag_prefix }}" ]; then
+              CURRENT_VERSION="${{ matrix.package_info.tag_prefix }}${CURRENT_VERSION}"
+              LATEST_VERSION="${{ matrix.package_info.tag_prefix }}${{ steps.release-monitoring.outputs.latest-version }}"
           else
               LATEST_VERSION="${{ steps.release-monitoring.outputs.latest-version }}"
           fi
@@ -272,7 +268,8 @@ jobs:
             COMPARE_URL="https://github.com/$REPO_PATH/compare/$CURRENT_VERSION...$LATEST_VERSION"
             echo "compare_url=$COMPARE_URL" >> $GITHUB_OUTPUT
           fi
-          echo "current_version=${CURRENT_VERSION#v}" >> $GITHUB_OUTPUT
+          echo "current_version=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
+          echo "latest_version=${LATEST_VERSION}" >> $GITHUB_OUTPUT
       
       - name: Prepare PR body
         if: steps.check-bump.outputs.bumped == 'true'
@@ -283,7 +280,7 @@ jobs:
             echo "### 📦 Automated Package Update"
             echo ""
             echo "**Package:** ${{ matrix.package_info.package_name }}"
-            echo "**Change:** ${{ steps.changelog.outputs.current_version }} → ${{ steps.release-monitoring.outputs.latest-version }}"
+            echo "**Change:** ${{ steps.changelog.outputs.current_version }} → ${{ steps.changelog.outputs.latest_version }}"
             echo "**Source:** [${{ matrix.package_info.repo }}](${{ matrix.package_info.repo }})"
             echo ""
           } > pr_body.md
