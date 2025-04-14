@@ -13,6 +13,8 @@ environment:
       - https://dl-cdn.alpinelinux.org/alpine/edge/testing
     packages:
       - alpine-base
+      - apk-tools
+      - freetype-dev
       - build-base
       - alsa-lib-dev
       - bzip2-dev
@@ -21,7 +23,6 @@ environment:
       - dav1d-dev
       - fribidi-dev
       - gmp-dev
-      - libass-dev
       - fontconfig-dev
       - lame-dev
       - libbluray-dev
@@ -57,6 +58,8 @@ pipeline:
       expected-commit: "9ba6e9a7c905f06c4a895ffe9ef5d19e61f001c2"
       repository: https://github.com/jellyfin/jellyfin-ffmpeg
       tag: v${{vars.jellyfin-ffmpeg-package-version}}
+  - runs: |
+      apk add --no-cache --allow-untrusted libass-dev
   - runs: |
       for i in debian/patches/*.patch; do
         patch -p1 -i "$i"
