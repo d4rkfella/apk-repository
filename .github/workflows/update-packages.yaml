@@ -53,15 +53,16 @@ jobs:
             version=$(yq ".package.version" "$file")
             identifier=$(yq '.update.release-monitor.identifier' "$file")
             transform=$(yq '."var-transforms"[] | select(.from | test("package\.version"))' "$file")
-            git_checkout_step=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.repository' "$file")
+            repo=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.repository' "$file")
 
-            if [ -n "$git_checkout_step" ] && [ "$git_checkout_step" != "null" ]; then
-                tag=$(echo "$git_checkout_step" | yq '.with.tag // ""')
-                repo=$(echo "$git_checkout_step" | yq '.with.repository // ""')
-                
-                if [[ "$tag" == *"\${{"* ]]; then
-                    tag_prefix="${tag%%\${{*}}"
-                    tag_prefix=$(echo "$tag_prefix" | xargs)
+            if [ -n "$repo" ] && [ "$repo" != "null" ]; then
+                tag=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.tag' "$file")
+                tag_prefix=""   
+                if [ -n "$tag" ] && [ "$tag" != "null" ]; then
+                    if echo "$tag" | grep -q '^[^$][^$]*\${{'; then
+                        tag_prefix=$(echo "$tag" | sed 's/\${{.*//')
+                        tag_prefix=$(echo "$tag_prefix" | xargs)
+                    fi
                 fi
             fi
             
@@ -86,7 +87,7 @@ jobs:
                 '$base + {version_transform: {match: $match, replace: $replace}}')
             fi
 
-            if [ -n "$tag_prefix" ] && [ "$tag_prefix" != "null" ]; then
+            if [ -n "$tag_prefix" ]; then
                 json_base=$(jq -n --argjson base "$json_base" \
                     --arg tag_prefix "$tag_prefix" \
                     '$base + {tag_prefix: $tag_prefix}')
