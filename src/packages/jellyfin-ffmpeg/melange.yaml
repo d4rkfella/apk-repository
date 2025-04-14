@@ -9,6 +9,7 @@ environment:
   contents:
     repositories:
       - https://dl-cdn.alpinelinux.org/alpine/edge/community
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
     packages:
       - alpine-base
       - alsa-lib-dev
