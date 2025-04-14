@@ -19,7 +19,6 @@ environment:
       - coreutils
       - dav1d-dev
       - fontconfig-dev
-      - freetype-dev
       - fribidi-dev
       - gmp-dev
       - imlib2-dev
