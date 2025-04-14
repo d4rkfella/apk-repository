@@ -1,11 +1,10 @@
 package:
   name: autobrr
-  version: "1.60.0"
+  version: "1.61.0"
   epoch: 0
   description: "Autobrr download automation tool"
   copyright:
     - license: GPL-2.0-or-later
-
 environment:
   contents:
     keyring:
@@ -22,40 +21,34 @@ pipeline:
     with:
       repository: https://github.com/autobrr/autobrr
       tag: v${{package.version}}
-
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
       volta install "node@$(sed -n 's/.*node:\([0-9]\+\)\..*/\1/p' Dockerfile)"
       volta install "$(jq -r '.packageManager' web/package.json)"
-
   - name: Build frontend
     working-directory: /home/build/web
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       pnpm install --frozen-lockfile
       pnpm run build
-  
   - uses: go/bump
     with:
       deps: "github.com/go-jose/go-jose/v4@v4.0.5 golang.org/x/net@v0.36.0"
       show-diff: true
-  
   - uses: build/go-build-new
     with:
       packages: cmd/autobrr/main.go
       output: autobrr
       strip: "-s -w"
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")'
-  
   - uses: build/go-build-new
     with:
       packages: cmd/autobrrctl/main.go
       output: autobrrctl
       strip: "-s -w"
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")'
-
 update:
   enabled: true
   release-monitor:
