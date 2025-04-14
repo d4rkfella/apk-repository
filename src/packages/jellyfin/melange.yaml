@@ -47,6 +47,8 @@ pipeline:
   - uses: strip
   - runs: |
       curl -L https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v7.0.2-9/jellyfin-ffmpeg_7.0.2-9_portable_linux64-gpl.tar.xz | tar -xJ -C "${{targets.destdir}}"/usr/lib/jellyfin-ffmpeg
+      ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg "${{targets.destdir}}"/usr/bin/ffmpeg
+      ln -s /usr/lib/jellyfin-ffmpeg/ffprobe "${{targets.destdir}}"/usr/bin/ffprobe
 
 test:
   environment:
