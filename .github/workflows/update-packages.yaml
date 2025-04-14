@@ -53,7 +53,17 @@ jobs:
             version=$(yq ".package.version" "$file")
             identifier=$(yq '.update.release-monitor.identifier' "$file")
             transform=$(yq '."var-transforms"[] | select(.from | test("package\.version"))' "$file")
-            repo=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.repository' "$file")          
+            git_checkout_step=$(yq '.pipeline | map(select(.uses == "git-checkout")) | .[0].with.repository' "$file")
+
+            if [ -n "$git_checkout_step" ] && [ "$git_checkout_step" != "null" ]; then
+                tag=$(echo "$git_checkout_step" | yq '.with.tag // ""')
+                repo=$(echo "$git_checkout_step" | yq '.with.repository // ""')
+                
+                if [[ "$tag" == *"\${{"* ]]; then
+                    tag_prefix="${tag%%\${{*}}"
+                    tag_prefix=$(echo "$tag_prefix" | xargs)
+                fi
+            fi
             
             json_base=$(jq -n \
               --arg package_name "$package_name" \
@@ -74,6 +84,12 @@ jobs:
                 --arg match "$match" \
                 --arg replace "$replace" \
                 '$base + {version_transform: {match: $match, replace: $replace}}')
+            fi
+
+            if [ -n "$tag_prefix" ] && [ "$tag_prefix" != "null" ]; then
+                json_base=$(jq -n --argjson base "$json_base" \
+                    --arg tag_prefix "$tag_prefix" \
+                    '$base + {tag_prefix: $tag_prefix}')
             fi
             
             if [ -n "$repo" ] && [ "$repo" != "null" ]; then
@@ -229,9 +245,17 @@ jobs:
               fi
           }
           
-          CURRENT_VERSION=v$(apply_version_transform "${{ matrix.package_info.version }}" "${{ matrix.package_info.var_transform }}")
+          CURRENT_VERSION=$(apply_version_transform "${{ matrix.package_info.version }}" "${{ matrix.package_info.var_transform }}")
           REPO_PATH=$(echo "${{ matrix.package_info.repo }}" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
-          LATEST_VERSION="v${{ steps.release-monitoring.outputs.latest-version}}"
+
+          if [ -n "${{ matrix.package_info.tag_prefix }}" ] && [ "${{ matrix.package_info.tag_prefix }}" != "null" ]; then
+              TAG_PREFIX="${{ matrix.package_info.tag_prefix }}"
+              CURRENT_VERSION="${TAG_PREFIX}${CURRENT_VERSION}"
+              LATEST_VERSION="${TAG_PREFIX}${{ steps.release-monitoring.outputs.latest-version }}"
+              echo "Using tag prefix: $TAG_PREFIX" >&2
+          else
+              LATEST_VERSION="${{ steps.release-monitoring.outputs.latest-version }}"
+          fi
           
           HEADERS=()
           if [ -n "${{ secrets.GITHUB_TOKEN }}" ]; then
