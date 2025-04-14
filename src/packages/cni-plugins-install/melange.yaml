@@ -16,10 +16,11 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/cni-plugins-install
       branch: main
-      expected-commit: 02ede9a3c508c4c2f15e9073e4585f590bad696e
+      expected-commit: "e33498e08c0802afe3cac1a6c990b980cf398023"
   
   - uses: go/build
     with:
       packages: main.go
       output: cni-plugins-install
       strip: "-s -w"
+      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
