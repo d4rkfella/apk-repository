@@ -10,18 +10,20 @@ environment:
     repositories:
       - https://dl-cdn.alpinelinux.org/alpine/edge/main
       - https://dl-cdn.alpinelinux.org/alpine/edge/community
+      - https://dl-cdn.alpinelinux.org/alpine/edge/testing
     packages:
       - alpine-base
       - build-base
       - alsa-lib-dev
       - bzip2-dev
       - chromaprint-dev
+      - freetype-dev
       - coreutils
       - dav1d-dev
-      - fontconfig-dev
       - fribidi-dev
       - gmp-dev
       - libass-dev
+      - fontconfig-dev
       - imlib2-dev
       - lame-dev
       - libbluray-dev
