@@ -169,7 +169,7 @@ jobs:
             local repo="$1"
             local tag="$2"
       
-            api_url="https://api.github.com/repos/${repo}/git/ref/tags/v${tag}"
+            api_url="https://api.github.com/repos/${repo}/git/ref/tags/${tag}"
             ref_response=$(curl -s "$api_url")
       
             object_type=$(echo "$ref_response" | jq -r '.object.type')
@@ -198,12 +198,11 @@ jobs:
               if [[ -n "${{ matrix.package_info.repo }}" ]]; then
                 owner_repo=$(echo "${{ matrix.package_info.repo }}" | sed -E 's#https://github.com/([^/]+/[^/]+).*#\1#')
                 if [ -n "${{ matrix.package_info.tag_prefix }}" ] && [ "${{ matrix.package_info.tag_prefix }}" != "null" ]; then
-                    TAG_PREFIX="${{ matrix.package_info.tag_prefix }}"
-                    raw_latest_version="${TAG_PREFIX}${{ steps.release-monitoring.outputs.latest-version }}"
+                    tag="${{ matrix.package_info.tag_prefix }}${{ steps.release-monitoring.outputs.latest-version }}"
                 else
-                    raw_latest_version="${{ steps.release-monitoring.outputs.latest-version }}"
+                    tag="${{ steps.release-monitoring.outputs.latest-version }}"
                 fi
-                commit=$(get_commit_for_tag "$owner_repo" "$raw_latest_version")
+                commit=$(get_commit_for_tag "$owner_repo" "$tag")
                 melange bump "$package_path" "$latest_version" --expected-commit "$commit"
               else
                 melange bump "$package_path" "$latest_version"
