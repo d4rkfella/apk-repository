@@ -25,6 +25,7 @@ pipeline:
     with:
       repository: https://github.com/cross-seed/cross-seed
       tag: v${{package.version}}
+      expected-commit: "20873dd41a9e66609549c44b738f5dfa600ceec2"
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
