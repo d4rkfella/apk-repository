@@ -97,3 +97,7 @@ test:
         /usr/src/multus-cni/bin/multus-shim -version
         /usr/src/multus-cni/bin/multus-daemon -help
         /thin_entrypoint --multus-log-level info
+update:
+  enabled: true
+  release-monitor:
+    identifier: 377716
