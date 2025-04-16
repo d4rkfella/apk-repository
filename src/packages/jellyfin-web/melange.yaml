@@ -9,7 +9,6 @@ package:
     runtime:
       - jellyfin-custom
       - nodejs
-
 environment:
   contents:
     keyring:
@@ -23,23 +22,19 @@ environment:
       - jellyfin-custom
       - nodejs
       - npm
-
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/jellyfin/jellyfin-web
       tag: v${{package.version}}
-      expected-commit: f4b8aa0ed4c5b571a3a6cc3bb027bb8ecebe5b68
-
+      expected-commit: "f4b8aa0ed4c5b571a3a6cc3bb027bb8ecebe5b68"
   - runs: |
       npm ci --no-audit --unsafe-perm
       npm run build:production
 
       mkdir -p "${{targets.destdir}}"/usr/lib/jellyfin/jellyfin-web
       cp -r dist/* "${{targets.destdir}}"/usr/lib/jellyfin/jellyfin-web
-
   - uses: strip
-
 test:
   environment:
     contents:
@@ -58,3 +53,7 @@ test:
 
         # Use wget to check that all the links referenced from index.html are valid
         wget --spider --recursive -e robots=off --page-requisites http://localhost:8000
+update:
+  enabled: true
+  release-monitor:
+    identifier: 241942
