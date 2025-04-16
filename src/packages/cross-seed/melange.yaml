@@ -30,7 +30,7 @@ pipeline:
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
       volta install node@$(cat .nvmrc)
-  - name: Build frontend
+  - name: Build
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       npm ci --no-fund
@@ -40,3 +40,7 @@ pipeline:
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/cross-seed
       cp -R node_modules dist package-lock.json package.json ${{targets.destdir}}/usr/lib/cross-seed
+update:
+  enabled: true
+  release-monitor:
+    identifier: 377714
