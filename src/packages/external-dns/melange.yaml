@@ -23,7 +23,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: ebd4e01043f8bdaa959f72258524c682ca3527bf
+      expected-commit: d54c2f0dc7ff46dc070943df54fe02e1ee50b135
       repository: https://github.com/d4rkfella/external-dns
       branch: master
 
