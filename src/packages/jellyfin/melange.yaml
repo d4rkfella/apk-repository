@@ -26,7 +26,7 @@ pipeline:
     with:
       repository: https://github.com/jellyfin/jellyfin
       tag: v${{package.version}}
-      expected-commit: aefb9b2cffca3ccb7a95d89af0d9fb2040de6ed3
+      expected-commit: "aefb9b2cffca3ccb7a95d89af0d9fb2040de6ed3"
   - uses: patch
     with:
       patches: GHSA-qrmm-w75w-3wpx.patch
@@ -95,3 +95,7 @@ test:
           exit 1
         fi
     - uses: test/tw/ldd-check
+update:
+  enabled: true
+  release-monitor:
+    identifier: 241546
