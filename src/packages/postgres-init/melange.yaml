@@ -1,6 +1,6 @@
 package:
   name: postgres-init
-  version: "1.0.0"
+  version: "1.0.1"
   epoch: 0
   copyright:
     - license: MIT
@@ -15,7 +15,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/postgres-init
       branch: main
-      expected-commit: ae08a272bd0135a793d29318335f14bce1b23962
+      expected-commit: "0f3025a6122a3011dc3636b81c579d0e2fcc15e4"
   - uses: go/build
     with:
       packages: main.go
