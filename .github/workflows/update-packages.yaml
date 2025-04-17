@@ -40,7 +40,7 @@ jobs:
           path: |
             ~/.docker/config.json
             /tmp/docker-images/*
-          key: docker-image-78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9
+          key: docker-image-${{ github.run_id }}
 
   update-packages:
     needs: configure-matrix
@@ -67,7 +67,7 @@ jobs:
           path: |
             ~/.docker/config.json
             /tmp/docker-images/*
-          key: docker-image-78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9
+          key: docker-image-${{ github.run_id }}
 
       - name: Load Docker image
         run: docker load -i /tmp/docker-images/melange-autoupdate.tar
