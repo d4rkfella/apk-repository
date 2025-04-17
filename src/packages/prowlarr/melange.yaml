@@ -101,5 +101,6 @@ test:
         EXPECTED_VERSION="${{package.version}}" ./test.sh
 update:
   enabled: true
-  release-monitor:
-    identifier: 377338
+  github:
+    identifier: Prowlarr/Prowlarr
+    strip-prefix: v
