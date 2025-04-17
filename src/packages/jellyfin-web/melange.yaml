@@ -55,5 +55,6 @@ test:
         wget --spider --recursive -e robots=off --page-requisites http://localhost:8000
 update:
   enabled: true
-  release-monitor:
-    identifier: 241942
+  github:
+    identifier: jellyfin/jellyfin-web
+    strip-prefix: v
