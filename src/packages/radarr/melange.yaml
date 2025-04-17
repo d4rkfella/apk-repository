@@ -103,5 +103,6 @@ test:
         EXPECTED_VERSION="${{package.version}}" ./test.sh
 update:
   enabled: true
-  release-monitor:
-    identifier: 377333
+  github:
+    identifier: Radarr/Radarr
+    strip-prefix: v
