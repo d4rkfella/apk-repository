@@ -55,24 +55,25 @@ jobs:
             -e GITHUB_TOKEN="$GITHUB_TOKEN" \
             -v "${{ github.workspace }}:${{ github.workspace }}" \
             -w "${{ github.workspace }}" \
-            ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:f0ea8f63e1e1d608000375db9712bf9857ed8225cf861f49cc578d7ddd8de601 \
+            ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9 \
             "${{ matrix.path }}"
 
       - name: Read output.json
         id: read-output
         run: |
-          json=$(cat "${{ github.workspace }}/output.json")
-          echo "json=$json" >> $GITHUB_OUTPUT
+          echo "bumped=$(jq -r '.bumped' "${{ github.workspace }}/output.json")" >> $GITHUB_OUTPUT
+          echo "package_name=$(jq -r '.package_name' "${{ github.workspace }}/output.json") >> $GITHUB_OUTPUT
+          echo "new_version=$(jq -r '.new_version' "${{ github.workspace }}/output.json") >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
-        if: fromJson(steps.read-output.outputs.json).bumped == true
+        if: steps.read-output.outputs.bumped == 'true'
         uses: peter-evans/create-pull-request@v7.0.8
         with:
-          title: 'Update "${{ fromJson(steps.read-output.outputs.json).package_name }}" version to "${{ fromJson(steps.read-output.outputs.json).new_version }}"'
+          title: 'Update "${{ steps.read-output.outputs.package_name }}" version to "${{ steps.read-output.outputs.new_version }}"'
           add-paths: "${{ matrix.path }}"
-          branch: 'update-${{ fromJson(steps.read-output.outputs.json).package_name }}'
+          branch: 'update-${{ steps.read-output.outputs.package_name }}'
           body-path: "${{ github.workspace }}/pr_body.md"
-          commit-message: 'Update ${{ fromJson(steps.read-output.outputs.json).package_name }} version to ${{ fromJson(steps.read-output.outputs.json).new_version }}'
+          commit-message: 'Update ${{ steps.read-output.outputs.package_name }} version to ${{ steps.read-output.outputs.new_version }}'
           sign-commits: true
           labels: |
             automated-pr
