@@ -18,7 +18,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/melange-autoupdate
       branch: main
-      expected-commit: "94f12327cfe21442e0a78e737ba95b25d82a27da"
+      expected-commit: "016e1341357004d96c214f45f7af20ff970f6d0c"
   - uses: go/build
     with:
       packages: main.go
