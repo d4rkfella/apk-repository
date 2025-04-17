@@ -83,7 +83,7 @@ jobs:
             -e GITHUB_TOKEN="$GITHUB_TOKEN" \
             -v "${{ github.workspace }}:${{ github.workspace }}" \
             -w "${{ github.workspace }}" \
-            melange-autoupdate:cached
+            melange-autoupdate:cached \
             "${{ matrix.path }}"
 
       - name: Read output.json
