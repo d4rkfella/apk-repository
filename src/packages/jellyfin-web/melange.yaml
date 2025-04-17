@@ -55,6 +55,10 @@ test:
         wget --spider --recursive -e robots=off --page-requisites http://localhost:8000
 update:
   enabled: true
+  ignore-regex-patterns:
+    - '.*alpha.*'
+    - '.*beta.*'
+    - '.*rc.*'
   github:
     identifier: jellyfin/jellyfin-web
     strip-prefix: v
