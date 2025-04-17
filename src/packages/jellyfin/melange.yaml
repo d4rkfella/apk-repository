@@ -97,5 +97,10 @@ test:
     - uses: test/tw/ldd-check
 update:
   enabled: true
-  release-monitor:
-    identifier: 241546
+  ignore-regex-patterns:
+    - '.*alpha.*'
+    - '.*beta.*'
+    - '.*rc.*'
+  github:
+    identifier: jellyfin/jellyfin
+    strip-prefix: v
