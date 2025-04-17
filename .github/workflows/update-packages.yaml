@@ -69,7 +69,8 @@ jobs:
           fi
 
       - name: Create Pull Request
-        if: fromJson(steps.read-output.outputs.json).bumped == true
+        if: |
+          file_exists="${{ github.workspace }}/output.json" && [ -f "$file_exists" ] && fromJson(steps.read-output.outputs.json).bumped == true
         uses: peter-evans/create-pull-request@v7.0.8
         with:
           title: 'Update "${{ fromJson(steps.read-output.outputs.json).package_name }}" version to "${{ fromJson(steps.read-output.outputs.json).new_version }}"'
