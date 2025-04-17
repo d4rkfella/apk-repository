@@ -55,7 +55,7 @@ jobs:
           docker run --rm \
             -v "${{ github.workspace }}:${{ github.workspace }}" \
             -w "${{ github.workspace }}" \
-            ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:fae32205fd6180e8abba502e174f4e9a3901eb58aa8c47b141592f86052a13bd \
+            ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:65111d6b4cf93dc73e5a25909c45aca57f8a091395638b285784fb0c603fc42b \
             "${{ matrix.path }}"
 
       - name: Read output.json
