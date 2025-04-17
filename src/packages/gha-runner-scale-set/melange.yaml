@@ -22,7 +22,7 @@ pipeline:
     with:
       repository: https://github.com/actions/actions-runner-controller
       tag: gha-runner-scale-set-${{package.version}}
-      expected-commit: 4ca37fbdf29072456b18eb604d2c4e5f69bc5381
+      expected-commit: "4ca37fbdf29072456b18eb604d2c4e5f69bc5381"
 
   - uses: go/build
     with:
@@ -61,9 +61,12 @@ subpackages:
           ln -sf /usr/bin/ghalistener ${{targets.subpkgdir}}/ghalistener
 
 update:
+  update:
   enabled: true
-  release-monitor:
-    identifier: 377431
+  github:
+    identifier: actions/actions-runner-controller
+    strip-prefix: gha-runner-scale-set-
+    tag-filter-prefix: gha-runner-scale-set-
 
 test:
   environment:
