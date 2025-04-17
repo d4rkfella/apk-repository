@@ -51,6 +51,8 @@ jobs:
 
       - name: Check for updates
         id: check-updates
+        env:
+          SKIP_PRERELEASES: true
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:${{ github.workspace }}" \
