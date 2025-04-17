@@ -48,5 +48,6 @@ pipeline:
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
 update:
   enabled: true
-  release-monitor:
-    identifier: 377310
+  github:
+    identifier: autobrr/autobrr
+    strip-prefix: v
