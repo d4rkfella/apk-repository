@@ -29,6 +29,7 @@ jobs:
 
       - name: Pull and save Docker image
         run: |
+          mkdir /tmp/docker-images
           docker pull ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9
           IMAGE_ID=$(docker image inspect --format '{{ .Id }}' ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9)
           docker save "$IMAGE_ID" -o /tmp/docker-images/melange-autoupdate.tar
