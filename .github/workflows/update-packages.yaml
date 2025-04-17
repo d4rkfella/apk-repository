@@ -27,11 +27,11 @@ jobs:
           files=$(find . -name "melange.yaml" -print0 | xargs -0 -n1 | jq -R . | jq -cs '{path: .}')
           echo "matrix=$files" >> "$GITHUB_OUTPUT"
 
-      - name: Pull and save Docker image as tar
+      - name: Pull and save Docker image
         run: |
           docker pull ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9
-          mkdir -p /tmp/docker-images
-          docker save ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9 -o /tmp/docker-images/melange-autoupdate.tar
+          IMAGE_ID=$(docker image inspect --format '{{ .Id }}' ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9)
+          docker save "$IMAGE_ID" -o /tmp/docker-images/melange-autoupdate.tar
 
       - name: Save Docker image to cache
         uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
@@ -70,7 +70,9 @@ jobs:
           key: docker-image-${{ github.run_id }}
 
       - name: Load Docker image
-        run: docker load -i /tmp/docker-images/melange-autoupdate.tar
+        run: |
+          LOADED_ID=$(docker load -i /tmp/docker-images/melange-autoupdate.tar | grep "Loaded image ID:" | awk -F':' '{print $3}' | tr -d ' ')
+          docker tag "$LOADED_ID" ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9
 
       - name: Check for updates
         id: check-updates
@@ -81,7 +83,7 @@ jobs:
             -e GITHUB_TOKEN="$GITHUB_TOKEN" \
             -v "${{ github.workspace }}:${{ github.workspace }}" \
             -w "${{ github.workspace }}" \
-            sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9 \
+            ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9 \
             "${{ matrix.path }}"
 
       - name: Read output.json
