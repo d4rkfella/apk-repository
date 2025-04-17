@@ -43,5 +43,6 @@ pipeline:
       cp -R node_modules dist package-lock.json package.json ${{targets.destdir}}/usr/lib/cross-seed
 update:
   enabled: true
-  release-monitor:
-    identifier: 377714
+  github:
+    identifier: cross-seed/cross-seed
+    strip-prefix: v
