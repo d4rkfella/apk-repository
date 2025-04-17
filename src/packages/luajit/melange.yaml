@@ -59,16 +59,19 @@ subpackages:
         - uses: test/docs
 update:
   enabled: true
+  ignore-regex-patterns:
+    - "beta*"
   version-transform:
     - match: -(\d{8})$
       replace: _p$1
-  release-monitor:
-    identifier: 377302
+  github:
+    identifier: openresty/luajit2
+    strip-prefix: v
 test:
   pipeline:
     - runs: |
         lua -v
         luajit -v
-    - uses: test/ldd-check
+    - uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
