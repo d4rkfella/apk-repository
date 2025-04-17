@@ -1,6 +1,6 @@
 package:
   name: catatonit
-  version: 0.2.1
+  version: "0.2.1"
   epoch: 0
   description: minimal init system for Linux containers
   copyright:
@@ -18,17 +18,11 @@ environment:
       - busybox
 
 pipeline:
-  - uses: fetch
+  - uses: git-checkout
     with:
-      uri: https://github.com/openSUSE/catatonit/releases/download/v${{package.version}}/catatonit.tar.xz
-      expected-sha256: 9950425501af862e12f618bdc930ea755c46db6a16072a1462b4fc93b2bd59bc
-  
-  - uses: build/gpg-verify
-    with:
-      signature-uri: https://github.com/openSUSE/catatonit/releases/download/v${{package.version}}/catatonit.tar.xz.asc
-      keyserver: keyserver.ubuntu.com
-      receiver-key: 5F36C6C61B5460124A75F5A69E18AA267DDB8DB4
-      filename: catatonit.tar.xz
+      repository: https://github.com/openSUSE/catatonit
+      tag: v${{package.version}}
+      expected-commit: "bb3b96b99668e544618c5aec427c1f4b6b9ee9bb"
   
   - uses: autoconf/configure
 
@@ -45,5 +39,6 @@ test:
 
 update:
   enabled: true
-  release-monitor:
-    identifier: 301804
+  github:
+    identifier: openSUSE/catatonit
+    strip-prefix: v
