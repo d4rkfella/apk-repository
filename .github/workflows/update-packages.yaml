@@ -49,7 +49,7 @@ jobs:
       - name: Check for updates
         id: check-updates
         run: |
-          docker run --rm --privileged \
+          docker run --rm \
             -v "${{ github.workspace }}:${{ github.workspace }}" \
             -w "${{ github.workspace }}" \
             ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78e1b284bb79e4a539e0a07acee57faccfe888b45a40510d9a718e1be6661824 \
@@ -58,7 +58,7 @@ jobs:
       - name: Read output.json
         id: read-output
         run: |
-          json=$(cat output.json)
+          json=$(cat "${{ github.workspace }}"/output.json)
           echo "json=$json" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
@@ -68,7 +68,7 @@ jobs:
           title: 'Update "${{ fromJson(steps.read-output.outputs.json).package_name }}" version to "${{ fromJson(steps.read-output.outputs.json).new_version }}"'
           add-paths: "${{ matrix.path }}"
           branch: 'update-${{ fromJson(steps.read-output.outputs.json).package_name }}'
-          body-path: 'pr_body.md'
+          body-path: "${{ github.workspace }}/pr_body.md"
           commit-message: 'Update ${{ fromJson(steps.read-output.outputs.json).package_name }} version to ${{ fromJson(steps.read-output.outputs.json).new_version }}'
           sign-commits: true
           labels: |
