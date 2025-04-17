@@ -36,7 +36,6 @@ jobs:
 
       - name: Save Docker image to cache
         uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        continue-on-error: true
         with:
           path: |
             ~/.docker/config.json
@@ -70,15 +69,12 @@ jobs:
             /tmp/docker-images/*
           key: docker-image-${{ github.run_id }}
 
-      - name: Load Docker image
-        id: load-image
-        run: |
-          docker load -i /tmp/docker-images/melange-autoupdate.tar
       - name: Check for updates
         id: check-updates
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          docker load -i /tmp/docker-images/melange-autoupdate.tar
           docker run --rm --user "$(id -u):$(id -g)" \
             -e GITHUB_TOKEN="$GITHUB_TOKEN" \
             -v "${{ github.workspace }}:${{ github.workspace }}" \
