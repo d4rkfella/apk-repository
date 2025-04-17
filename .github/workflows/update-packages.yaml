@@ -49,7 +49,7 @@ jobs:
       - name: Check for updates
         id: check-updates
         run: |
-          docker run --rm \
+          docker run --rm --privileged \
             -v "${{ github.workspace }}:${{ github.workspace }}" \
             -w "${{ github.workspace }}" \
             ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78e1b284bb79e4a539e0a07acee57faccfe888b45a40510d9a718e1be6661824 \
