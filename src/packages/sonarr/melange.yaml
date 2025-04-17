@@ -104,5 +104,6 @@ test:
         EXPECTED_VERSION="${{package.version}}" ./test.sh
 update:
   enabled: true
-  release-monitor:
-    identifier: 377336
+  github:
+    identifier: Sonarr/Sonarr
+    strip-prefix: v
