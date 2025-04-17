@@ -46,6 +46,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      - name: Change ownership of workspace directory
+        run: sudo chown -R 1000:1000 "${{ github.workspace }}"
+
       - name: Check for updates
         id: check-updates
         run: |
@@ -58,8 +61,12 @@ jobs:
       - name: Read output.json
         id: read-output
         run: |
-          json=$(cat "${{ github.workspace }}"/output.json)
-          echo "json=$json" >> $GITHUB_OUTPUT
+          if [ -f "${{ github.workspace }}/output.json" ]; then
+            json=$(cat "${{ github.workspace }}/output.json")
+            echo "json=$json" >> $GITHUB_OUTPUT
+          else
+            echo "No output.json file found, skipping reading step."
+          fi
 
       - name: Create Pull Request
         if: fromJson(steps.read-output.outputs.json).bumped == true
