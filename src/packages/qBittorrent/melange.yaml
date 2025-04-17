@@ -74,5 +74,6 @@ update:
   version-transform:
     - match: _v(\d+)\.(\d+)\.(\d+)$
       replace: _p$1$2$3
-  release-monitor:
-    identifier: 377279
+  github:
+    identifier: userdocs/qbittorrent-nox-static
+    strip-prefix: "release-"
