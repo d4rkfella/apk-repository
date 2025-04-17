@@ -82,5 +82,6 @@ test:
         EXPECTED_VERSION="${{package.version}}" test/test.sh
 update:
   enabled: true
-  release-monitor:
-    identifier: 376442
+  github:
+    identifier: fallenbagel/jellyseerr
+    strip-prefix: v
