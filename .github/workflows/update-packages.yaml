@@ -81,7 +81,7 @@ jobs:
             -e GITHUB_TOKEN="$GITHUB_TOKEN" \
             -v "${{ github.workspace }}:${{ github.workspace }}" \
             -w "${{ github.workspace }}" \
-            ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9 \
+            sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9 \
             "${{ matrix.path }}"
 
       - name: Read output.json
