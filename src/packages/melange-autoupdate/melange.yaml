@@ -4,7 +4,9 @@ package:
   epoch: 0
   copyright:
     - license: MIT
-
+  dependencies:
+    runtime:
+      - melange
 environment:
   contents:
     keyring:
@@ -17,7 +19,6 @@ pipeline:
       repository: https://github.com/d4rkfella/melange-autoupdate
       branch: main
       expected-commit: "35fc8d6c3c8053f794df49522fcf48de472ce4dd"
-  
   - uses: go/build
     with:
       packages: main.go
