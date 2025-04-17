@@ -46,18 +46,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Change ownership of workspace directory
-        run: sudo chown -R 1000:1000 "${{ github.workspace }}"
-
       - name: Check for updates
         id: check-updates
-        env:
-          SKIP_PRERELEASES: true
         run: |
           docker run --rm \
+            --user "$(id -u):$(id -g)"
             -v "${{ github.workspace }}:${{ github.workspace }}" \
             -w "${{ github.workspace }}" \
-            ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:65111d6b4cf93dc73e5a25909c45aca57f8a091395638b285784fb0c603fc42b \
+            ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:e79b96814b76175084c29bc45a4ff68cf13602447bd8f1d4e68657ce44db1f50 \
             "${{ matrix.path }}"
 
       - name: Read output.json
