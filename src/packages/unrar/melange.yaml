@@ -25,7 +25,7 @@ pipeline:
       install -v -m755 unrar ${{targets.destdir}}/usr/bin
 test:
   pipeline:
-    - uses: test/ldd-check
+    - uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
 update:
