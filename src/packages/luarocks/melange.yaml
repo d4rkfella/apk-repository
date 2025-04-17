@@ -1,6 +1,6 @@
 package:
   name: luarocks
-  version: 3.11.1
+  version: "3.11.1"
   epoch: 0
   description: A package manager for Lua modules
   copyright:
@@ -51,7 +51,7 @@ pipeline:
   
 test:
   pipeline:
-    - uses: test/ldd-check
+    - uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
     
