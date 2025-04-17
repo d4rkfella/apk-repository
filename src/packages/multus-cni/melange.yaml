@@ -99,5 +99,6 @@ test:
         /thin_entrypoint --multus-log-level info
 update:
   enabled: true
-  release-monitor:
-    identifier: 377716
+  github:
+    identifier: k8snetworkplumbingwg/multus-cni
+    strip-prefix: v
