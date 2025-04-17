@@ -56,7 +56,7 @@ jobs:
             -v "${{ github.workspace }}:${{ github.workspace }}" \
             -w "${{ github.workspace }}" \
             ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:f0ea8f63e1e1d608000375db9712bf9857ed8225cf861f49cc578d7ddd8de601 \
-            "${{ matrix.path }}
+            "${{ matrix.path }}"
 
       - name: Read output.json
         id: read-output
