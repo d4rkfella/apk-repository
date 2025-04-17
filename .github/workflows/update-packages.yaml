@@ -62,8 +62,8 @@ jobs:
         id: read-output
         run: |
           echo "bumped=$(jq -r '.bumped' "${{ github.workspace }}/output.json")" >> $GITHUB_OUTPUT
-          echo "package_name=$(jq -r '.package_name' "${{ github.workspace }}/output.json") >> $GITHUB_OUTPUT
-          echo "new_version=$(jq -r '.new_version' "${{ github.workspace }}/output.json") >> $GITHUB_OUTPUT
+          echo "package_name=$(jq -r '.package_name' "${{ github.workspace }}/output.json")" >> $GITHUB_OUTPUT
+          echo "new_version=$(jq -r '.new_version' "${{ github.workspace }}/output.json")" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         if: steps.read-output.outputs.bumped == 'true'
