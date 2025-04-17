@@ -27,6 +27,18 @@ jobs:
           files=$(find . -name "melange.yaml" -print0 | xargs -0 -n1 | jq -R . | jq -cs '{path: .}')
           echo "matrix=$files" >> "$GITHUB_OUTPUT"
 
+      - name: Pull Docker image
+        run: |
+          docker pull ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9
+
+      - name: Save Docker image to cache
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            ~/.docker/config.json
+            /tmp/docker-images/*
+          key: docker-image-78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9
+
   update-packages:
     needs: configure-matrix
     runs-on: ubuntu-latest
@@ -45,6 +57,14 @@ jobs:
       
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Restore Docker image from cache
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            ~/.docker/config.json
+            /tmp/docker-images/*
+          key: docker-image-78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9
 
       - name: Check for updates
         id: check-updates
