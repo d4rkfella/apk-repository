@@ -48,9 +48,12 @@ jobs:
 
       - name: Check for updates
         id: check-updates
-        uses: docker://ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78e1b284bb79e4a539e0a07acee57faccfe888b45a40510d9a718e1be6661824
-        with:
-          args: "${{ matrix.path }}"
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:${{ github.workspace }}" \
+            -w "${{ github.workspace }}" \
+            ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78e1b284bb79e4a539e0a07acee57faccfe888b45a40510d9a718e1be6661824 \
+            "${{ matrix.path }}"
 
       - name: Read output.json
         id: read-output
