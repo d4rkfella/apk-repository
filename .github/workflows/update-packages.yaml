@@ -61,18 +61,11 @@ jobs:
       - name: Read output.json
         id: read-output
         run: |
-          if [ -f "${{ github.workspace }}/output.json" ]; then
-            json=$(cat "${{ github.workspace }}/output.json")
-            echo "json=$json" >> $GITHUB_OUTPUT
-          else
-            echo "No output.json file found, skipping reading step."
-          fi
+          json=$(cat "${{ github.workspace }}/output.json")
+          echo "json=$json" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
-        if: |
-          file_exists="${{ github.workspace }}/output.json" && 
-          -f "$file_exists" && 
-          fromJson(steps.read-output.outputs.json).bumped == true
+        if: fromJson(steps.read-output.outputs.json).bumped == true
         uses: peter-evans/create-pull-request@v7.0.8
         with:
           title: 'Update "${{ fromJson(steps.read-output.outputs.json).package_name }}" version to "${{ fromJson(steps.read-output.outputs.json).new_version }}"'
