@@ -67,6 +67,7 @@ update:
   github:
     identifier: openresty/luajit2
     strip-prefix: v
+    use-tag: true
 test:
   pipeline:
     - runs: |
