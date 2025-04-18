@@ -16,7 +16,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/opnsense-exporter-fork
       branch: main
-      expected-commit: "33f5b0cdeabd88be3397c54d9fddcfdfd7082ed9"
+      expected-commit: "323d472e1d32e4ffd762ba5978b40110b19a27ae"
   - uses: go/build
     with:
       packages: main.go
