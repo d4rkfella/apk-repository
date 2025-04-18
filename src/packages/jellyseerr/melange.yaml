@@ -45,7 +45,7 @@ pipeline:
       export SOURCE_DATE_EPOCH=0
       export NODE_ENV=production
       PATH="$HOME/.volta/bin:$PATH"
-      rm next.config.js && install -m 644 -D /home/build/next.config.js ./
+      rm next.config.js package.json && install -m 644 -D /home/build/next.config.js /home/build/package.json ./
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm build:next && pnpm build:server
       pnpm prune --prod --ignore-scripts
