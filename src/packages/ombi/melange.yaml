@@ -25,7 +25,9 @@ pipeline:
       tag: v${{package.version}}  
   - uses: patch
     with:
-      patches: GHSA-gmc6-fwg3-75m5.patch,GHSA-x9vc-6hfv-hg8c.patch
+      patches: |
+        GHSA-gmc6-fwg3-75m5.patch
+        GHSA-x9vc-6hfv-hg8c.patch
   - name: Install dependancies
     runs: |
       curl -sSL https://get.volta.sh | bash
