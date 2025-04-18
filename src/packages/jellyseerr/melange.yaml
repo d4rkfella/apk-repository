@@ -42,6 +42,7 @@ pipeline:
     working-directory: /home/build/jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
+      rm next.config.js && install -m 644 -D /home/build/next.config.js ./
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
       pnpm run build
       pnpm prune --prod --ignore-scripts
