@@ -41,11 +41,17 @@ pipeline:
   - name: Build
     working-directory: /home/build/jellyseerr
     runs: |
+      export NEXT_TELEMETRY_DISABLED=1
+      export SOURCE_DATE_EPOCH=0
+      export NODE_ENV=production
       PATH="$HOME/.volta/bin:$PATH"
       rm next.config.js && install -m 644 -D /home/build/next.config.js ./
-      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
-      pnpm run build
+      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile --ignore-scripts
+      pnpm build:next && pnpm build:server
       pnpm prune --prod --ignore-scripts
+      find . -exec touch -h -d "@$SOURCE_DATE_EPOCH" {} +
+      sed -i '/"buildId"/d' .next/build-manifest.json
+      sed -i '/"timestamp"/d' **/*.json
   - name: Delete linux-musl node-modules and other unneeded files
     working-directory: /home/build/jellyseerr
     runs: |
