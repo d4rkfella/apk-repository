@@ -35,6 +35,7 @@ pipeline:
   - name: Build
     runs: |
       PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"      
+      
       volta install node@22
       volta install yarn@1.22
       
