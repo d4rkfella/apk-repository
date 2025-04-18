@@ -14,9 +14,9 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      repository: https://github.com/AthennaMind/opnsense-exporter
-      tag: v${{package.version}}
-      expected-commit: "93c4703d731396e7523f707793e3e124f9f48bfc"
+      repository: https://github.com/d4rkfella/opnsense-exporter-fork
+      branch: main
+      expected-commit: "88a403fb7403b155f22492f297275f241c9c27f9"
   - uses: go/build
     with:
       packages: main.go
