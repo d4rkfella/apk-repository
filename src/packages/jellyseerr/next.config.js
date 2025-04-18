@@ -5,6 +5,7 @@ module.exports = {
   generateBuildId: () => 'fixed',
   env: {
     commitTag: process.env.COMMIT_TAG || 'local',
+    forceIpv4First: process.env.FORCE_IPV4_FIRST === 'true' ? 'true' : 'false',
   },
   images: {
     remotePatterns: [
