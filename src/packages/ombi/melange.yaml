@@ -22,7 +22,10 @@ pipeline:
     with:
       expected-commit: "c59becaa16e742f173140b9a8b3e5cfbe1f64b5e"
       repository: https://github.com/Ombi-app/Ombi
-      tag: v${{package.version}}
+      tag: v${{package.version}}  
+  - uses: patch
+    with:
+      patches: GHSA-gmc6-fwg3-75m5.patch,GHSA-x9vc-6hfv-hg8c.patch
   - name: Install dependancies
     runs: |
       curl -sSL https://get.volta.sh | bash
