@@ -63,6 +63,6 @@ pipeline:
       
       DESTDIR="${{targets.destdir}}"/usr/lib/ombi
       
-      mkdir -p "$DESTDIR"
+      mkdir -p "$DESTDIR" "${{targets.destdir}}/usr/bin"
       cp -af "$_artifacts"/* "$DESTDIR"
       ln -s /usr/lib/ombi/Ombi "${{targets.destdir}}/usr/bin/Ombi"
