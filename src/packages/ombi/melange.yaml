@@ -52,7 +52,7 @@ pipeline:
       dotnet publish "$_backend" \
         -c Release \
         -r "$_runtime" \
-        --self-contained true
+        --self-contained
       
       mv "$_artifacts/$_runtime"/publish/* "$_artifacts" -f
       rm -r "${_artifacts:?}/${_runtime:?}"
