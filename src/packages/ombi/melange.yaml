@@ -5,6 +5,12 @@ package:
   description: Friendly media request tool which automatically syncs with your media servers!
   copyright:
     - license: GPL-2.0-only
+  dependencies:
+    runtime:
+      - icu-libs
+      - sqlite-libs
+      - libssl3
+      - zlib
 environment:
   contents:
     keyring:
@@ -66,6 +72,5 @@ pipeline:
       
       DESTDIR="${{targets.destdir}}"/usr/lib/ombi
       
-      mkdir -p "$DESTDIR" "${{targets.destdir}}/usr/bin"
+      mkdir -p "$DESTDIR"
       cp -af "$_artifacts"/* "$DESTDIR"
-      ln -s /usr/lib/ombi/Ombi "${{targets.destdir}}/usr/bin/Ombi"
