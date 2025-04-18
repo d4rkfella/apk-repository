@@ -64,8 +64,6 @@ pipeline:
       mkdir -p "$_artifacts"/ClientApp
       mv "$_frontend"/dist "$_artifacts"/ClientApp
       
-      echo "Prepare package"
-      
       DESTDIR="${{targets.destdir}}"/usr/lib/ombi
       
       mkdir -p "$DESTDIR" "${{targets.destdir}}/usr/bin"
