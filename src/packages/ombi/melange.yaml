@@ -34,8 +34,7 @@ pipeline:
       curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version 8.0.408
   - name: Build
     runs: |
-      PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
-      
+      PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"      
       volta install node@22
       volta install yarn@1.22
       
