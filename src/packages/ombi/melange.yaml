@@ -65,3 +65,4 @@ pipeline:
       
       mkdir -p "$DESTDIR"
       cp -af "$_artifacts"/* "$DESTDIR"
+      ln -s /usr/lib/ombi/Ombi "${{targets.destdir}}/usr/bin/Ombi"
