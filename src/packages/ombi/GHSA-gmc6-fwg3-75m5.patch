@@ -1,5 +1,5 @@
---- src/Ombi/Ombi.csproj	2025-04-18 11:30:12.868783933 +0300
-+++ src/Ombi/Ombi.csproj	2025-04-18 12:00:07.653782208 +0300
+--- ./src/Ombi/Ombi.csproj	2025-04-18 11:30:12.868783933 +0300
++++ ./src/Ombi/Ombi.csproj	2025-04-18 12:00:07.653782208 +0300
 @@ -85,6 +85,7 @@
      <PackageReference Include="System.Security.Cryptography.Csp" Version="4.3.0" />
      <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="8.0.5" />
