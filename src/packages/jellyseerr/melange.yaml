@@ -43,7 +43,7 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
-      pnpm build
+      pnpm run build
       pnpm prune --prod --ignore-scripts
   - name: Delete linux-musl node-modules and other unneeded files
     working-directory: /home/build/jellyseerr
