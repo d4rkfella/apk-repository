@@ -16,7 +16,7 @@ pipeline:
     with:
       repository: https://github.com/AthennaMind/opnsense-exporter
       tag: v${{package.version}}
-      expected-commit: "323d472e1d32e4ffd762ba5978b40110b19a27ae"
+      expected-commit: "93c4703d731396e7523f707793e3e124f9f48bfc"
   - uses: go/build
     with:
       packages: main.go
