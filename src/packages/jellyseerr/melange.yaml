@@ -60,7 +60,6 @@ pipeline:
   - name: Prepare package
     working-directory: /home/build/jellyseerr
     runs: |
-      mkdir -p ${{targets.destdir}}/usr/lib/jellyseerr
       install -dm755 "${{targets.destdir}}/usr/lib/jellyseerr"
     
       cp -dr --no-preserve='ownership' ./{.next,dist,public,node_modules} "${{targets.destdir}}/usr/lib/jellyseerr"
