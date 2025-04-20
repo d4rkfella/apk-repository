@@ -7,7 +7,7 @@ package:
     - license: MIT
   dependencies:
     runtime:
-      - nodejs-22
+      - nodejs-23
 environment:
   contents:
     keyring:
@@ -39,6 +39,7 @@ pipeline:
     working-directory: /home/build/jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
+      export NODE_ENV=production
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
       export SHARP_IGNORE_GLOBAL_LIBVIPS=1
@@ -49,6 +50,7 @@ pipeline:
       echo "{\"commitTag\": \"${{package.version}}\"}" > committag.json
       pnpm install --frozen-lockfile
       pnpm build
+      echo "static-build-id" > .next/BUILD_ID
       pnpm prune --prod --ignore-scripts
   - name: Delete linux-musl node-modules and other unneeded files
     working-directory: /home/build/jellyseerr
@@ -63,8 +65,8 @@ pipeline:
     runs: |
       install -dm755 "${{targets.destdir}}/usr/lib/jellyseerr"
     
-      cp -dr --no-preserve='ownership' .next dist public node_modules "${{targets.destdir}}/usr/lib/jellyseerr"
-      cp -d --no-preserve='ownership' package.json jellyseerr-api.yml next.config.js "${{targets.destdir}}/usr/lib/jellyseerr"
+      cp -dr --no-preserve='ownership,timestamp' .next dist public node_modules "${{targets.destdir}}/usr/lib/jellyseerr"
+      cp -d --no-preserve='ownership,timestamp' package.json jellyseerr-api.yml next.config.js "${{targets.destdir}}/usr/lib/jellyseerr"
     
       rm -rf "${{targets.destdir}}/usr/lib/jellyseerr/.next/cache"   
       
