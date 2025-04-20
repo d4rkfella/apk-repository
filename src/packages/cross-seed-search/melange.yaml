@@ -18,12 +18,6 @@ pipeline:
       branch: main
       expected-commit: "ccf459a48ab2503ce664773936dc40d674ebdc27"
 
-  - uses: go/bump
-    with:
-      modroot: ./cross-seed-search
-      deps: |-
-        golang.org/x/net@v0.36.0
-  
   - uses: go/build
     with:
       packages: main.go
