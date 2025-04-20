@@ -41,7 +41,7 @@ pipeline:
     working-directory: /home/build/jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
-      export COMMIT_TAG=$(git rev-parse --short HEAD)
+      export COMMIT_TAG=$(git rev-parse HEAD)
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
       patch -Np1 -i "../jellyseerr.patch"
