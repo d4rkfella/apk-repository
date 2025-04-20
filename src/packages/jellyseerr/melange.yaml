@@ -9,6 +9,8 @@ package:
     runtime:
       - nodejs-23
 environment:
+  environment:
+    REPRODUCIBLE: false
   contents:
     keyring:
       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
@@ -39,11 +41,9 @@ pipeline:
     working-directory: /home/build/jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
-      export SOURCE_DATE_EPOCH=0
       export COMMIT_TAG=$(git rev-parse --short HEAD)
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
-      export SHARP_IGNORE_GLOBAL_LIBVIPS=1
       patch -Np1 -i "../jellyseerr.patch"
       volta install "node@$(yq -r '.engines.node' package.json)"
       volta install "pnpm@$(yq -r '.engines.pnpm' package.json)"
