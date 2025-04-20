@@ -16,7 +16,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/qbittorrent-distroless
       branch: main
-      expected-commit: "e353343f5c5b26dadaddb351cf6b075d84a737f7"
+      expected-commit: "ccf459a48ab2503ce664773936dc40d674ebdc27"
 
   - uses: go/bump
     with:
