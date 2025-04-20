@@ -39,18 +39,19 @@ pipeline:
     working-directory: /home/build/jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
+      export BUILD_ID=$(git rev-parse --short HEAD)
       export NODE_ENV=production
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
       export SHARP_IGNORE_GLOBAL_LIBVIPS=1
       patch -Np1 -i "../jellyseerr.patch"
+      patch -Np1 -i "../next.config.js.patch"
       volta install "node@$(yq -r '.engines.node' package.json)"
       volta install "pnpm@$(yq -r '.engines.pnpm' package.json)"
       sed -i 's/husky install//' package.json
       echo "{\"commitTag\": \"${{package.version}}\"}" > committag.json
       pnpm install --frozen-lockfile
       SOURCE_DATE_EPOCH=0 pnpm build
-      echo "static-build-id" > .next/BUILD_ID
       pnpm prune --prod --ignore-scripts
   - name: Delete linux-musl node-modules and other unneeded files
     working-directory: /home/build/jellyseerr
