@@ -41,6 +41,7 @@ pipeline:
       PATH="$HOME/.volta/bin:$PATH"
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
+      export SHARP_IGNORE_GLOBAL_LIBVIPS=1
       patch -Np1 -i "../jellyseerr.patch"
       volta install "node@$(yq -r '.engines.node' package.json)"
       volta install "pnpm@$(yq -r '.engines.pnpm' package.json)"
@@ -62,8 +63,8 @@ pipeline:
     runs: |
       install -dm755 "${{targets.destdir}}/usr/lib/jellyseerr"
     
-      cp -dr --no-preserve='ownership' ./{.next,dist,public,node_modules} "${{targets.destdir}}/usr/lib/jellyseerr"
-      cp -d --no-preserve='ownership' ./{package.json,jellyseerr-api.yml,next.config.js} "${{targets.destdir}}/usr/lib/jellyseerr"
+      cp -dr --no-preserve='ownership' .next dist public node_modules "${{targets.destdir}}/usr/lib/jellyseerr"
+      cp -d --no-preserve='ownership' package.json jellyseerr-api.yml next.config.js "${{targets.destdir}}/usr/lib/jellyseerr"
     
       rm -rf "${{targets.destdir}}/usr/lib/jellyseerr/.next/cache"   
       
