@@ -24,16 +24,3 @@ index 67cbb55e..de454bb2 100644
    "config": {
      "commitizen": {
        "path": "./node_modules/cz-conventional-changelog"
-diff --git i/server/index.ts w/server/index.ts
-index d8aadfa0..eff9037d 100644
---- i/server/index.ts
-+++ w/server/index.ts
-@@ -162,7 +162,7 @@ app
-       }
-     });
-     if (settings.network.csrfProtection) {
--      server.use(
-+      server.use(() =>
-         csurf({
-           cookie: {
-             httpOnly: true,
