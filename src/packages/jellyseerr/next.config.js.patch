@@ -1,0 +1,22 @@
+--- next.config.js
++++ next.config.js.copy
+@@ -2,6 +2,9 @@
+  * @type {import('next').NextConfig}
+  */
+ module.exports = {
++  generateBuildId: async () => {
++    return process.env.BUILD_ID || null;
++  },
+   env: {
+     commitTag: process.env.COMMIT_TAG || 'local',
+   },
+@@ -19,6 +22,9 @@
+       issuer: /\.(js|ts)x?$/,
+       use: ['@svgr/webpack'],
+     });
++
++    config.output.filename = '[name].[contenthash].js';
++    config.output.chunkFilename = '[name].[contenthash].js';
+ 
+     return config;
+   },
