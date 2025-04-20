@@ -82,7 +82,7 @@ test:
         packages: ${{package.name}}
     - name: Run test script
       runs: |
-        EXPECTED_VERSION="${{package.version}}" test/test.sh
+        EXPECTED_VERSION="${{package.version}}" ./test.sh
 update:
   enabled: true
   github:
