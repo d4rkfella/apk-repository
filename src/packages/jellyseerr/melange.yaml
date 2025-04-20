@@ -48,7 +48,7 @@ pipeline:
       volta install "pnpm@$(yq -r '.engines.pnpm' package.json)"
       sed -i 's/husky install//' package.json
       echo "{\"commitTag\": \"${{package.version}}\"}" > committag.json
-      pnpm install --frozen-lockfile --shamefully-hoist
+      pnpm install --frozen-lockfile
       SOURCE_DATE_EPOCH=0 pnpm build
       echo "static-build-id" > .next/BUILD_ID
       pnpm prune --prod --ignore-scripts
