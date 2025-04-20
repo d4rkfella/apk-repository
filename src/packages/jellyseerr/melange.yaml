@@ -1,0 +1,91 @@
+package:
+  name: jellyseerr
+  version: "2.5.2"
+  epoch: 0
+  description: Open-source media request and discovery manager for Jellyfin, Plex, and Emby.
+  copyright:
+    - license: MIT
+  dependencies:
+    runtime:
+      - nodejs-22
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - wolfi-baselayout
+      - build-base
+      - busybox
+      - bash
+      - curl
+      - yq
+      - jq
+      - patch
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: "fac453878e3d55b93cfda78908403cce348bb9fa"
+      repository: https://github.com/fallenbagel/jellyseerr
+      tag: v${{package.version}}
+      destination: jellyseerr
+  - name: Install dependancies
+    runs: |
+      PATH="$HOME/.volta/bin:$PATH"
+      curl -sSL https://get.volta.sh | bash
+      volta install "node@$(yq -r '.engines.node' jellyseerr/package.json)"
+      volta install "pnpm@$(yq -r '.engines.pnpm' jellyseerr/package.json)"
+      curl -fsSL -o jellyseerr.patch https://github.com/Fallenbagel/jellyseerr/compare/develop...pnpm-10-for-arch-folks.patch
+  - name: Build
+    working-directory: /home/build/jellyseerr
+    runs: |
+      patch -Np1 -i "../jellyseerr.patch"
+      sed -i 's/husky install//' package.json
+      echo "{\"commitTag\": \"${{package.version}}\"}" > committag.json
+      PATH="$HOME/.volta/bin:$PATH"
+      export NEXT_TELEMETRY_DISABLED=1
+      export CYPRESS_INSTALL_BINARY=0
+      pnpm install --frozen-lockfile
+      pnpm build
+      pnpm prune --prod --ignore-scripts
+  - name: Delete linux-musl node-modules and other unneeded files
+    working-directory: /home/build/jellyseerr
+    runs: |
+      find node_modules -type d \
+        -name "*musl*" \
+        -print \
+        -exec rm -rf {} + \
+        -prune
+  - name: Prepare package
+    working-directory: /home/build/jellyseerr
+    runs: |
+      mkdir -p ${{targets.destdir}}/usr/lib/jellyseerr
+      install -dm755 "${{targets.destdir}}/usr/lib/jellyseerr"
+    
+      cp -dr --no-preserve='ownership' ./{.next,dist,public,node_modules} "${{targets.destdir}}/usr/lib/jellyseerr"
+      cp -d --no-preserve='ownership' ./{package.json,jellyseerr-api.yml,next.config.js} "${{targets.destdir}}/usr/lib/jellyseerr"
+    
+      rm -rf "${pkgdir}/usr/lib/jellyseerr/.next/cache"   
+      
+      find "${{targets.destdir}}/usr/lib/jellyseerr/.next" -type f -print0 | xargs -0 sed -i "s^/home/build/jellyseerr^/usr/lib/jellyseerr^g"
+test:
+  environment:
+    contents:
+      packages:
+        - curl
+        - bash
+        - jq
+  pipeline:
+    - name: Check for missing dependancies
+      uses: test/tw/ldd-check
+      with:
+        packages: ${{package.name}}
+    - name: Run test script
+      runs: |
+        EXPECTED_VERSION="${{package.version}}" test/test.sh
+update:
+  enabled: true
+  github:
+    identifier: fallenbagel/jellyseerr
+    strip-prefix: v
