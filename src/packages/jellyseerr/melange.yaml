@@ -34,14 +34,12 @@ pipeline:
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
-      curl -fsSL -o jellyseerr.patch https://github.com/Fallenbagel/jellyseerr/compare/develop...pnpm-10-for-arch-folks.patch
   - name: Build
     working-directory: /home/build/jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
-      patch -Np1 -i "../jellyseerr.patch"
       volta install "node@$(yq -r '.engines.node' jellyseerr/package.json)"
       volta install "pnpm@$(yq -r '.engines.pnpm' jellyseerr/package.json)"
       sed -i 's/husky install//' package.json
