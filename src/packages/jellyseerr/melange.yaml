@@ -39,7 +39,7 @@ pipeline:
     working-directory: /home/build/jellyseerr
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
-      export BUILD_ID=$(git rev-parse --short HEAD)
+      export COMMIT_TAG=$(git rev-parse --short HEAD)
       export NODE_ENV=production
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
