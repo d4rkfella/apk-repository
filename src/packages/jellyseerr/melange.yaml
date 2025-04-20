@@ -69,7 +69,6 @@ pipeline:
       cp -d --no-preserve='ownership,timestamp' package.json jellyseerr-api.yml next.config.js "${{targets.destdir}}/usr/lib/jellyseerr"
       rm -rf "${{targets.destdir}}/usr/lib/jellyseerr/.next/cache"   
       find "${{targets.destdir}}/usr/lib/jellyseerr/.next" -type f -print0 | xargs -0 sed -i "s^/home/build/jellyseerr^/usr/lib/jellyseerr^g"
-
 test:
   environment:
     contents:
