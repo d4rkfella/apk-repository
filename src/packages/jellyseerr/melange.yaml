@@ -40,8 +40,8 @@ pipeline:
       PATH="$HOME/.volta/bin:$PATH"
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
-      volta install "node@$(yq -r '.engines.node' jellyseerr/package.json)"
-      volta install "pnpm@$(yq -r '.engines.pnpm' jellyseerr/package.json)"
+      volta install "node@$(yq -r '.engines.node' package.json)"
+      volta install "pnpm@$(yq -r '.engines.pnpm' package.json)"
       sed -i 's/husky install//' package.json
       echo "{\"commitTag\": \"${{package.version}}\"}" > committag.json
       pnpm install --frozen-lockfile
