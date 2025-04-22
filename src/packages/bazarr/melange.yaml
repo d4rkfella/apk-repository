@@ -8,7 +8,7 @@ package:
   dependencies:
     runtime:
       - unrar
-      - bazarr-ffmpeg
+      - ffmpeg
 environment:
   contents:
     keyring:
