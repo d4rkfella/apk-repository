@@ -20,6 +20,7 @@ environment:
       - autoconf
       - automake
       - pkgconf
+      - libtool
 pipeline:
   - uses: git-checkout
     with:
