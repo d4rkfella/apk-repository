@@ -57,7 +57,7 @@ pipeline:
       ./configure \
         --prefix=/usr \
         --enable-gpl --enable-version3 \
-        --enable-shared --disable-static \
+        --enable-static \
         --disable-everything \
         --disable-ffplay \
         --disable-doc --disable-debug \
