@@ -57,44 +57,64 @@ pipeline:
   - runs: |
       ./configure \
         --prefix=/usr \
-        --enable-gpl --enable-version3 \
         --disable-shared \
         --enable-static \
         --disable-everything \
         --disable-ffplay \
-        --disable-doc --disable-debug \
-        --enable-libass \
-        --enable-libfreetype \
-        --enable-fontconfig \
-        --enable-zlib \
-        --enable-iconv \
+        --disable-doc \
+        --disable-debug \
+        --enable-gpl \
+        --enable-version3 \
+        --enable-optimizations \
+        --extra-cflags="-O3 -march=native" \
+        \
+        ## Subtitle support (for extracting embedded subs and saving as .srt)
         --enable-demuxer=matroska \
         --enable-demuxer=mov \
-        --enable-muxer=srt \
-        --enable-muxer=wav \
-        --enable-encoder=pcm_s16le \
+        --enable-demuxer=subtitles \
         --enable-decoder=subrip \
+        --enable-decoder=movtext \
+        --enable-parser=subrip \
+        --enable-muxer=srt \
+        \
+        ## Audio decoders (speech detection for ffsubsync)
         --enable-decoder=aac \
         --enable-decoder=ac3 \
-        --enable-decoder=dts \
-        --enable-decoder=mp3 \
-        --enable-decoder=flac \
         --enable-decoder=eac3 \
+        --enable-decoder=flac \
+        --enable-decoder=mp3 \
+        --enable-decoder=dts \
+        --enable-decoder=pcm_s16le \
+        \
+        ## Audio encoder (used internally when re-encoding/resampling)
+        --enable-encoder=pcm_s16le \
+        \
+        ## Audio filters required by ffsubsync
         --enable-filter=aformat \
         --enable-filter=pan \
         --enable-filter=aresample \
         --enable-filter=loudnorm \
+        --enable-filter=highpass \
+        --enable-filter=lowpass \
+        --enable-filter=volume \
+        \
+        ## Protocols
         --enable-protocol=file \
         --enable-protocol=pipe \
-        --enable-filter=highpass \
-        --enable-filter=volume \
-        --enable-filter=lowpass \
+        \
+        ## Subtitle rendering (may help with styled subtitles in future)
+        --enable-libass \
+        --enable-libfreetype \
+        --enable-fontconfig \
+        \
+        ## Common dependencies (needed by subtitle libs and filters)
+        --enable-zlib \
+        --enable-iconv \
+        \
+        ## Optional audio libraries (can improve decoding/resampling quality)
+        --enable-libsoxr \
         --enable-libvorbis \
         --enable-libopus \
-        --enable-libsoxr \
-        --enable-libvpx \
-        --enable-optimizations \
-        --extra-cflags="-O3 -march=native"
 
   - uses: autoconf/make
 
