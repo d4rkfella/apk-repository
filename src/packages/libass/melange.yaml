@@ -12,10 +12,13 @@ environment:
     repositories:
       - https://packages.wolfi.dev/os
     packages:
+      - build-base
       - fontconfig-dev
       - fribidi-dev
       - freetype-dev
       - harfbuzz-dev
+      - autoconf
+      - automake
 pipeline:
   - uses: git-checkout
     with:
