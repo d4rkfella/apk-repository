@@ -20,9 +20,8 @@ environment:
       - autoconf
       - automake
       - pkgconf
+      - nasm
       - libtool
-      - autoconf-archive
-      - m4
 pipeline:
   - uses: fetch
     with:
