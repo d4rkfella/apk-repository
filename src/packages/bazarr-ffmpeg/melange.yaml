@@ -72,10 +72,10 @@ pipeline:
         --enable-muxer=srt \
         --enable-muxer=wav \
         --enable-encoder=pcm_s16le \
-        --enable-decoder=pcm_s16le \
         --enable-decoder=subrip \
         --enable-decoder=aac \
         --enable-decoder=ac3 \
+        --enable-decoder=dts \
         --enable-decoder=mp3 \
         --enable-decoder=flac \
         --enable-decoder=eac3 \
@@ -86,9 +86,12 @@ pipeline:
         --enable-protocol=file \
         --enable-protocol=pipe \
         --enable-filter=highpass \
+        --enable-filter=volume \
         --enable-filter=lowpass \
         --enable-libvorbis \
         --enable-libopus \
+        --enable-libsoxr \
+        --enable-libvpx \
         --enable-optimizations \
         --extra-cflags="-O3 -march=native"
 
