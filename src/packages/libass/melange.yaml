@@ -33,8 +33,6 @@ pipeline:
 
   - runs: |
       export AR=gcc-ar
-      CFLAGS="$CFLAGS -flto=auto" \
-      CXXFLAGS="$CXXFLAGS -flto=auto" \
       ./configure \
         --build=${{host.triplet.gnu}} \
         --host=${{host.triplet.gnu}} \
