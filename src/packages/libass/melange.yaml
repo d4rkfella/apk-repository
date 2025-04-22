@@ -22,6 +22,7 @@ environment:
       - pkgconf
       - libtool
       - autoconf-archive
+      - m4
 pipeline:
   - uses: git-checkout
     with:
@@ -30,6 +31,7 @@ pipeline:
       tag: ${{package.version}}
 
   - runs: |
+      export ACLOCAL_PATH=/usr/share/aclocal
       autoreconf -vfi
       CFLAGS="$CFLAGS -flto=auto" \
       CXXFLAGS="$CXXFLAGS -flto=auto" \
