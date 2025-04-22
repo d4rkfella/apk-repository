@@ -26,8 +26,8 @@ pipeline:
       CFLAGS="$CFLAGS -O2 -flto=auto" \
       ./configure \
         --prefix=/usr \
-        --host=$CHOST \
-        --build=$CBUILD \
+        --host=${{host.triplet.gnu}} \
+        --build=${{host.triplet.gnu}} \
         --disable-static
 
   - uses: autoconf/make
