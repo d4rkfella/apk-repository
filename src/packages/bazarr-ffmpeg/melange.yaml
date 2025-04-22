@@ -55,45 +55,29 @@ pipeline:
   - runs: |
       ./configure \
         --prefix=/usr \
-        --enable-gpl \
-        --enable-version3 \
-        --enable-static \
-        --disable-debug \
-        --disable-ffplay \
-        --disable-indev=sndio \
-        --disable-outdev=sndio \
-        --cc=gcc \
-        --enable-fontconfig \
-        --enable-gmp \
-        --enable-openssl \
-        --enable-gray \
-        --enable-libaom \
-        --enable-libfribidi \
-        --enable-libass \
-        --enable-libvmaf \
-        --enable-libfreetype \
-        --enable-libmp3lame \
-        --enable-libopencore-amrnb \
-        --enable-libopencore-amrwb \
-        --enable-libopenjpeg \
-        --enable-librubberband \
-        --enable-libsoxr \
-        --enable-libspeex \
-        --enable-libsrt \
-        --enable-libvorbis \
-        --enable-libopus \
-        --enable-libtheora \
-        --enable-libvidstab \
-        --enable-libvo-amrwbenc \
-        --enable-libvpx \
-        --enable-libwebp \
-        --enable-libx264 \
-        --enable-libx265 \
-        --enable-libxml2 \
-        --enable-libdav1d \
-        --enable-libxvid \
-        --enable-libzvbi \
-        --enable-libzimg \
+        --enable-gpl --enable-version3 \
+        --enable-shared --disable-static \
+        --disable-ffplay \            # Explicitly disable ffplay
+        --disable-doc --disable-debug \
+        --enable-libass \             # ASS/SSA subtitles
+        --enable-libfreetype \        # Font rendering
+        --enable-fontconfig \         # Font discovery
+        --enable-libzvbi \            # Teletext/PGS
+        --enable-zlib \               # Compressed subtitles
+        --enable-iconv \              # Text encoding
+        --enable-demuxer=matroska \   # MKV
+        --enable-demuxer=mov \        # MP4
+        --enable-muxer=srt \          # SRT output
+        --enable-decoder=subrip \     # SRT subtitles
+        --enable-decoder=aac \        # AAC audio
+        --enable-decoder=ac3 \        # AC3
+        --enable-decoder=mp3 \        # MP3
+        --enable-decoder=flac \       # FLAC
+        --enable-decoder=eac3 \       # E-AC3
+        --enable-filter=aresample \   # Audio resampling
+        --enable-filter=loudnorm \    # Audio normalization
+        --enable-libswresample \      # Audio resampling library
+        --enable-protocol=file \      # Local files
         --enable-optimizations \
         --extra-cflags="-O3 -march=native"
 
