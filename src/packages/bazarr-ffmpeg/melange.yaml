@@ -41,6 +41,7 @@ environment:
       - x265-dev
       - yasm
       - fribidi-dev
+      - gmp-dev
 
 pipeline:
   - uses: git-checkout
