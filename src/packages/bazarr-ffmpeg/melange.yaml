@@ -42,6 +42,7 @@ environment:
       - yasm
       - fribidi-dev
       - gmp-dev
+      - libass-dev
 
 pipeline:
   - uses: git-checkout
