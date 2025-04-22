@@ -76,7 +76,6 @@ pipeline:
         --enable-decoder=eac3 \
         --enable-filter=aresample \
         --enable-filter=loudnorm \
-        --enable-libswresample \
         --enable-protocol=file \
         --enable-optimizations \
         --extra-cflags="-O3 -march=native"
