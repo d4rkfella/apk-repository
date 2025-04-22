@@ -46,6 +46,7 @@ environment:
       - gmp-dev
       - libass-dev
       - zlib-dev
+      - soxr-dev
 pipeline:
   - uses: git-checkout
     with:
