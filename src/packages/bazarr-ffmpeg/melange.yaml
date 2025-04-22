@@ -69,17 +69,14 @@ pipeline:
         --extra-cflags="-O3 -march=native" \
         --enable-demuxer=matroska \
         --enable-demuxer=mov \
-        --enable-demuxer=subtitles \
         --enable-decoder=subrip \
         --enable-decoder=movtext \
-        --enable-parser=subrip \
         --enable-muxer=srt \
         --enable-decoder=aac \
         --enable-decoder=ac3 \
         --enable-decoder=eac3 \
         --enable-decoder=flac \
         --enable-decoder=mp3 \
-        --enable-decoder=dts \
         --enable-decoder=pcm_s16le \
         --enable-encoder=pcm_s16le \
         --enable-filter=aformat \
@@ -89,9 +86,11 @@ pipeline:
         --enable-filter=highpass \
         --enable-filter=lowpass \
         --enable-filter=volume \
+        --enable-filter=silencedetect \
         --enable-protocol=file \
         --enable-protocol=pipe \
         --enable-libass \
+        --enable-libavfilter \
         --enable-libfreetype \
         --enable-fontconfig \
         --enable-zlib \
