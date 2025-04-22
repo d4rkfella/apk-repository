@@ -23,7 +23,14 @@ pipeline:
       expected-commit: e46aedea0a0d17da4c4ef49d84b94a7994664ab5
       tag: ${{package.version}}
 
-  - uses: autoconf/configure
+  - runs: |
+      CFLAGS="$CFLAGS -flto=auto" \
+      CXXFLAGS="$CXXFLAGS -flto=auto" \
+      ./configure \
+        --build=$CBUILD \
+        --host=$CHOST \
+        --prefix=/usr
+        --disable-static
 
   - uses: autoconf/make
 
