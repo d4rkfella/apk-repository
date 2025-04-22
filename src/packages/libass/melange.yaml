@@ -19,7 +19,7 @@ environment:
       - harfbuzz-dev
       - autoconf
       - automake
-      - libtool
+      - pkgconf
 pipeline:
   - uses: git-checkout
     with:
