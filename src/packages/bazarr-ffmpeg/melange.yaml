@@ -94,6 +94,10 @@ pipeline:
         --enable-filter=aresample \
         --enable-filter=loudnorm \
         --enable-protocol=file \
+        --enable-filter=highpass \
+        --enable-filter=lowpass \
+        --enable-libvorbis \
+        --enable-libopus \
         --enable-optimizations \
         --extra-cflags="-O3 -march=native"
 
