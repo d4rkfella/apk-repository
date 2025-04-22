@@ -84,6 +84,7 @@ pipeline:
         --enable-filter=aresample \
         --enable-filter=loudnorm \
         --enable-protocol=file \
+        --enable-protocol=pipe \
         --enable-filter=highpass \
         --enable-filter=lowpass \
         --enable-libvorbis \
