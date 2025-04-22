@@ -32,7 +32,7 @@ var-transforms:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: "82dad607c1a9f63f209a76178acb8a8f55a91de7"
+      expected-commit: "c752796b829303d856b1e6c880c489674b35dc2f"
       repository: https://github.com/morpheus65535/bazarr
       tag: v${{vars.transformed-version}}
   - uses: patch
