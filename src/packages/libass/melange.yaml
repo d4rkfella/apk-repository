@@ -24,15 +24,12 @@ environment:
       - autoconf-archive
       - m4
 pipeline:
-  - uses: git-checkout
+  - uses: fetch
     with:
-      repository: https://github.com/libass/libass
-      expected-commit: e46aedea0a0d17da4c4ef49d84b94a7994664ab5
-      tag: ${{package.version}}
+      uri: https://github.com/libass/libass/releases/download/0.17.3/libass-0.17.3.tar.gz
+      expected-sha256: ""
 
   - runs: |
-      export ACLOCAL_PATH=/usr/share/aclocal
-      autoreconf -vfi
       CFLAGS="$CFLAGS -flto=auto" \
       CXXFLAGS="$CXXFLAGS -flto=auto" \
       ./configure \
