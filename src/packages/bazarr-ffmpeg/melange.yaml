@@ -45,6 +45,8 @@ environment:
       - fribidi-dev
       - gmp-dev
       - libass-dev
+      - zlib-dev
+      - iconv-dev
 pipeline:
   - uses: git-checkout
     with:
@@ -62,7 +64,6 @@ pipeline:
         --enable-libass \
         --enable-libfreetype \
         --enable-fontconfig \
-        --enable-libzvbi \
         --enable-zlib \
         --enable-iconv \
         --enable-demuxer=matroska \
