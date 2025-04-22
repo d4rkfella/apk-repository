@@ -81,12 +81,16 @@ pipeline:
         --enable-demuxer=matroska \
         --enable-demuxer=mov \
         --enable-muxer=srt \
+        --enable-muxer=wav \
+        --enable-encoder=pcm_s16le \
         --enable-decoder=subrip \
         --enable-decoder=aac \
         --enable-decoder=ac3 \
         --enable-decoder=mp3 \
         --enable-decoder=flac \
         --enable-decoder=eac3 \
+        --enable-filter=aformat \
+        --enable-filter=pan \
         --enable-filter=aresample \
         --enable-filter=loudnorm \
         --enable-protocol=file \
