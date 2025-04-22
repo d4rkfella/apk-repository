@@ -2,9 +2,7 @@ package:
   name: libass
   version: "0.17.3"
   epoch: 3
-  description: ffmpeg multimedia library
-  copyright:
-    - license: GPL-2.0-or-later AND LGPL-2.1-or-later
+  description: Portable library for SSA/ASS subtitle rendering
 environment:
   contents:
     keyring:
@@ -27,7 +25,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/libass/libass/releases/download/0.17.3/libass-0.17.3.tar.gz
-      expected-sha256: ""
+      expected-sha256: "7564364556"
 
   - runs: |
       CFLAGS="$CFLAGS -flto=auto" \
