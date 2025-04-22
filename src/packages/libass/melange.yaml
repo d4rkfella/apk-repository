@@ -27,7 +27,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/libass/libass/releases/download/0.17.3/libass-0.17.3.tar.gz
-      expected-sha256: "12ebd44dc4107fb492cc42a461d070c91758d672d467099792f4f28fd284e769"
+      expected-sha256: "da7c348deb6fa6c24507afab2dee7545ba5dd5bbf90a137bfe9e738f7df68537"
 
   - runs: |
       CFLAGS="$CFLAGS -flto=auto" \
