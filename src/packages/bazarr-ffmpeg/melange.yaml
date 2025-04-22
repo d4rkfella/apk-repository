@@ -61,7 +61,6 @@ pipeline:
         --disable-outdev=sndio \
         --cc=gcc \
         --enable-fontconfig \
-        --enable-frei0r \
         --enable-gmp \
         --enable-openssl \
         --enable-libgme \
