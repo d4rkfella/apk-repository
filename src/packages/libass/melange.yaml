@@ -19,7 +19,7 @@ environment:
       - harfbuzz-dev
       - autoconf
       - automake
-      - m4
+      - libtool
 pipeline:
   - uses: git-checkout
     with:
