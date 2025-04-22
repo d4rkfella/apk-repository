@@ -3,6 +3,8 @@ package:
   version: "0.17.3"
   epoch: 3
   description: Portable library for SSA/ASS subtitle rendering
+  copyright:
+    - license: ISC
 environment:
   contents:
     keyring:
@@ -25,7 +27,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/libass/libass/releases/download/0.17.3/libass-0.17.3.tar.gz
-      expected-sha256: "7564364556"
+      expected-sha256: "12ebd44dc4107fb492cc42a461d070c91758d672d467099792f4f28fd284e769"
 
   - runs: |
       CFLAGS="$CFLAGS -flto=auto" \
