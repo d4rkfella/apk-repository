@@ -98,7 +98,7 @@ pipeline:
         --enable-iconv \
         --enable-libsoxr \
         --enable-libvorbis \
-        --enable-libopus \
+        --enable-libopus
 
   - uses: autoconf/make
 
