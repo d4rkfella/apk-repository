@@ -45,7 +45,6 @@ environment:
       - fribidi-dev
       - gmp-dev
       - libass-dev
-
 pipeline:
   - uses: git-checkout
     with:
@@ -67,7 +66,6 @@ pipeline:
         --enable-fontconfig \
         --enable-gmp \
         --enable-openssl \
-        --enable-libgme \
         --enable-gray \
         --enable-libaom \
         --enable-libfribidi \
