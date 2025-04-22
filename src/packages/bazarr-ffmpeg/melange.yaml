@@ -46,7 +46,6 @@ environment:
       - gmp-dev
       - libass-dev
       - zlib-dev
-      - iconv-dev
 pipeline:
   - uses: git-checkout
     with:
