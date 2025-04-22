@@ -21,6 +21,7 @@ environment:
       - automake
       - pkgconf
       - libtool
+      - autoconf-archive
 pipeline:
   - uses: git-checkout
     with:
