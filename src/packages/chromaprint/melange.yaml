@@ -27,7 +27,7 @@ pipeline:
       patches: |
         added-missing-chromaprint_get_algorithm-function-106.patch
         bump-required-C-version-to-14.patch
-        fix-compatibility-with-ffmpeg-7.0.patch 
+        fix-compatibility-with-ffmpeg-7.1.patch 
   
   - uses: cmake/configure
     with:
