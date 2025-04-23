@@ -34,7 +34,9 @@ pipeline:
       opts: |
         -DBUILD_TOOLS=ON \
         -DBUILD_SHARED_LIBS=ON \
-        -DFFT_LIB=ffmpeg
+        -DFFT_LIB=ffmpeg \
+        -DFFMPEG_ROOT=/usr \
+        -DFFMPEG_LIBRARIES=/usr/lib/libavcodec.so
   
   - uses: cmake/build
 
