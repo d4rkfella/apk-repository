@@ -33,7 +33,8 @@ pipeline:
     with:
       opts: |
         -DBUILD_TOOLS=ON \
-        -DBUILD_SHARED_LIBS=ON \  
+        -DBUILD_SHARED_LIBS=ON \
+        -DFFT_LIB=ffmpeg
   
   - uses: cmake/build
 
