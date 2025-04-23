@@ -4,16 +4,18 @@ package:
   epoch: 0
   description: C library for generating audio fingerprints used by AcoustID
   copyright:
-    - license: LGPL-2.1-only
+    - license: MIT
 environment:
   contents:
     keyring:
       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+      - https://packages.darkfellanetwork.com/melange.rsa.pub
     repositories:
       - https://packages.wolfi.dev/os
+      - https://packages.darkfellanetwork.com
     packages:
       - build-base
-      - ffmpeg-dev
+      - kissfft-dev
 pipeline:
   - uses: git-checkout
     with:
@@ -24,7 +26,8 @@ pipeline:
     with:
       opts: |
         -DBUILD_TOOLS=ON \
-        -DBUILD_SHARED_LIBS=ON
+        -DBUILD_SHARED_LIBS=ON \
+        -DFFT_LIB=kissfft
   
   - uses: cmake/build
 
