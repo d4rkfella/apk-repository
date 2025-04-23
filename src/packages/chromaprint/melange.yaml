@@ -23,11 +23,12 @@ pipeline:
       tag: v${{package.version}}
 
   - uses: patch
+    working-directory: /home/build/chromaprint
     with:
       patches: |
-        added-missing-chromaprint_get_algorithm-function-106.patch
-        bump-required-C-version-to-14.patch
-        fix-compatibility-with-ffmpeg-7.0.patch 
+        ../added-missing-chromaprint_get_algorithm-function-106.patch
+        ../bump-required-C-version-to-14.patch
+        ../fix-compatibility-with-ffmpeg-7.0.patch 
   
   - uses: cmake/configure
     with:
