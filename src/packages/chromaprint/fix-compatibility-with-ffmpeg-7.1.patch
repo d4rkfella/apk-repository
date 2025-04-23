@@ -1,0 +1,29 @@
+diff --git a/src/audio/ffmpeg_audio_reader.h b/src/audio/ffmpeg_audio_reader.h
+index abc1234..def5678 100644
+--- a/src/audio/ffmpeg_audio_reader.h
++++ b/src/audio/ffmpeg_audio_reader.h
+@@ -117,7 +117,7 @@ inline bool FFmpegAudioReader::SetInputChannels(int channels) {
+ 	char buf[64];
+ 	sprintf(buf, "%d", channels);
+-	return av_dict_set(&m_input_opts, "channels", buf, 0) >= 0;
++	return av_dict_set(&m_input_opts, "ch_layout", buf, 0) >= 0;
+ }
+ 
+ inline bool FFmpegAudioReader::Open(const std::string &file_name) {
+@@ -179,7 +179,7 @@ inline bool FFmpegAudioReader::Open(const std::string &file_name) {
+ 	}
+ 
+ 	if (m_codec_ctx->sample_fmt != AV_SAMPLE_FMT_S16 || m_codec_ctx->ch_layout.nb_channels != m_output_channels || m_codec_ctx->sample_rate != m_output_sample_rate) {
+-		m_converter.reset(new FFmpegAudioProcessor());
++		m_converter = std::make_unique<FFmpegAudioProcessor>();
+ 		m_converter->SetCompatibleMode();
+ 		m_converter->SetInputSampleFormat(m_codec_ctx->sample_fmt);
+ 		m_converter->SetInputSampleRate(m_codec_ctx->sample_rate);
+@@ -200,7 +200,7 @@ inline void FFmpegAudioReader::Close() {
+ 	m_stream_index = -1;
+ 
+ 	if (m_codec_ctx) {
+-		avcodec_close(m_codec_ctx);
++		avcodec_free_context(&m_codec_ctx);
+ 		m_codec_ctx = nullptr;
+ 	}
