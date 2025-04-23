@@ -27,7 +27,8 @@ pipeline:
       patches: |
         added-missing-chromaprint_get_algorithm-function-106.patch
         bump-required-C-version-to-14.patch
-        fix-compatibility-with-ffmpeg-7.1.patch 
+        01-fix-compatibility-with-ffmpeg-7.1.patch
+        02-fix-compatibility-with-ffmpeg-7.1.patch
   
   - uses: cmake/configure
     with:
@@ -60,6 +61,7 @@ subpackages:
           with:
             packages: chromaprint-dev
     description: ${{package.name}} dev
+
 test:
   pipeline:
     - uses: test/tw/ldd-check
