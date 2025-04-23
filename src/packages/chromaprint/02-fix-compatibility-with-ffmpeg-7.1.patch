@@ -1,5 +1,5 @@
 --- chromaprint/src/audio/ffmpeg_audio_reader.h	2025-04-24 02:39:36.037092483 +0300
-+++ chromaprint/src/audio/ffmpeg_audio_reader-copy.h	2025-04-24 02:39:42.901007232 +0300
++++ chromaprint/src/audio/ffmpeg_audio_reader.h	2025-04-24 02:39:42.901007232 +0300
 @@ -30,8 +30,22 @@
  	FFmpegAudioReader();
  	~FFmpegAudioReader();
