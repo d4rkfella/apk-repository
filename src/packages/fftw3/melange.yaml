@@ -13,6 +13,7 @@ environment:
       - https://packages.wolfi.dev/os
     packages:
       - build-base
+      - openmpi-dev
 pipeline:
   - uses: fetch
     with:
