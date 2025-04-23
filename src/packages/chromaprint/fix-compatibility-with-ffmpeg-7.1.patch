@@ -1,5 +1,5 @@
---- chromaprint/src/audio/ffmpeg_audio_reader.h	2025-04-24 02:12:04.493731124 +0300
-+++ chromaprint/src/audio/ffmpeg_audio_reader.h	2025-04-24 02:13:16.183444422 +0300
+--- src/audio/ffmpeg_audio_reader.h	2025-04-24 02:12:04.493731124 +0300
++++ src/audio/ffmpeg_audio_reader.h	2025-04-24 02:13:16.183444422 +0300
 @@ -119,7 +119,7 @@
  inline bool FFmpegAudioReader::SetInputChannels(int channels) {
  	char buf[64];
