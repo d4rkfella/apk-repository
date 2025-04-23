@@ -63,6 +63,7 @@ pipeline:
         --arch=x86_64 \
         --target-os=linux \
         --extra-version=Jellyfin \
+        --enable-nonfree \
         --extra-cflags= \
         --extra-cxxflags= \
         --extra-ldflags= \
