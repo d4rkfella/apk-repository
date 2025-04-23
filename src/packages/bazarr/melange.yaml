@@ -127,6 +127,7 @@ pipeline:
       cp VERSION "${APPDIR}"
       
       printf "UpdateMethod=docker\nBranch=master\nPackageVersion=${{package.version}}\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)" > ${{targets.destdir}}/usr/lib/bazarr/package_info
+
 test:
   environment:
     contents:
