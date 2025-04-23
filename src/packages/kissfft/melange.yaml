@@ -1,0 +1,65 @@
+package:
+  name: kissfft
+  version: "131.1.0"
+  epoch: 0
+  description: a Fast Fourier Transform (FFT) library that tries to Keep it Simple, Stupid
+  copyright:
+    - license: BSD-3-Clause
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - cmake
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/mborgerding/kissfft
+      tag: ${{package.version}}
+
+  - name: Configure CMake
+    uses: cmake/configure
+    with:
+      opts: |
+        - -DCMAKE_BUILD_TYPE=ReleaseWithDebInfo
+        - -DBUILD_SHARED_LIBS=ON
+        - -DKISSFFT_TEST=ON
+        - -DUSE_LTO=1
+        - -DCMAKE_INSTALL_LIBDIR=lib/x86_64-linux-gnu
+        - -DCMAKE_INSTALL_PREFIX=/usr
+        - -DCMAKE_INSTALL_SYSCONFDIR=/etc
+        - -DCMAKE_INSTALL_LOCALSTATEDIR=/var
+        - -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY=ON
+
+  - runs: |
+      CFLAGS: -flto=thin CXXFLAGS: -flto=thin LDFLAGS: -fuse-ld=lld VERBOSE=1 cmake --build output
+
+  - name: Install
+    uses: cmake/install
+
+  - uses: strip
+
+subpackages:
+  - name: ${{package.name}}-doc
+    description: ${{package.name}} documentation
+    pipeline:
+      - uses: split/manpages
+      - uses: split/infodir
+
+  - name: ${{package.name}}-dev
+    pipeline:
+      - uses: split/dev
+    test:
+      pipeline:
+        - uses: test/pkgconf
+        - uses: test/tw/ldd-check
+          with:
+            packages: kissfft-dev
+    description: ${{package.name}} dev
+
+test:
+  pipeline:
+    - uses: test/tw/ldd-check
