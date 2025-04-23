@@ -1,0 +1,64 @@
+package:
+  name: fftw3
+  version: "3.3.10"
+  epoch: 0
+  description: FFTW is a C subroutine library for computing the discrete Fourier transform (DFT) in one or more dimensions, of arbitrary input size, and of both real and complex data (as well as of even/odd data, i.e. the discrete cosine/sine transforms or DCT/DST). We believe that FFTW, which is free software, should become the FFT library of choice for most applications.
+  copyright:
+    - license: GPL-2.0-or-later
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://fftw.org/fftw-3.3.10.tar.gz
+      expected-sha256: "da7c348deb6fa6c24507afab2dee7545ba5dd5bbf90a137bfe9e738f7df68537"
+
+  - runs: |
+      ./configure \
+        --enable-single  \
+        --build x86_64-linux-gnu F77="gfortran \
+        -ff2c" --prefix=/usr \
+        --enable-shared \
+        --enable-threads \
+        --enable-openmp \
+        --enable-mpi \
+        --libdir=/usr/lib MPILIBS="-L/usr/lib/openmpi/lib \
+        -Wl,-rpath \
+        -Wl,/usr/lib/openmpi/lib \
+        -lmpi" \
+        --enable-sse \
+        --enable-avx
+
+  - uses: autoconf/make
+
+  - uses: autoconf/make-install
+
+  - uses: strip
+
+subpackages:
+  - name: ${{package.name}}-doc
+    description: ${{package.name}} documentation
+    pipeline:
+      - uses: split/manpages
+      - uses: split/infodir
+
+  - name: ${{package.name}}-dev
+    pipeline:
+      - uses: split/dev
+    test:
+      pipeline:
+        - uses: test/pkgconf
+        - uses: test/tw/ldd-check
+          with:
+            packages: fftw3-dev
+    description: ${{package.name}} dev
+
+test:
+  pipeline:
+    - uses: test/tw/ldd-check
