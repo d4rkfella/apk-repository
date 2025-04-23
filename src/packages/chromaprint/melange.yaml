@@ -23,7 +23,7 @@ pipeline:
   - uses: cmake/configure
     with:
       opts: |
-        -DBUILD_TOOLS=ON
+        -DBUILD_TOOLS=ON \
         -DBUILD_SHARED_LIBS=ON
   
   - uses: cmake/build
