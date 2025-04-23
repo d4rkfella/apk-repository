@@ -18,6 +18,7 @@ environment:
       - cmake
       - libpng-dev
       - fftw3-dev
+      - python-3.13-dev
 pipeline:
   - uses: git-checkout
     with:
