@@ -1,0 +1,40 @@
+--- chromaprint/src/audio/ffmpeg_audio_processor_swresample.h	2025-04-24 02:40:55.207604390 +0300
++++ chromaprint/src/audio/ffmpeg_audio_processor_swresample.h	2025-04-24 02:41:13.882864302 +0300
+@@ -6,6 +6,7 @@
+ 
+ extern "C" {
+ #include <libswresample/swresample.h>
++#include <libavutil/channel_layout.h>
+ }
+ 
+ namespace chromaprint {
+@@ -29,8 +30,12 @@
+ 	}
+ 
+ 	void SetInputChannelLayout(int64_t channel_layout) {
+-		av_opt_set_int(m_swr_ctx, "icl", channel_layout, 0);
+-		av_opt_set_int(m_swr_ctx, "ich", av_get_channel_layout_nb_channels(channel_layout), 0);
++		AVChannelLayout ch_layout;
++		if (av_channel_layout_from_mask(&ch_layout, channel_layout) == 0) {
++			av_opt_set_chlayout(m_swr_ctx, "icl", &ch_layout, 0);
++			av_opt_set_int(m_swr_ctx, "ich", av_channel_layout_nb_channels(&ch_layout), 0);
++			av_channel_layout_uninit(&ch_layout);
++		}
+ 	}
+ 
+ 	void SetInputSampleFormat(AVSampleFormat sample_format) {
+@@ -42,8 +47,12 @@
+ 	}
+ 
+ 	void SetOutputChannelLayout(int64_t channel_layout) {
+-		av_opt_set_int(m_swr_ctx, "ocl", channel_layout, 0);
+-		av_opt_set_int(m_swr_ctx, "och", av_get_channel_layout_nb_channels(channel_layout), 0);
++		AVChannelLayout ch_layout;
++		if (av_channel_layout_from_mask(&ch_layout, channel_layout) == 0) {
++			av_opt_set_chlayout(m_swr_ctx, "ocl", &ch_layout, 0);
++			av_opt_set_int(m_swr_ctx, "och", av_channel_layout_nb_channels(&ch_layout), 0);
++			av_channel_layout_uninit(&ch_layout);
++		}
+ 	}
+ 
+ 	void SetOutputSampleFormat(AVSampleFormat sample_format) {
