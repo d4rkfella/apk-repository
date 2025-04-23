@@ -31,13 +31,12 @@ pipeline:
       expected-sha256: "da7c348deb6fa6c24507afab2dee7545ba5dd5bbf90a137bfe9e738f7df68537"
 
   - runs: |
-      export AR=gcc-ar
       ./configure \
         --build=${{host.triplet.gnu}} \
         --host=${{host.triplet.gnu}} \
         --prefix=/usr \
-        --disable-static \
         --sysconfdir=/etc \
+        --libdir=/usr/lib \
         --mandir=/usr/share/man \
         --infodir=/usr/share/info \
         --localstatedir=/var
