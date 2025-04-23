@@ -14,7 +14,7 @@ environment:
     packages:
       - build-base
       - cmake
-      - libpng
+      - libpng-dev
 pipeline:
   - uses: git-checkout
     with:
