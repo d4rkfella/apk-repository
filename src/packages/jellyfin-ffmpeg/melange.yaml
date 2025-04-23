@@ -56,10 +56,9 @@ pipeline:
 
   - runs: |
       ./configure \
-        --prefix=/ffbuild/prefix \
+        --prefix=/usr \
         --pkg-config=pkg-config \
         --pkg-config-flags=--static \
-        --cross-prefix=x86_64-ffbuild-linux-gnu- \
         --arch=x86_64 \
         --target-os=linux \
         --extra-version=Jellyfin \
