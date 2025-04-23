@@ -1,7 +1,7 @@
 package:
   name: libunibreak
   version: "6.1"
-  epoch: 3
+  epoch: 0
   description: Implementation of the line breaking and word breaking algorithms
   copyright:
     - license: Zlib
