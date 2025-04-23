@@ -1,0 +1,22 @@
+From: Sebastian Ramacher <sramacher@debian.org>
+Date: Mon, 17 Jul 2023 23:24:06 +0200
+Subject: Bump required C++ version to 14
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/chromaprint/CMakeLists.txt b/chromaprint/CMakeLists.txt
+index fe75836..b31b067 100644
+--- a/chromaprint/CMakeLists.txt
++++ b/chromaprint/CMakeLists.txt
+@@ -24,7 +24,7 @@ find_package(Threads)
+ 
+ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+ 
+-set(CMAKE_CXX_STANDARD 11)
++set(CMAKE_CXX_STANDARD 14)
+ 
+ if(BUILD_SHARED_LIBS)
+ 	set(CMAKE_C_VISIBILITY_PRESET hidden)
+  
