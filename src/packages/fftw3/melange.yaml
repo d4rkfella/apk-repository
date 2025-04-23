@@ -14,6 +14,7 @@ environment:
     packages:
       - build-base
       - openmpi-dev
+      - gfortran
 pipeline:
   - uses: fetch
     with:
