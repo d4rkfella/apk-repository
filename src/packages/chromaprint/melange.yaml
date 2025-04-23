@@ -15,20 +15,26 @@ environment:
       - https://packages.darkfellanetwork.com
     packages:
       - build-base
-      - kissfft-dev
       - ffmpeg-dev
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/acoustid/chromaprint
       tag: v${{package.version}}
+
+  - uses: patch
+    with:
+      patches: |
+        added-missing-chromaprint_get_algorithm-function-106.patch
+        bump-required-C-version-to-14.patch
+        fix-compatibility-with-ffmpeg-7.0.patch 
   
   - uses: cmake/configure
     with:
       opts: |
         -DBUILD_TOOLS=ON \
         -DBUILD_SHARED_LIBS=ON \
-        -DFFT_LIB=kissfft
+        -DFFT_LIB=ffmpeg
   
   - uses: cmake/build
 
