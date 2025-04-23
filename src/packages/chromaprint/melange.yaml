@@ -16,6 +16,7 @@ environment:
     packages:
       - build-base
       - kissfft-dev
+      - ffmpeg-dev
 pipeline:
   - uses: git-checkout
     with:
