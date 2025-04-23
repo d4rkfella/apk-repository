@@ -1,0 +1,28 @@
+From: diogo464 <djfona@gmail.com>
+Date: Thu, 30 Dec 2021 16:58:36 +0000
+Subject: added missing chromaprint_get_algorithm function (#106)
+
+* added missing chromaprint_get_algorithm function
+
+* fixed tab
+---
+ chromaprint/src/chromaprint.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/chromaprint/src/chromaprint.cpp b/chromaprint/src/chromaprint.cpp
+index 5e5c01d..fb7fff9 100644
+--- a/chromaprint/src/chromaprint.cpp
++++ b/chromaprint/src/chromaprint.cpp
+@@ -65,6 +65,12 @@ void chromaprint_free(ChromaprintContext *ctx)
+ 	}
+ }
+ 
++int chromaprint_get_algorithm(ChromaprintContext *ctx)
++{
++	FAIL_IF(!ctx, "context can't be NULL");
++	return ctx->algorithm;
++}
++
+ int chromaprint_set_option(ChromaprintContext *ctx, const char *name, int value)
+ {
+ 	FAIL_IF(!ctx, "context can't be NULL");
