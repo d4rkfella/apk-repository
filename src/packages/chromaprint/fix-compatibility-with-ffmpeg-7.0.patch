@@ -3,13 +3,13 @@ Date: Fri, 2 Aug 2024 23:38:21 +0200
 Subject: Fix compatibility with ffmpeg 7.0
 
 ---
- chromaprint/src/audio/ffmpeg_audio_reader.h | 9 +++++++--
+ src/audio/ffmpeg_audio_reader.h | 9 +++++++--
  1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/chromaprint/src/audio/ffmpeg_audio_reader.h b/chromaprint/src/audio/ffmpeg_audio_reader.h
+diff --git a/src/audio/ffmpeg_audio_reader.h b/src/audio/ffmpeg_audio_reader.h
 index 35b2934..d57d9a1 100644
---- a/chromaprint/src/audio/ffmpeg_audio_reader.h
-+++ b/chromaprint/src/audio/ffmpeg_audio_reader.h
+--- a/src/audio/ffmpeg_audio_reader.h
++++ b/src/audio/ffmpeg_audio_reader.h
 @@ -118,8 +118,13 @@ inline bool FFmpegAudioReader::SetInputSampleRate(int sample_rate) {
  
  inline bool FFmpegAudioReader::SetInputChannels(int channels) {
@@ -26,3 +26,4 @@ index 35b2934..d57d9a1 100644
  }
  
  inline bool FFmpegAudioReader::Open(const std::string &file_name) {
+ 
