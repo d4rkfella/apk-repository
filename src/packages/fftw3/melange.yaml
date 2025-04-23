@@ -43,7 +43,7 @@ pipeline:
 
   - runs: |
      ./configure \
-       --build ${{host.triplet.gnu}} \
+       --build=${{host.triplet.gnu}} \
        --host=${{host.triplet.gnu}} \
        F77="gfortran -ff2c" \
        --prefix=/usr \
@@ -63,7 +63,7 @@ pipeline:
   - runs: |
       ./configure \
         --enable-long-double  \
-        --build x86_64-linux-gnu \
+        --build=${{host.triplet.gnu}} \
         --host=${{host.triplet.gnu}} \
         F77="gfortran -ff2c" \
         --prefix=/usr \
@@ -80,7 +80,7 @@ pipeline:
 
   - runs: |
       ./configure \
-        --build x86_64-linux-gnu \
+        --build=${{host.triplet.gnu}} \
         --host=${{host.triplet.gnu}} \
         F77="gfortran -ff2c" \
         --prefix=/usr \
