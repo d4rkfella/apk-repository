@@ -17,21 +17,21 @@ pipeline:
   - uses: fetch
     with:
       uri: https://fftw.org/fftw-3.3.10.tar.gz
-      expected-sha256: "da7c348deb6fa6c24507afab2dee7545ba5dd5bbf90a137bfe9e738f7df68537"
+      expected-sha256: "56c932549852cddcfafdab3820b0200c7742675be92179e59e6215b340e26467"
 
   - runs: |
       ./configure \
-        --enable-single  \
-        --build x86_64-linux-gnu F77="gfortran \
-        -ff2c" --prefix=/usr \
+        --enable-single \
+        --build=${{host.triplet.gnu}} \
+        --host=${{host.triplet.gnu}} \
+        F77="gfortran -ff2c" \
+        --prefix=/usr \
         --enable-shared \
         --enable-threads \
         --enable-openmp \
         --enable-mpi \
-        --libdir=/usr/lib MPILIBS="-L/usr/lib/openmpi/lib \
-        -Wl,-rpath \
-        -Wl,/usr/lib/openmpi/lib \
-        -lmpi" \
+        --libdir=/usr/lib \
+        MPILIBS="-L/usr/lib/openmpi/lib -Wl,-rpath,/usr/lib/openmpi/lib -lmpi" \
         --enable-sse \
         --enable-avx
 
