@@ -33,7 +33,7 @@ pipeline:
         --enable-openmp \
         --enable-mpi \
         --libdir=/usr/lib \
-        MPILIBS="-L/usr/lib/openmpi/lib -Wl,-rpath,/usr/lib/openmpi/lib -lmpi" \
+        MPILIBS="-L/usr/lib/openmpi -Wl,-rpath,/usr/lib/openmpi -lmpi" \
         --enable-sse \
         --enable-avx
 
@@ -41,7 +41,63 @@ pipeline:
 
   - uses: autoconf/make-install
 
-  - uses: strip
+  - runs: |
+     ./configure \
+       --build ${{host.triplet.gnu}} \
+       --host=${{host.triplet.gnu}} \
+       F77="gfortran -ff2c" \
+       --prefix=/usr \
+       --enable-shared \
+       --enable-threads \
+       --enable-openmp \
+       --enable-mpi \
+       --libdir=/usr/lib \
+       MPILIBS="-L/usr/lib/openmpi -Wl,-rpath -Wl,/usr/lib/openmpi -lmpi" \
+       --enable-sse2 \
+       --enable-avx
+  
+  - uses: autoconf/make
+
+  - uses: autoconf/make-install
+
+  - runs: |
+      ./configure \
+        --enable-long-double  \
+        --build x86_64-linux-gnu \
+        --host=${{host.triplet.gnu}} \
+        F77="gfortran -ff2c" \
+        --prefix=/usr \
+        --enable-shared \
+        --enable-threads \
+        --enable-openmp \
+        --enable-mpi \
+        --libdir=/usr/lib \
+        MPILIBS="-L/usr/lib/openmpi -Wl,-rpath -Wl,/usr/lib/openmpi -lmpi"
+  
+  - uses: autoconf/make
+
+  - uses: autoconf/make-install
+
+  - runs: |
+      ./configure \
+        --build x86_64-linux-gnu \
+        --host=${{host.triplet.gnu}} \
+        F77="gfortran -ff2c" \
+        --prefix=/usr \
+        --enable-shared \
+        --enable-threads \
+        --enable-openmp \
+        --enable-mpi \
+        --libdir=/usr/lib \
+        MPILIBS="-L/usr/lib/openmpi -Wl,-rpath -Wl,/usr/lib/openmpi -lmpi" \
+        --enable-quad-precision \
+        --disable-mpi
+  
+  - uses: autoconf/make
+
+  - uses: autoconf/make-install
+
+  - uses: strip  
 
 subpackages:
   - name: ${{package.name}}-doc
