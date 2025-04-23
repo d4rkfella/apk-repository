@@ -1,6 +1,6 @@
---- chromaprint/src/audio/ffmpeg_audio_reader.h	2025-04-24 02:12:04.493731124 +0300
-+++ chromaprint/src/audio/ffmpeg_audio_reader.h	2025-04-24 02:13:16.183444422 +0300
-@@ -119,7 +119,7 @@
+--- src/audio/ffmpeg_audio_reader.h	2025-04-24 02:24:45.408731873 +0300
++++ src/audio/ffmpeg_audio_reader.h	2025-04-24 02:25:34.823785774 +0300
+@@ -127,7 +127,7 @@
  inline bool FFmpegAudioReader::SetInputChannels(int channels) {
  	char buf[64];
  	sprintf(buf, "%d", channels);
@@ -12,13 +12,13 @@
 @@ -188,7 +188,7 @@
  	}
  
- 	if (m_codec_ctx->sample_fmt != AV_SAMPLE_FMT_S16 || m_codec_ctx->ch_layout.nb_channels != m_output_channels || m_codec_ctx->sample_rate != m_output_sample_rate) {
+ 	if (m_codec_ctx->sample_fmt != AV_SAMPLE_FMT_S16 || m_codec_ctx->channels != m_output_channels || m_codec_ctx->sample_rate != m_output_sample_rate) {
 -		m_converter.reset(new FFmpegAudioProcessor());
 +		m_converter = std::make_unique<FFmpegAudioProcessor>();
  		m_converter->SetCompatibleMode();
  		m_converter->SetInputSampleFormat(m_codec_ctx->sample_fmt);
  		m_converter->SetInputSampleRate(m_codec_ctx->sample_rate);
-@@ -220,7 +220,7 @@
+@@ -218,7 +218,7 @@
  	m_stream_index = -1;
  
  	if (m_codec_ctx) {
