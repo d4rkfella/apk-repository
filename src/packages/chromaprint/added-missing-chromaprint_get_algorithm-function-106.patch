@@ -6,13 +6,13 @@ Subject: added missing chromaprint_get_algorithm function (#106)
 
 * fixed tab
 ---
- chromaprint/src/chromaprint.cpp | 6 ++++++
+ src/chromaprint.cpp | 6 ++++++
  1 file changed, 6 insertions(+)
 
-diff --git a/chromaprint/src/chromaprint.cpp b/chromaprint/src/chromaprint.cpp
+diff --git a/src/chromaprint.cpp b/src/chromaprint.cpp
 index 5e5c01d..fb7fff9 100644
---- a/chromaprint/src/chromaprint.cpp
-+++ b/chromaprint/src/chromaprint.cpp
+--- a/src/chromaprint.cpp
++++ b/src/chromaprint.cpp
 @@ -65,6 +65,12 @@ void chromaprint_free(ChromaprintContext *ctx)
  	}
  }
