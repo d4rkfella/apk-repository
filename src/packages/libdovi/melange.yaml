@@ -50,6 +50,19 @@ subpackages:
   - name: libdovi-dev
     pipeline:
       - uses: split/dev
+    test:
+      pipeline:
+        - uses: test/pkgconf
+        - uses: test/tw/ldd-check
+          with:
+            packages: ${{package.name}}-dev
+  
   - name: libdovi-doc
+    description: ${{package.name}} documentation
     pipeline:
       - uses: split/manpages
+      - uses: split/infodir
+
+test:
+  pipeline:
+    - uses: test/tw/ldd-check
