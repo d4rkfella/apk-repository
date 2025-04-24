@@ -111,7 +111,6 @@ pipeline:
   - uses: autoconf/make-install
 
   - uses: strip
-
 test:
   pipeline:
     - runs: |
