@@ -14,30 +14,18 @@ environment:
       - https://packages.wolfi.dev/os
       - https://packages.darkfellanetwork.com
     packages:
-      - aom
-      - aom-dev
-      - aom-libs
+      - wolfi-baselayout
       - build-base
       - busybox
-      - ca-certificates-bundle
       - dav1d-dev
-      - expat-dev
       - fontconfig-dev
       - lame-dev
-      - libogg-dev
-      - libsdl2-dev
-      - libsodium-dev
       - libsrt
-      - libssh-dev
-      - libtheora-dev
       - libvorbis-dev
       - libwebp-dev
       - libxml2-dev
-      - openjpeg-dev
       - openssl-dev
       - opus-dev
-      - speex-dev
-      - wolfi-baselayout
       - x264-dev
       - x265-dev
       - yasm
@@ -45,7 +33,6 @@ environment:
       - gmp-dev
       - libass-dev
       - zlib-dev
-      - vulkan-headers
       - chromaprint-dev
 pipeline:
   - uses: git-checkout
