@@ -27,6 +27,7 @@ pipeline:
       expected-commit: "bb5bc108ec695889855f06df338958004ff289ef"
 
   - runs: |
+      export JAVA_TOOL_OPTIONS="-Dant.includeantruntime=false"
       autoreconf -vfi
       ./configure \
         --build=${{host.triplet.gnu}} \
@@ -42,6 +43,7 @@ pipeline:
         --with-libxml2 \
         --with-freetype \
         --with-bdj-type=j2se \
+        --with-java9=yes \
         --disable-doxygen-ps \
         --disable-doxygen-pdf \
         --enable-bdjava-jar
