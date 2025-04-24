@@ -23,7 +23,7 @@ environment:
       - fontconfig-dev
       - ant
       - libudfread-dev
-      - openjdk-21-default-jvm
+      - openjdk-21
 pipeline:
   - uses: git-checkout
     with:
@@ -33,6 +33,8 @@ pipeline:
 
   - runs: |
       autoreconf -vfi
+      export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+      export PATH=$JAVA_HOME/bin:$PATH
       ./configure \
         --build=${{host.triplet.gnu}} \
         --host=${{host.triplet.gnu}} \
