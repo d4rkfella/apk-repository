@@ -14,7 +14,7 @@ environment:
       - lcms2-dev
       - vulkan-loader
       - libdovi-dev
-      - xxhash-dev
+      - py3-mako
 pipeline:
   - uses: git-checkout
     with:
@@ -22,14 +22,33 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 1fd3c7bde7b943fe8985c893310b5269a09b46c5
       recurse-submodules: true
-
+  - runs: |
+      export CFLAGS="$CFLAGS -O2"
+	    export CXXFLAGS="$CXXFLAGS -O2"
+      apk add glslang-dev glslang-static --no-cache
   - uses: meson/configure
     with:
       opts: |
         --buildtype=plain \
-        --sysconfdir=/etc \
+        --bindir=/usr/bin \
+        --buildtype=plain \
+        --datadir=/usr/share \
+        --includedir=/usr/include \
+        --infodir=/usr/share/info \
+        --libdir=/usr/lib \
+        --libexecdir=/usr/libexec \
+        --localedir=/usr/share/locale \
         --localstatedir=/var \
-        --libdir=lib \
+        --mandir=/usr/share/man \
+        --prefix=/usr \
+        --sbindir=/usr/sbin \
+        --sharedstatedir=/var/lib \
+        --sysconfdir=/etc \
+        --python.bytecompile=0 \
+        --werror=false \
+        -Db_lto=true \
+		    -Dbackend_max_links=4 \
+        -Dglslang=enabled \
         -Dtests=false \
         -Ddemos=false \
         -Ddovi=enabled \
