@@ -23,8 +23,8 @@ environment:
       - fontconfig-dev
       - ant
       - libudfread-dev
-      - openjdk-21-default-jdk
-      - openjdk-21-jmods
+      - openjdk-17-default-jdk
+      - openjdk-17-jmods
 pipeline:
   - uses: git-checkout
     with:
