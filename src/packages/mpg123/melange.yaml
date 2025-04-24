@@ -33,10 +33,6 @@ pipeline:
   - uses: strip
 
 subpackages:
-  - name: ${{package.name}}-static
-    description: ${{package.name}} static libraries
-    pipeline:
-      - uses: split/static    
   - name: ${{package.name}}-utils
     description: ${{package.name}} utils
     pipeline:
