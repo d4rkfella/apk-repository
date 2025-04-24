@@ -20,7 +20,7 @@ pipeline:
     with:
       repository: https://code.videolan.org/videolan/libudfread
       tag: ${{package.version}}
-      expected-commit: bb5bc108ec695889855f06df338958004ff289ef
+      expected-commit: a35513813819efadca82c4b90edbe1407b1b9e05
 
   - runs: |
       autoreconf -vfi
