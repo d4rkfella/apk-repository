@@ -24,8 +24,7 @@ environment:
       - ant
       - libudfread-dev
       - openjdk-21-default-jvm
-      - openjdk-21-jre
-      - java-common
+      - openjdk-21-default-jvk
 pipeline:
   - uses: git-checkout
     with:
