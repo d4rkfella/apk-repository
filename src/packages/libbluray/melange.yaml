@@ -23,6 +23,7 @@ pipeline:
       expected-commit: "d414512f1b3d8b6ebf7f3e9698734d2903304087"
 
   - runs: |
+      autoreconf -vfi
       ./configure \
         --build=${{host.triplet.gnu}} \
         --host=${{host.triplet.gnu}} \
