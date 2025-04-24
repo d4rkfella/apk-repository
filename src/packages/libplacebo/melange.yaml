@@ -12,7 +12,6 @@ environment:
       - busybox
       - spirv-tools-dev
       - shaderc
-      - glslang-static
       - lcms2-dev
       - vulkan-loader
 pipeline:
@@ -37,7 +36,6 @@ pipeline:
         -Dtests=false \
         -Ddemos=false \
         -Ddovi=enabled \
-        -Dglslang=enabled \
         -Dlcms=enabled \
         -Dlibdovi=enabled \
         -Dshaderc=enabled \
