@@ -22,9 +22,7 @@ pipeline:
         --enable-static \
         --enable-shared \
         --enable-lfs-alias \
-        --enable-yasm \
-        --enable-avx \
-        --enable-sse
+        --enable-yasm
   
   - uses: autoconf/make
  
