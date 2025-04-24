@@ -15,6 +15,7 @@ environment:
       - vulkan-loader
       - libdovi-dev
       - py3-mako
+      - xxhash-dev
 pipeline:
   - uses: git-checkout
     with:
@@ -43,7 +44,7 @@ pipeline:
         --sharedstatedir=/var/lib \
         --sysconfdir=/etc \
         --python.bytecompile=0 \
-        --werror=false \
+        --werror \
         -Db_lto=true \
         -Dbackend_max_links=4 \
         -Dglslang=enabled \
