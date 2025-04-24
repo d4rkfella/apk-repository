@@ -24,6 +24,7 @@ pipeline:
     with:
       opts: |
         -DBUILD_EXAMPLES=OFF \
+        -DINSTALL_EXAMPLES=OFF \
         -DBUILD_TESTS=OFF
   
   - uses: cmake/build
