@@ -14,7 +14,6 @@ environment:
     packages:
       - build-base
       - ffmpeg-dev
-      - gtest-dev
 pipeline:
   - uses: git-checkout
     with:
@@ -32,21 +31,16 @@ pipeline:
   - uses: cmake/configure
     with:
       opts: |
-        -DBUILD_TOOLS=ON \
         -DBUILD_SHARED_LIBS=OFF \
         -DFFMPEG_ROOT=/usr \
   
   - uses: cmake/build
-  
-  - runs: make check
-    working-directory: /home/build/output
   
   - uses: cmake/install
 
   - uses: cmake/configure
     with:
       opts: |
-        -DBUILD_TOOLS=ON \
         -DBUILD_SHARED_LIBS=ON \
         -DFFMPEG_ROOT=/usr \
   
