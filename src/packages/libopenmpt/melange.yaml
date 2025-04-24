@@ -14,6 +14,7 @@ environment:
     packages:
       - build-base
       - busybox
+      - zlib-dev
 pipeline:
   - uses: fetch
     with:
