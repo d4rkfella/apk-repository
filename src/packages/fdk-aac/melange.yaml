@@ -11,6 +11,7 @@ environment:
       - https://packages.wolfi.dev/os
     packages:
       - build-base
+      - libtool
 pipeline:
   - uses: git-checkout
     with:
