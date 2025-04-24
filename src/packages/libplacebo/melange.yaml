@@ -11,6 +11,11 @@ environment:
       - build-base
       - busybox
       - spirv-tools-dev
+      - glslang-dev
+      - glslang-static
+      - lcms2-dev
+      - shaderc-dev
+      - vulkan-loader-dev
 pipeline:
   - uses: git-checkout
     with:
@@ -27,8 +32,14 @@ pipeline:
         --localstatedir=/var \
         --libdir=lib \
         -Dtests=false \
-        -Ddemos=false
-  
+        -Ddemos=false \
+        -Ddovi=enabled \
+        -Dglslang=enabled \
+        -Dlcms=enabled \
+        -Dlibdovi=enabled \
+        -Dshaderc=enabled \
+        -Dvulkan=enabled
+
   - uses: meson/compile
  
   - uses: meson/install
