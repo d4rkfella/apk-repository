@@ -55,7 +55,7 @@ pipeline:
         -Dlcms=enabled \
         -Dlibdovi=enabled \
         -Dshaderc=enabled \
-        -Dvulkan=disabled \
+        -Dvulkan=enabled \
         -Ddefault_library=both
 
   - uses: meson/compile
