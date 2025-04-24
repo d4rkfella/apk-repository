@@ -6,6 +6,8 @@ package:
   copyright:
     - license: LGPL-2.1-only
 environment:
+  enviroment:
+    REPRODUCIBLE: false
   contents:
     packages:
       - build-base
@@ -17,8 +19,8 @@ environment:
       - fontconfig-dev
       - ant
       - libudfread-dev
-      - openjdk-16-default-jdk
-      - openjdk-16-jmods
+      - openjdk-18-default-jdk
+      - openjdk-18-jmods
 pipeline:
   - uses: git-checkout
     with:
@@ -27,7 +29,6 @@ pipeline:
       expected-commit: "bb5bc108ec695889855f06df338958004ff289ef"
 
   - runs: |
-      export JAVA_TOOL_OPTIONS="-Dant.includeantruntime=false"
       autoreconf -vfi
       ./configure \
         --build=${{host.triplet.gnu}} \
@@ -42,7 +43,6 @@ pipeline:
         --runstatedir=/run \
         --with-libxml2 \
         --with-freetype \
-        --with-java9 \
         --with-bdj-type=j2se \
         --disable-doxygen-ps \
         --disable-doxygen-pdf \
