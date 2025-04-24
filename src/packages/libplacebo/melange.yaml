@@ -15,6 +15,7 @@ environment:
       - vulkan-loader
       - libdovi-dev
       - py3-mako
+      - apk-tools
 pipeline:
   - uses: git-checkout
     with:
