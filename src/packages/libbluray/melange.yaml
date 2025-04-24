@@ -25,6 +25,7 @@ environment:
       - libudfread-dev
       - java-common
       - java-cacerts
+      - java-gcj-compat
 pipeline:
   - uses: git-checkout
     with:
