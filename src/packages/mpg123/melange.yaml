@@ -39,14 +39,22 @@ subpackages:
     description: ${{package.name}} static libraries
   
   - name: ${{package.name}}-utils
-    runs: |
-      mkdir -p ${{targets.subpkgdir}}/usr/share
-      mv ${{targets.destdir}}/usr/bin ${{targets.subpkgdir}}/usr/
+    pipeline:
+      runs: |
+        mkdir -p ${{targets.subpkgdir}}/usr/share
+        mv ${{targets.destdir}}/usr/bin ${{targets.subpkgdir}}/usr/
     description: ${{package.name}} utils
     test:
       pipeline:
         - runs: |
-            openmpt123 --version
+            mpg123 --version
+            mpg123 --help
+            mpg123-strip --version
+            mpg123-strip --help
+            out123 --version
+            out123 --help
+            mpg123-id3dump --version
+            mpg123-id3dump --help
   
   - name: ${{package.name}}-doc
     description: ${{package.name}} documentation
