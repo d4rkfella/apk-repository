@@ -21,7 +21,10 @@ pipeline:
       opts: |
         --enable-static \
         --enable-shared \
-        --enable-lfs-alias
+        --enable-lfs-alias \
+        --enable-yasm \
+        --enable-avx \
+        --enable-sse
   
   - uses: autoconf/make
  
