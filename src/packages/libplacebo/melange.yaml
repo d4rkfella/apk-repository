@@ -9,6 +9,7 @@ environment:
   contents:
     packages:
       - build-base
+      - busybox
       - spirv-tools-dev
 pipeline:
   - uses: git-checkout
