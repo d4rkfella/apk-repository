@@ -39,6 +39,7 @@ pipeline:
   - uses: cmake/build
   
   - runs: make check
+    working-directory: /home/build/output
   
   - uses: cmake/install
 
@@ -52,7 +53,8 @@ pipeline:
   - uses: cmake/build
 
   - runs: make check
-
+    working-directory: /home/build/output
+  
   - uses: cmake/install
 
   - uses: strip
