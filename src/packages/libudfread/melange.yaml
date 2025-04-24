@@ -1,0 +1,65 @@
+package:
+  name: libbluray
+  version: "1.1.2"
+  epoch: 0
+  description: Library for reading UDF from raw devices and image files.
+  copyright:
+    - license: LGPL-2.1-only
+environment:
+  contents:
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    repositories:
+      - https://packages.wolfi.dev/os
+    packages:
+      - build-base
+      - autoconf
+      - automake
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://code.videolan.org/videolan/libudfread
+      tag: ${{package.version}}
+      expected-commit: bb5bc108ec695889855f06df338958004ff289ef
+
+  - runs: |
+      autoreconf -vfi
+      ./configure \
+        --build=${{host.triplet.gnu}} \
+        --host=${{host.triplet.gnu}} \
+        --prefix=/usr \
+        --includedir=/usr/include \
+        --mandir=/usr/share/man \
+        --infodir=/usr/share/info \
+        --sysconfdir=/etc \
+        --localstatedir=/var \
+        --libdir=/usr/lib \
+        --runstatedir=/run
+  
+  - uses: autoconf/make
+
+  - uses: autoconf/make-install
+
+  - uses: strip
+
+subpackages:
+  - name: ${{package.name}}-doc
+    description: ${{package.name}} documentation
+    pipeline:
+      - uses: split/manpages
+      - uses: split/infodir
+
+  - name: ${{package.name}}-dev
+    pipeline:
+      - uses: split/dev
+    test:
+      pipeline:
+        - uses: test/pkgconf
+        - uses: test/tw/ldd-check
+          with:
+            packages: libudfread-dev
+    description: ${{package.name}} dev
+
+test:
+  pipeline:
+    - uses: test/tw/ldd-check
