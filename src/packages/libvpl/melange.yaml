@@ -23,12 +23,9 @@ pipeline:
   - uses: cmake/configure
     with:
       opts: |
-        -DBUILD_PREVIEW=OFF \
         -DBUILD_EXAMPLES=OFF \
-        -DBUILD_TOOLS=ON \
-        -DINSTALL_EXAMPLE_CODE=OFF \
         -DBUILD_TESTS=OFF
-
+  
   - uses: cmake/build
   
   - uses: cmake/install
