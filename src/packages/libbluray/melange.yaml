@@ -20,6 +20,7 @@ environment:
       - libtool
       - fontconfig-dev
       - ant
+      - libudfread-dev
 pipeline:
   - uses: git-checkout
     with:
@@ -54,12 +55,6 @@ pipeline:
   - uses: strip
 
 subpackages:
-  - name: ${{package.name}}-doc
-    description: ${{package.name}} documentation
-    pipeline:
-      - uses: split/manpages
-      - uses: split/infodir
-
   - name: ${{package.name}}-dev
     pipeline:
       - uses: split/dev
