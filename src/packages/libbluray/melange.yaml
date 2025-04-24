@@ -23,9 +23,7 @@ environment:
       - fontconfig-dev
       - ant
       - libudfread-dev
-      - java-common
-      - java-cacerts
-      - java-gcj-compat
+      - openjdk-21
 pipeline:
   - uses: git-checkout
     with:
