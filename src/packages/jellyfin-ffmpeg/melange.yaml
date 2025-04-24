@@ -10,6 +10,13 @@ environment:
     packages:
       - wolfi-base
       - build-base
+      - chromaprint-dev
+      - libbluray-dev
+      - fdk-aac-dev
+      - libvpl-dev
+      - libopenmpt-dev
+      - libplacebo-dev
+      - libass-dev
 pipeline:
   - uses: git-checkout
     with:
@@ -36,15 +43,8 @@ pipeline:
         fribidi-dev \
         fribidi-static \
         gmp-dev \
-        libass-dev \
         zlib-dev \
         zlib-static \
-        chromaprint-dev \
-        libbluray-dev \
-        fdk-aac-dev \
-        libvpl-dev \
-        libopenmpt-dev \
-        libplacebo-dev \
         vulkan-headers \
         vulkan-loader \
         libtheora-dev \
