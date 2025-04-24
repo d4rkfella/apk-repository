@@ -17,6 +17,7 @@ environment:
       - libxml2-dev
       - autoconf
       - automake
+      - libtool
 pipeline:
   - uses: git-checkout
     with:
