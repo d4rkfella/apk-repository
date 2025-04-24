@@ -6,7 +6,7 @@ package:
   copyright:
     - license: LGPL-2.1-only
 environment:
-  enviroment:
+  environment:
     REPRODUCIBLE: false
   contents:
     packages:
