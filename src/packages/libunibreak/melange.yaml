@@ -22,7 +22,6 @@ pipeline:
       expected-sha256: "cc4de0099cf7ff05005ceabff4afed4c582a736abc38033e70fdac86335ce93f"
 
   - runs: |
-      autoreconf -vfi
       ./configure \
         --build=${{host.triplet.gnu}} \
         --host=${{host.triplet.gnu}} \
