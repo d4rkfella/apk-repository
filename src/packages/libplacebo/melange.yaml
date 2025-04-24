@@ -27,7 +27,7 @@ pipeline:
         -Dtests=false \
         -Ddemos=false
   
-  - uses: meson/build
+  - uses: meson/compile
  
   - uses: meson/install
 
