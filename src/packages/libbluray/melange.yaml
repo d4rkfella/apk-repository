@@ -20,9 +20,9 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      repository: https://github.com/ShiftMediaProject/libbluray
-      tag: ${{package.version}}-3
-      expected-commit: "d414512f1b3d8b6ebf7f3e9698734d2903304087"
+      repository: https://code.videolan.org/videolan/libbluray.git
+      tag: ${{package.version}}
+      expected-commit: "9feeb79e8b7bf5525232ee660270affa0d5a440b"
 
   - runs: |
       autoreconf -vfi
