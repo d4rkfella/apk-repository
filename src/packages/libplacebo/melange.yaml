@@ -15,7 +15,7 @@ environment:
       - glslang-static
       - lcms2-dev
       - shaderc
-      - vulkan-loader-dev
+      - vulkan-loader
 pipeline:
   - uses: git-checkout
     with:
@@ -23,6 +23,9 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 1fd3c7bde7b943fe8985c893310b5269a09b46c5
       recurse-submodules: true
+  - runs: |
+      export CFLAGS="$CFLAGS -O2" \
+	    export CXXFLAGS="$CXXFLAGS -O2" \
 
   - uses: meson/configure
     with:
@@ -31,6 +34,7 @@ pipeline:
         --sysconfdir=/etc \
         --localstatedir=/var \
         --libdir=lib \
+        -Db_lto=true \
         -Dtests=false \
         -Ddemos=false \
         -Ddovi=enabled \
