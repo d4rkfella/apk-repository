@@ -13,6 +13,7 @@ environment:
       - shaderc
       - lcms2-dev
       - vulkan-loader
+      - vulkan-headers
       - libdovi-dev
       - py3-mako
       - xxhash-dev
