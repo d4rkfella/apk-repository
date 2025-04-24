@@ -29,34 +29,34 @@ pipeline:
   - uses: meson/configure
     with:
       opts: |
-	--buildtype=plain \
-	--bindir=/usr/bin \
-	--buildtype=plain \
-	--datadir=/usr/share \
-	--includedir=/usr/include \
-	--infodir=/usr/share/info \
-	--libdir=/usr/lib \
-	--libexecdir=/usr/libexec \
-	--localedir=/usr/share/locale \
-	--localstatedir=/var \
-	--mandir=/usr/share/man \
-	--prefix=/usr \
-	--sbindir=/usr/sbin \
-	--sharedstatedir=/var/lib \
-	--sysconfdir=/etc \
-	--python.bytecompile=0 \
-	--werror=false \
-	-Db_lto=true \
-	-Dbackend_max_links=4 \
-	-Dglslang=enabled \
+        --buildtype=plain \
+        --bindir=/usr/bin \
+        --buildtype=plain \
+        --datadir=/usr/share \
+        --includedir=/usr/include \
+        --infodir=/usr/share/info \
+        --libdir=/usr/lib \
+        --libexecdir=/usr/libexec \
+        --localedir=/usr/share/locale \
+        --localstatedir=/var \
+        --mandir=/usr/share/man \
+        --prefix=/usr \
+        --sbindir=/usr/sbin \
+        --sharedstatedir=/var/lib \
+        --sysconfdir=/etc \
+        --python.bytecompile=0 \
+        --werror=false \
+        -Db_lto=true \
+        -Dbackend_max_links=4 \
+        -Dglslang=enabled \
 	-Dtests=false \
-	-Ddemos=false \
-	-Ddovi=enabled \
-	-Dlcms=enabled \
-	-Dlibdovi=enabled \
-	-Dshaderc=enabled \
-	-Dvulkan=enabled \
-	-Ddefault_library=both
+        -Ddemos=false \
+        -Ddovi=enabled \
+        -Dlcms=enabled \
+        -Dlibdovi=enabled \
+        -Dshaderc=enabled \
+        -Dvulkan=enabled \
+        -Ddefault_library=both
 
   - uses: meson/compile
  
