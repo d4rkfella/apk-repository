@@ -22,7 +22,7 @@ pipeline:
     with:
       repository: https://code.videolan.org/videolan/libbluray.git
       tag: ${{package.version}}
-      expected-commit: "9feeb79e8b7bf5525232ee660270affa0d5a440b"
+      expected-commit: "bb5bc108ec695889855f06df338958004ff289ef"
 
   - runs: |
       autoreconf -vfi
