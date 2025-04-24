@@ -9,7 +9,6 @@ environment:
   contents:
     packages:
       - build-base
-      - yasm
 pipeline:
   - uses: fetch
     with:
@@ -22,7 +21,7 @@ pipeline:
         --enable-static \
         --enable-shared \
         --enable-lfs-alias \
-        --enable-yasm
+        --with-cpu=x86-64
   
   - uses: autoconf/make
  
