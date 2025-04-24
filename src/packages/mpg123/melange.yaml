@@ -9,6 +9,7 @@ environment:
   contents:
     packages:
       - build-base
+      - yasm
 pipeline:
   - uses: fetch
     with:
