@@ -17,6 +17,7 @@ pipeline:
       repository: https://code.videolan.org/videolan/libplacebo
       tag: v${{package.version}}
       expected-commit: 1fd3c7bde7b943fe8985c893310b5269a09b46c5
+      recurse-submodules: true
 
   - uses: meson/configure
     with:
