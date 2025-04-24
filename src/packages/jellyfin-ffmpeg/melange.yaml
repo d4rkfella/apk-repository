@@ -37,6 +37,7 @@ environment:
       - libbluray-dev
       - fdk-aac-dev
       - libvpl-dev
+      - libopenmpt-dev
 pipeline:
   - uses: git-checkout
     with:
