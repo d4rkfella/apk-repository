@@ -38,6 +38,7 @@ environment:
       - fdk-aac-dev
       - libvpl-dev
       - libopenmpt-dev
+      - libplacebo-dev
 pipeline:
   - uses: git-checkout
     with:
