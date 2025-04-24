@@ -14,7 +14,7 @@ environment:
       - glslang-dev
       - glslang-static
       - lcms2-dev
-      - shaderc-dev
+      - shaderc
       - vulkan-loader-dev
 pipeline:
   - uses: git-checkout
