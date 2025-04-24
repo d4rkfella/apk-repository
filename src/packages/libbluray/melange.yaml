@@ -43,7 +43,6 @@ pipeline:
         --with-libxml2 \
         --with-freetype \
         --with-bdj-type=j2se \
-        --with-java9=yes \
         --disable-doxygen-ps \
         --disable-doxygen-pdf \
         --enable-bdjava-jar
