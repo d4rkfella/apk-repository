@@ -44,7 +44,6 @@ pipeline:
       ./configure \
         --prefix=/usr \
         --pkg-config=pkg-config \
-        --pkg-config-flags=--static \
         --arch=x86_64 \
         --target-os=linux \
         --extra-version=Jellyfin \
