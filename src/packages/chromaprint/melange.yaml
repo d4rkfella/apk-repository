@@ -33,6 +33,7 @@ pipeline:
       opts: |
         -DBUILD_TOOLS=ON \
         -DBUILD_SHARED_LIBS=ON \
+        -DBUILD_STATIC_LIBS=ON \
         -DFFMPEG_ROOT=/usr \
         -DFFMPEG_LIBRARIES=/usr/lib/libavcodec.so
   
