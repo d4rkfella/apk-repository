@@ -32,7 +32,7 @@ pipeline:
     with:
       opts: |
         -DBUILD_TOOLS=ON \
-        -DBUILD_SHARED_LIBS=ON \
+        -DBUILD_SHARED_LIBS=OFF \
         -DBUILD_STATIC_LIBS=ON \
         -DFFMPEG_ROOT=/usr \
   
