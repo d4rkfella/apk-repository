@@ -15,6 +15,12 @@ environment:
       - build-base
       - busybox
       - zlib-dev
+      - pulseaudio-dev
+      - portaudio-dev
+      - libvorbis-dev
+      - libsndfile-dev
+      - flac-dev
+      - libogg-dev
 pipeline:
   - uses: fetch
     with:
