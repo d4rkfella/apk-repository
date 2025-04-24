@@ -48,6 +48,7 @@ pipeline:
         vulkan-headers \
         vulkan-loader \
         libtheora-dev \
+        svt-av1 \
         libtheora-static
   - runs: |
       ./configure \
