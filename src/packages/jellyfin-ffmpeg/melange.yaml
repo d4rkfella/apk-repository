@@ -35,6 +35,8 @@ environment:
       - libplacebo-dev
       - vulkan-headers
       - vulkan-loader
+      - libtheora-dev
+      - libtheora-static
 pipeline:
   - uses: git-checkout
     with:
