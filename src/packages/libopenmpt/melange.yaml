@@ -21,6 +21,7 @@ environment:
       - libsndfile-dev
       - flac-dev
       - libogg-dev
+      - libmpg123-dev
 pipeline:
   - uses: fetch
     with:
