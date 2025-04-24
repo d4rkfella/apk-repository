@@ -10,7 +10,6 @@ environment:
     packages:
       - build-base
       - busybox
-      - spirv-tools-dev
       - shaderc
       - lcms2-dev
       - vulkan-loader
