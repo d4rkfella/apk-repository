@@ -33,7 +33,17 @@ pipeline:
       opts: |
         -DBUILD_TOOLS=ON \
         -DBUILD_SHARED_LIBS=OFF \
-        -DBUILD_STATIC_LIBS=ON \
+        -DFFMPEG_ROOT=/usr \
+  
+  - uses: cmake/build
+
+  - uses: cmake/install
+
+  - uses: cmake/configure
+    with:
+      opts: |
+        -DBUILD_TOOLS=ON \
+        -DBUILD_SHARED_LIBS=ON \
         -DFFMPEG_ROOT=/usr \
   
   - uses: cmake/build
@@ -43,6 +53,11 @@ pipeline:
   - uses: strip
 
 subpackages:
+  - name: chromaprint-static
+    pipeline:
+      - uses: split/static
+    description: chromaprint static libraries
+  
   - name: ${{package.name}}-dev
     pipeline:
       - uses: split/dev
