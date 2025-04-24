@@ -18,6 +18,7 @@ environment:
       - autoconf
       - automake
       - libtool
+      - fontconfig-dev
 pipeline:
   - uses: git-checkout
     with:
