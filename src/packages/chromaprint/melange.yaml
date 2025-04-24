@@ -35,7 +35,6 @@ pipeline:
         -DBUILD_SHARED_LIBS=ON \
         -DBUILD_STATIC_LIBS=ON \
         -DFFMPEG_ROOT=/usr \
-        -DFFMPEG_LIBRARIES=/usr/lib/libavcodec.so
   
   - uses: cmake/build
 
