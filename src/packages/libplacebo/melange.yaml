@@ -1,0 +1,38 @@
+package:
+  name: libplacebo
+  version: "7.349.0"
+  epoch: 0
+  description: Reusable library for GPU-accelerated video/image rendering
+  copyright:
+    - license: LGPL-2.1-or-later
+environment:
+  contents:
+    packages:
+      - build-base
+      - spirv-tools-dev
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://code.videolan.org/videolan/libplacebo
+      tag: v${{package.version}}
+      expected-commit: 1fd3c7bde7b943fe8985c893310b5269a09b46c5
+
+  - uses: meson/configure
+    with:
+      opts: |
+        --buildtype=plain \
+        --sysconfdir=/etc \
+        --localstatedir=/var \
+        --libdir=lib \
+        -Dtests=false \
+        -Ddemos=false
+  
+  - uses: meson/build
+ 
+  - uses: meson/install
+
+  - uses: strip
+
+test:
+  pipeline:
+    - uses: test/tw/ldd-check
