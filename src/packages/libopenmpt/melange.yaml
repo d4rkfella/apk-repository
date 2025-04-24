@@ -24,6 +24,7 @@ environment:
       - flac-dev
       - libogg-dev
       - libmpg123-dev
+      - doxygen
 pipeline:
   - uses: fetch
     with:
@@ -41,12 +42,22 @@ pipeline:
   - uses: strip
 
 subpackages:
+  - name: ${{package.name}}-static
+    pipeline:
+      - uses: split/static
+    description: ${{package.name}} static libraries
+  
   - name: ${{package.name}}-doc
     description: ${{package.name}} documentation
     pipeline:
       - uses: split/manpages
       - uses: split/infodir
+  
   - name: ${{package.name}}-dev
+    dependencies:
+      runtime:
+        - ${{package.name}}
+        - ${{package.name}}-static
     pipeline:
       - uses: split/dev
     test:
