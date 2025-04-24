@@ -24,11 +24,7 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 1fd3c7bde7b943fe8985c893310b5269a09b46c5
       recurse-submodules: true
-  
-  - uses: patch
-    with:
-      patches: glslang-deps.patch
-  
+   
   - uses: meson/configure
     with:
       opts: |
@@ -48,7 +44,7 @@ pipeline:
         --sysconfdir=/etc \
         --python.bytecompile=0 \
         -Dbackend_max_links=4 \
-        -Dglslang=enabled \
+        -Dglslang=disabled \
         -Dtests=true \
         -Ddemos=false \
         -Ddovi=enabled \
