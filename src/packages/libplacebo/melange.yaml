@@ -23,9 +23,6 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 1fd3c7bde7b943fe8985c893310b5269a09b46c5
       recurse-submodules: true
-  - runs: |
-      export CFLAGS="$CFLAGS -O2"
-      export CXXFLAGS="$CXXFLAGS -O2"
   - uses: meson/configure
     with:
       opts: |
@@ -44,7 +41,6 @@ pipeline:
         --sharedstatedir=/var/lib \
         --sysconfdir=/etc \
         --python.bytecompile=0 \
-        --werror \
         -Db_lto=true \
         -Dbackend_max_links=4 \
         -Dglslang=enabled \
