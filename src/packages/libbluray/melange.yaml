@@ -35,8 +35,6 @@ pipeline:
 
   - runs: |
       autoreconf -vfi
-      export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
-      export PATH=$JAVA_HOME/bin:$PATH
       ./configure \
         --build=${{host.triplet.gnu}} \
         --host=${{host.triplet.gnu}} \
