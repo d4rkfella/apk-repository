@@ -44,7 +44,16 @@ pipeline:
   - uses: strip
 
 subpackages:
+  - name: ${{package.name}}-static
+    pipeline:
+      - uses: split/static
+    description: ${{package.name}} static libraries
+  
   - name: ${{package.name}}-dev
+    dependencies:
+      runtime:
+        - ${{package.name}}
+        - ${{package.name}}-static
     pipeline:
       - uses: split/dev
     test:
@@ -52,7 +61,7 @@ subpackages:
         - uses: test/pkgconf
         - uses: test/tw/ldd-check
           with:
-            packages: libudfread-dev
+            packages: ${{package.name}}-dev
     description: ${{package.name}} dev
 
 test:
