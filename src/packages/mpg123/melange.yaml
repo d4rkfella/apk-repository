@@ -7,10 +7,6 @@ package:
     - license: LGPL-2.1-only
 environment:
   contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
     packages:
       - build-base
 pipeline:
