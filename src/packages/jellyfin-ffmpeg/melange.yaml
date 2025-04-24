@@ -47,6 +47,7 @@ environment:
       - libass-dev
       - zlib-dev
       - vulkan-headers
+      - chromaprint-dev
 pipeline:
   - uses: git-checkout
     with:
