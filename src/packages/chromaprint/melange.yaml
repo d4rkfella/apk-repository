@@ -9,10 +9,8 @@ environment:
   contents:
     keyring:
       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-      - https://packages.darkfellanetwork.com/melange.rsa.pub
     repositories:
       - https://packages.wolfi.dev/os
-      - https://packages.darkfellanetwork.com
     packages:
       - build-base
       - ffmpeg-dev
@@ -45,12 +43,6 @@ pipeline:
   - uses: strip
 
 subpackages:
-  - name: ${{package.name}}-doc
-    description: ${{package.name}} documentation
-    pipeline:
-      - uses: split/manpages
-      - uses: split/infodir
-
   - name: ${{package.name}}-dev
     pipeline:
       - uses: split/dev
