@@ -2,7 +2,7 @@ package:
   name: libbluray
   version: "1.3.4"
   epoch: 0
-  description: Unofficial LibBluray with added custom native Visual Studio project build tools. LibBluray: libbluray is an open-source library designed for Blu-Ray Discs playback for media players.
+  description: libbluray is an open-source library designed for Blu-Ray Discs playback for media players.
   copyright:
     - license: LGPL-2.1-only
 environment:
