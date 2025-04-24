@@ -48,7 +48,7 @@ pipeline:
         --werror=false \
         -Db_lto=true \
         -Dbackend_max_links=4 \
-        -Dglslang=enabled \
+	-Dglslang=enabled \
 	-Dtests=false \
         -Ddemos=false \
         -Ddovi=enabled \
