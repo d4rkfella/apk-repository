@@ -18,7 +18,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://lib.openmpt.org/files/libopenmpt/src/libopenmpt-${{package.version}}+release.autotools.tar.gz
-      expected-commit: c45b5d786bf7cdabbe49ff1bab78693ad78feb78
+      expected-sha512: 04e63c635dd6c63c2ce79db4eff971f10e4d14a12c7f143fc317a4b5f5188cd8cbf84fc5121057c2beff3a3e6b9b48767c02b9eb5c569accab3e6ff7322a9690
 
   - runs: sed -i 's/+release.autotools//' ./configure
 
