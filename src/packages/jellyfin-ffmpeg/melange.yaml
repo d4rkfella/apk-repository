@@ -34,6 +34,7 @@ environment:
       - libopenmpt-dev
       - libplacebo-dev
       - vulkan-headers
+      - vulkan-loader
 pipeline:
   - uses: git-checkout
     with:
