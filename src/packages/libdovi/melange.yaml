@@ -1,0 +1,54 @@
+package:
+  name: libdovi
+  version: 3.3.1
+  epoch: 0
+  description: "Library to read & write Dolby Vision metadata"
+  license: "MIT"
+
+environment:
+  contents:
+    packages:
+      - cargo
+      - cargo-auditable
+      - cargo-c
+      - build-base
+
+pipeline:
+  - uses: fetch
+    uri: https://github.com/quietvoid/dovi_tool/archive/refs/tags/libdovi-${{package.version}}.tar.gz
+    expected-sha512: f7240f2761aad5cc662ba401a81b4314a3a32a5b7ee1ce5b21497c767c40279438819184efe3de6e3faa7477b422fc9e9ab9177256c321fab8099e83933ea3ea
+  
+  - runs: |
+      cargo fetch --manifest-path dolby_vision/Cargo.toml
+
+  - name: Build
+    runs: |
+      cargo auditable cbuild \
+        --release \
+        --frozen \
+        --prefix /usr \
+        --library-type cdylib \
+        --manifest-path dolby_vision/Cargo.toml
+
+  - name: Check
+    runs: |
+      cargo test --frozen --manifest-path dolby_vision/Cargo.toml
+
+  - name: Install
+    runs: |
+      cargo auditable cinstall \
+        --release \
+        --frozen \
+        --prefix /usr \
+        --destdir "${{targets.destdir}}" \
+        --library-type cdylib \
+        --manifest-path dolby_vision/Cargo.toml
+      install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/libdovi/LICENSE"
+
+subpackages:
+  - name: libdovi-dev
+    pipeline:
+      - uses: split/dev
+  - name: libdovi-doc
+    pipeline:
+      - uses: split/manpages
