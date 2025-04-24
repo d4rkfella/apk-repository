@@ -25,6 +25,7 @@ environment:
       - libudfread-dev
       - openjdk-21-jre
       - openjdk-21
+      - java-common
 pipeline:
   - uses: git-checkout
     with:
