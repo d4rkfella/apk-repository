@@ -49,9 +49,9 @@ pipeline:
         --target-os=linux \
         --extra-version=Jellyfin \
         --enable-nonfree \
-        --extra-cflags= \
         --extra-cxxflags= \
-        --extra-ldflags= \
+        --extra-cflags="-I/usr/include/libplacebo" \
+        --extra-ldflags="-L/usr/lib -lplacebo" \
         --extra-ldexeflags=-pie \
         --extra-libs=-ldl \
         --enable-gpl \
