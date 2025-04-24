@@ -29,7 +29,6 @@ environment:
       - libsodium-dev
       - libsrt
       - libssh-dev
-      - libtheora
       - libtheora-dev
       - libvorbis-dev
       - libwebp-dev
