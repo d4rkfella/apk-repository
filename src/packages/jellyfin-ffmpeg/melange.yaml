@@ -43,6 +43,7 @@ pipeline:
   - runs: |
       ./configure \
         --prefix=/usr \
+        --pkg-config-flags=--static \
         --pkg-config=pkg-config \
         --arch=x86_64 \
         --target-os=linux \
