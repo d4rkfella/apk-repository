@@ -17,8 +17,8 @@ environment:
       - fontconfig-dev
       - ant
       - libudfread-dev
-      - openjdk-17-default-jdk
-      - openjdk-17-jmods
+      - openjdk-18-default-jdk
+      - openjdk-18-jmods
 pipeline:
   - uses: git-checkout
     with:
@@ -27,7 +27,6 @@ pipeline:
       expected-commit: "bb5bc108ec695889855f06df338958004ff289ef"
 
   - runs: |
-      export JAVA_TOOL_OPTIONS="-Dant.javac.source=17 -Dant.javac.target=17"
       autoreconf -vfi
       ./configure \
         --build=${{host.triplet.gnu}} \
@@ -43,7 +42,7 @@ pipeline:
         --with-libxml2 \
         --with-freetype \
         --with-bdj-type=j2se \
-        --with-java9=yes \
+        --with-java9 \
         --disable-doxygen-ps \
         --disable-doxygen-pdf \
         --enable-bdjava-jar
