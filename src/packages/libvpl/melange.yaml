@@ -1,6 +1,6 @@
 package:
   name: libvpl
-  version: "2023.3.1"
+  version: "2.15.0"
   epoch: 0
   description: Intel® Video Processing Library (Intel® VPL) API, dispatcher, and examples
   copyright:
