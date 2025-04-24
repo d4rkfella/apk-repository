@@ -17,8 +17,8 @@ environment:
       - fontconfig-dev
       - ant
       - libudfread-dev
-      - openjdk-18-default-jdk
-      - openjdk-18-jmods
+      - openjdk-9-default-jdk
+      - openjdk-9-jmods
 pipeline:
   - uses: git-checkout
     with:
@@ -41,6 +41,7 @@ pipeline:
         --runstatedir=/run \
         --with-libxml2 \
         --with-freetype \
+        --with-java9 \
         --with-bdj-type=j2se \
         --disable-doxygen-ps \
         --disable-doxygen-pdf \
