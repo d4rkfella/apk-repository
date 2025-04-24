@@ -48,8 +48,6 @@ subpackages:
   - name: ${{package.name}}-dev
     pipeline:
       - uses: split/dev
-      - runs: |
-          sed -i 's/-lplacebo/-l:libplacebo.so/' ${{targets.subpkgdir}}/usr/lib/pkgconfig/libplacebo.pc
     test:
       pipeline:
         - uses: test/pkgconf
