@@ -41,10 +41,9 @@ pipeline:
         --sharedstatedir=/var/lib \
         --sysconfdir=/etc \
         --python.bytecompile=0 \
-        -Db_lto=true \
         -Dbackend_max_links=4 \
         -Dglslang=enabled \
-        -Dtests=false \
+        -Dtests=true \
         -Ddemos=false \
         -Ddovi=enabled \
         -Dlcms=enabled \
@@ -54,7 +53,9 @@ pipeline:
         -Ddefault_library=both
 
   - uses: meson/compile
- 
+
+  - runs: meson test --no-rebuild --print-errorlogs -C output
+  
   - uses: meson/install
 
   - uses: strip
