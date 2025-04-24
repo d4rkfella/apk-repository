@@ -11,7 +11,7 @@ environment:
       - build-base
       - busybox
       - spirv-tools-dev
-      - glslang-dev
+      - shaderc
       - glslang-static
       - lcms2-dev
       - vulkan-loader
