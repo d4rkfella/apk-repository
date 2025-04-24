@@ -7,12 +7,6 @@ package:
     - license: LGPL-2.1-only
 environment:
   contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-      - https://packages.darkfellanetwork.com/melange.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
-      - https://packages.darkfellanetwork.com
     packages:
       - build-base
       - freetype-dev
@@ -59,7 +53,35 @@ pipeline:
   - uses: strip
 
 subpackages:
+  - name: ${{package.name}}-bdj
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/share
+          mv ${{targets.destdir}}/usr/share ${{targets.subpkgdir}}/usr/
+  
+  - name: ${{package.name}}-static
+    pipeline:
+      - uses: split/static
+    description: ${{package.name}} static libraries
+
+  - name: ${{package.name}}-utils
+    description: ${{package.name}} utils
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/share
+          mv ${{targets.destdir}}/usr/bin ${{targets.subpkgdir}}/usr/
+    test:
+      pipeline:
+        - runs: |
+            bd_splice
+            bd_list_titles
+            bd_info
+  
   - name: ${{package.name}}-dev
+    dependencies:
+      runtime:
+        - ${{package.name}}
+        - ${{package.name}}-static
     pipeline:
       - uses: split/dev
     test:
@@ -67,7 +89,7 @@ subpackages:
         - uses: test/pkgconf
         - uses: test/tw/ldd-check
           with:
-            packages: libbluray-dev
+            packages: ${{package.name}}-dev
     description: ${{package.name}} dev
 
 test:
