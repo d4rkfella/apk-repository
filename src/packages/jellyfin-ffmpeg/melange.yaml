@@ -33,6 +33,7 @@ environment:
       - libvpl-dev
       - libopenmpt-dev
       - libplacebo-dev
+      - vulkan-headers
 pipeline:
   - uses: git-checkout
     with:
