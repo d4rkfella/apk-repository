@@ -55,16 +55,23 @@ pipeline:
   - uses: strip
 
 subpackages:
-  - name: chromaprint-static
+  - name: ${{package.name}}-static
     pipeline:
       - uses: split/static
-    description: chromaprint static libraries
+    description: ${{package.name}} static libraries
+
+  - name: ${{package.name}}-utils
+    description: ${{package.name}} utils
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/share
+          mv ${{targets.destdir}}/usr/bin ${{targets.subpkgdir}}/usr/
   
   - name: ${{package.name}}-dev
     dependencies:
       runtime:
-        - chromaprint
-        - chromaprint-static
+        - ${{package.name}}
+        - ${{package.name}}-static
     pipeline:
       - uses: split/dev
     test:
@@ -72,7 +79,7 @@ subpackages:
         - uses: test/pkgconf
         - uses: test/tw/ldd-check
           with:
-            packages: chromaprint-dev
+            packages: ${{package.name}}-dev
     description: ${{package.name}} dev
 
 test:
