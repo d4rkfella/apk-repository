@@ -18,7 +18,7 @@ pipeline:
     with:
       repository: https://github.com/intel/libvpl
       tag: v${{package.version}}
-      expected-commit: ca5bbbb057a6e84b103aca807612afb693ad046c
+      expected-commit: c45b5d786bf7cdabbe49ff1bab78693ad78feb78
 
   - uses: cmake/configure
     with:
