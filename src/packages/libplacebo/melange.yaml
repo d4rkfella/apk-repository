@@ -47,6 +47,23 @@ pipeline:
 
   - uses: strip
 
+subpackages:
+  - name: ${{package.name}}-dev
+    pipeline:
+      - uses: split/dev
+    test:
+      pipeline:
+        - uses: test/pkgconf
+        - uses: test/tw/ldd-check
+          with:
+            packages: ${{package.name}}-dev
+  
+  - name: ${{package.name}}-doc
+    description: ${{package.name}} documentation
+    pipeline:
+      - uses: split/manpages
+      - uses: split/infodir
+
 test:
   pipeline:
     - uses: test/tw/ldd-check
