@@ -23,7 +23,9 @@ environment:
       - fontconfig-dev
       - ant
       - libudfread-dev
-      - openjdk-21
+      - openjdk-21-default-jvm
+      - openjdk-21-jre
+      - java-common
 pipeline:
   - uses: git-checkout
     with:
