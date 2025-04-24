@@ -17,8 +17,8 @@ environment:
       - fontconfig-dev
       - ant
       - libudfread-dev
-      - openjdk-9-default-jdk
-      - openjdk-9-jmods
+      - openjdk-16-default-jdk
+      - openjdk-16-jmods
 pipeline:
   - uses: git-checkout
     with:
@@ -27,7 +27,7 @@ pipeline:
       expected-commit: "bb5bc108ec695889855f06df338958004ff289ef"
 
   - runs: |
-      export JAVA_TOOL_OPTIONS="-Dant.includeantruntime=false -source 1.9 -target 1.9"
+      export JAVA_TOOL_OPTIONS="-Dant.includeantruntime=false"
       autoreconf -vfi
       ./configure \
         --build=${{host.triplet.gnu}} \
