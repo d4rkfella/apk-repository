@@ -27,6 +27,7 @@ pipeline:
       expected-commit: "bb5bc108ec695889855f06df338958004ff289ef"
 
   - runs: |
+      export JAVA_TOOL_OPTIONS="-Dant.includeantruntime=false -source 1.9 -target 1.9"
       autoreconf -vfi
       ./configure \
         --build=${{host.triplet.gnu}} \
