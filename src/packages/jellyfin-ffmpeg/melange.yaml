@@ -35,6 +35,7 @@ environment:
       - zlib-dev
       - chromaprint-dev
       - libbluray-dev
+      - fdk-aac-dev
 pipeline:
   - uses: git-checkout
     with:
