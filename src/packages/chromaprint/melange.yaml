@@ -66,6 +66,11 @@ subpackages:
       - runs: |
           mkdir -p ${{targets.subpkgdir}}/usr/share
           mv ${{targets.destdir}}/usr/bin ${{targets.subpkgdir}}/usr/
+    test:
+      pipeline:
+        - runs: |
+            fpcalc -help
+            fpcalc -version
   
   - name: ${{package.name}}-dev
     dependencies:
