@@ -32,8 +32,9 @@ pipeline:
     with:
       opts: |
         -DBUILD_SHARED_LIBS=OFF \
-        -DFFMPEG_ROOT=/usr
-        -DBUILD_TESTS=OFF
+        -DFFMPEG_ROOT=/usr \
+        -DBUILD_TESTS=ON \
+        -DBUILD_TOOLS=ON
   
   - uses: cmake/build
   
@@ -44,7 +45,8 @@ pipeline:
       opts: |
         -DBUILD_SHARED_LIBS=ON \
         -DFFMPEG_ROOT=/usr \
-        -DBUILD_TESTS=OFF
+        -DBUILD_TESTS=ON \
+        -DBUILD_TOOLS=ON
   
   - uses: cmake/build
 
