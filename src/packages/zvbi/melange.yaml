@@ -34,6 +34,7 @@ pipeline:
   - uses: strip
 
   - runs: |
+      mv ${{targets.destdir}}/usr/sbin/zvbid ${{targets.destdir}}/usr/bin/zvbid 
       rm -rf ${{targets.destdir}}/usr/sbin
 
 subpackages:
