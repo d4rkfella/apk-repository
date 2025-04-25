@@ -21,6 +21,7 @@ environment:
       - zimg-dev
       - zvbi-dev
       - nv-codec-headers
+      - amf-headers
 pipeline:
   - uses: git-checkout
     with:
