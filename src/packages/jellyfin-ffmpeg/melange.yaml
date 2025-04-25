@@ -48,7 +48,7 @@ pipeline:
         opus-dev \
         x264-dev \
         x265-dev \
-        yasm \
+        nasm \
         fribidi-dev \
         fribidi-static \
         gmp-dev \
@@ -60,17 +60,23 @@ pipeline:
         svt-av1-dev \
         libtheora-static \
         opencl-dev \
-        clang-19 \
-        libdrm-dev
+        libdrm-dev \
+        libva-dev \
+        alsa-lib-dev \
+        sndio-dev
   
   - working-directory: /home/build/nvidia-cuda-toolkit
     runs: |
-      curl -fsSL -o ./cuda-toolkit.deb https://developer.download.nvidia.com/compute/cuda/12.3.0/local_installers/cuda-repo-ubuntu2204-12-3-local_12.3.0-545.23.06-1_amd64.deb
-      dpkg -i ./cuda-toolkit.deb
-      dpkg -i --force-depends /var/cuda-repo-*/*.deb 2>&1 || true
-      rm ./cuda-toolkit.deb
-      export CUDA_HOME="/usr/local/cuda"
+      wget https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda_12.8.1_570.124.06_linux.run
+      chmod +x ./cuda_12.8.1_570.124.06_linux.run
+      sh ./cuda_12.8.1_570.124.06_linux.run --silent --toolkit --override
+      rm ./cuda*.run
+      export CUDA_HOME="/usr/local/cuda-12.8"
       export PATH="$CUDA_HOME/bin:$PATH"
+
+  - uses: patch
+    with:
+      patches: fix-math-functions.patch
       
   - runs: |
       ./configure \
@@ -81,8 +87,8 @@ pipeline:
         --target-os=linux \
         --extra-version=Jellyfin \
         --enable-nonfree \
-        --extra-cflags="-I$CUDA_HOME/include -I$CUDA_HOME/nvvm/include" \
-        --extra-ldflags="-L/usr/lib/x86_64-linux-gnu -L$CUDA_HOME/lib64 -L$CUDA_HOME/nvvm/lib64 -L$CUDA_HOME/targets/x86_64-linux/lib/stubs -lcuda -lnvrtc -lnvvm" \
+        --extra-cflags=-I/usr/local/cuda-12.8/include \
+        --extra-ldflags=-L/usr/local/cuda-12.8/lib64 \
         --extra-ldexeflags=-pie \
         --extra-libs=-ldl \
         --enable-gpl \
@@ -112,7 +118,8 @@ pipeline:
         --enable-libfdk-aac \
         --enable-ffnvcodec \
         --enable-cuda \
-        --enable-cuda-llvm \
+        --enable-cuda-nvcc \
+        --enable-libnpp \
         --enable-cuvid \
         --enable-nvdec \
         --enable-nvenc \
@@ -142,6 +149,7 @@ pipeline:
   - uses: autoconf/make-install
 
   - uses: strip
+
 test:
   pipeline:
     - runs: |
