@@ -16,7 +16,7 @@ pipeline:
       tag: n${{package.version}}
       expected-commit: e844e5b26f46bb77479f063029595293aa8f812d
   
-  - runs: make && make install
+  - runs: make && DESTDIR="${{targets.destdir}}" make install PREFIX=/usr
 
 test:
   pipeline:
