@@ -9,7 +9,7 @@ environment:
   contents:
     packages:
       - build-base
-      - nasm
+      - yasm
       - bash
       - perl
       - diffutils
@@ -23,7 +23,9 @@ pipeline:
       expected-commit: ""
 
   - runs: |
-      ./configure
+      ./configure \
+        --prefix=/usr \
+        --disable-install-srcs \
         --disable-examples \
         --enable-libs \
         --enable-multithread \
@@ -57,6 +59,13 @@ subpackages:
     pipeline:
       - uses: split/manpages
       - uses: split/infodir
+  
+  - name: ${{package.name}}-utils
+    description: ${{package.name}} utils
+    pipeline:
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/share
+          mv ${{targets.destdir}}/usr/bin ${{targets.subpkgdir}}/usr/
   
   - name: ${{package.name}}-dev
     dependencies:
