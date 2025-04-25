@@ -12,6 +12,7 @@ environment:
       - libtool
       - libpng-dev
       - libpng-static
+      - gettext-dev
 pipeline:
   - uses: git-checkout
     with:
