@@ -11,7 +11,7 @@ environment:
       - wolfi-base
       - build-base
       - curl
-      - 7zip
+      - dpkg
       - chromaprint-dev
       - libbluray-dev
       - fdk-aac-dev
@@ -65,16 +65,9 @@ pipeline:
   
   - working-directory: /home/build/nvidia-cuda-toolkit
     runs: |
-      curl -fsSLO https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda_12.8.1_570.124.06_linux.run
-      chmod +x ./cuda_12.8.1_570.124.06_linux.run
-      mkdir -p /opt/cuda-extracted /opt/cuda
-      7z x cuda_12.8.1_570.124.06_linux.run -o/opt/cuda-extracted
-      rm ./cuda_12.8.1_570.124.06_linux.run
-      cp -r /opt/cuda-extracted/cuda-toolkit/* /opt/cuda/
-      rm -rf /opt/cuda-extracted
-      export PATH=/opt/cuda/bin:$PATH
-      export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
-      export CUDA_HOME=/opt/cuda
+      curl -fsSL -o ./cuda-toolkit.deb https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda-repo-ubuntu2404-12-8-local_12.8.1-570.124.06-1_amd64.deb
+      dpkg -i ./cuda-toolkit.deb
+      rm ./cuda-toolkit.deb
       
   - runs: |
       ./configure \
