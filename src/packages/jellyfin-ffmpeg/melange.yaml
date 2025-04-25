@@ -52,7 +52,8 @@ pipeline:
         vulkan-loader \
         libtheora-dev \
         svt-av1-dev \
-        libtheora-static
+        libtheora-static \
+        opencl-dev
   - runs: |
       ./configure \
         --prefix=/usr \
