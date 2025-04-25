@@ -11,6 +11,7 @@ environment:
       - wolfi-base
       - build-base
       - wget
+      - kmod
       - chromaprint-dev
       - libbluray-dev
       - fdk-aac-dev
