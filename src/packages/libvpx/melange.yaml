@@ -13,6 +13,8 @@ environment:
       - bash
       - perl
       - diffutils
+      - autoconf
+      - automake
 pipeline:
   - uses: git-checkout
     with:
@@ -20,9 +22,8 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: ""
 
-  - uses: autoconf/configure
-    with:
-      opts: |
+  - runs: |
+      ./configure
         --disable-install-srcs \
         --enable-static \
         --enable-libs \
