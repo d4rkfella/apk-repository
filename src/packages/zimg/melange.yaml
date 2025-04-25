@@ -9,6 +9,7 @@ environment:
   contents:
     packages:
       - build-base
+      - libtool
 pipeline:
   - uses: git-checkout
     with:
