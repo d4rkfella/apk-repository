@@ -1,0 +1,78 @@
+package:
+  name: libvpx
+  version: "1.15.1"
+  epoch: 0
+  description: Library for the vp8/vp9 codecs
+  copyright:
+    - license: BSD-3-Clause
+environment:
+  contents:
+    packages:
+      - build-base
+      - nasm
+      - bash
+      - perl
+      - diffutils
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://chromium.googlesource.com/webm/libvpx
+      tag: ${{package.version}}
+      expected-commit: ""
+
+  - uses: autoconf/configure
+    with:
+      opts: |
+        --disable-install-srcs \
+        --enable-static \
+        --enable-libs \
+        --enable-multithread \
+        --enable-pic \
+        --enable-postproc \
+        --enable-runtime-cpu-detect \
+        --enable-shared \
+        --enable-temporal-denoising \
+        --enable-unit-tests \
+        --enable-vp8 \
+        --enable-vp9 \
+        --enable-vp9-highbitdepth \
+        --enable-vp9-postproc \
+        --enable-vp9-temporal-denoising
+
+  - uses: autoconf/make
+ 
+  - uses: autoconf/make-install
+
+  - uses: strip
+
+
+subpackages:
+  - name: ${{package.name}}-static
+    pipeline:
+      - uses: split/static
+    description: ${{package.name}} static libraries
+
+  - name: ${{package.name}}-doc
+    description: ${{package.name}} documentation
+    pipeline:
+      - uses: split/manpages
+      - uses: split/infodir
+  
+  - name: ${{package.name}}-dev
+    dependencies:
+      runtime:
+        - ${{package.name}}
+        - ${{package.name}}-static
+    pipeline:
+      - uses: split/dev
+    test:
+      pipeline:
+        - uses: test/pkgconf
+        - uses: test/tw/ldd-check
+          with:
+            packages: ${{package.name}}-dev
+    description: ${{package.name}} dev
+
+test:
+  pipeline:
+    - uses: test/tw/ldd-check
