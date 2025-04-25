@@ -10,6 +10,7 @@ environment:
     packages:
       - wolfi-base
       - build-base
+      - wget
       - chromaprint-dev
       - libbluray-dev
       - fdk-aac-dev
@@ -55,7 +56,16 @@ pipeline:
         libtheora-dev \
         svt-av1-dev \
         libtheora-static \
-        opencl-dev
+        opencl-dev \
+        llvm \
+        clang
+  
+  - working-directory: /home/build/nvidia-cuda-toolkit
+    runs: |
+      wget https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda_12.8.1_570.124.06_linux.run
+      chmod +x ./cuda_12.8.1_570.124.06_linux.run
+      ./cuda_12.8.1_570.124.06_linux.run
+  
   - runs: |
       ./configure \
         --prefix=/usr \
