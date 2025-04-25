@@ -29,6 +29,7 @@ pipeline:
       repository: https://github.com/jellyfin/jellyfin-ffmpeg
       expected-commit: 9e7002e5dcf7d0760bbf97bf1628106f949e18d0
       tag: v${{package.version}}-1
+  
   - runs: |
       apk add \
         dav1d-dev \
