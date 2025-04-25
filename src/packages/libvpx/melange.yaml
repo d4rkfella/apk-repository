@@ -17,7 +17,7 @@ pipeline:
   - uses: git-checkout
     with:
       repository: https://chromium.googlesource.com/webm/libvpx
-      tag: ${{package.version}}
+      tag: v${{package.version}}
       expected-commit: ""
 
   - uses: autoconf/configure
