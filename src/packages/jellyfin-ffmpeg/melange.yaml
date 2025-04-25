@@ -11,6 +11,7 @@ environment:
       - wolfi-base
       - build-base
       - curl
+      - 7zip
       - chromaprint-dev
       - libbluray-dev
       - fdk-aac-dev
@@ -59,14 +60,15 @@ pipeline:
         libtheora-static \
         opencl-dev \
         llvm \
-        clang
+        clang \
+        libdrm-dev
   
   - working-directory: /home/build/nvidia-cuda-toolkit
     runs: |
       curl -fsSLO https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda_12.8.1_570.124.06_linux.run
       chmod +x ./cuda_12.8.1_570.124.06_linux.run
       mkdir -p /opt/cuda-extracted /opt/cuda
-      sh ./cuda_12.8.1_570.124.06_linux.run --no-drm --silent --toolkit --override --extract=/opt/cuda-extracted
+      7z x cuda_12.8.1_570.124.06_linux.run -o/opt/cuda-extracted
       rm ./cuda_12.8.1_570.124.06_linux.run
       cp -r /opt/cuda-extracted/cuda-toolkit/* /opt/cuda/
       rm -rf /opt/cuda-extracted
