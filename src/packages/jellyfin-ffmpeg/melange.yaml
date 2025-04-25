@@ -17,6 +17,7 @@ environment:
       - libopenmpt-dev
       - libplacebo-dev
       - libass-dev
+      - libvpx-dev
 pipeline:
   - uses: git-checkout
     with:
