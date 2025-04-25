@@ -68,7 +68,7 @@ pipeline:
     runs: |
       curl -fsSL -o ./cuda-toolkit.deb https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda-repo-ubuntu2404-12-8-local_12.8.1-570.124.06-1_amd64.deb
       dpkg -i ./cuda-toolkit.deb
-      dpkg -i --force-depends /var/cuda-repo-*/cuda-*.deb
+      dpkg -i --force-depends /var/cuda-repo-*/cuda-*.deb 2>&1 || true
       rm ./cuda-toolkit.deb
       
   - runs: |
