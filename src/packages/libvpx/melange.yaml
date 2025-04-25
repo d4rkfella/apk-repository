@@ -24,7 +24,9 @@ pipeline:
 
   - runs: |
       ./configure
-        --enable-static \
+        --target=x86_64-linux-gcc \
+        --cpu=x86_64 \
+        --disable-examples \
         --enable-libs \
         --enable-multithread \
         --enable-pic \
