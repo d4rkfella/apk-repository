@@ -79,8 +79,8 @@ pipeline:
         --extra-version=Jellyfin \
         --enable-nonfree \
         --extra-cxxflags= \
-        --extra-cflags=-I/opt/cuda/include \
-        --extra-ldflags=-L/opt/cuda/lib64 \
+        --extra-cflags= \
+        --extra-ldflags= \
         --extra-ldexeflags=-pie \
         --extra-libs=-ldl \
         --enable-gpl \
