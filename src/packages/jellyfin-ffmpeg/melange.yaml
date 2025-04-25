@@ -18,6 +18,7 @@ environment:
       - libplacebo-dev
       - libass-dev
       - libvpx-dev
+      - zimg-dev
 pipeline:
   - uses: git-checkout
     with:
