@@ -12,9 +12,9 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      repository: https://git.videolan.org/?p=ffmpeg/nv-codec-headers.git
+      repository: https://github.com/FFmpeg/nv-codec-headers
       tag: n${{package.version}}
-      expected-commit: 5169a428d51c3ae8ff7b0897e8a687d8e05e37b5
+      expected-commit: e844e5b26f46bb77479f063029595293aa8f812d
   
   - runs: make && make install
 
