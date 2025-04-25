@@ -67,11 +67,12 @@ pipeline:
       chmod +x ./cuda_12.8.1_570.124.06_linux.run
       mkdir -p /opt/cuda-extracted /opt/cuda
       sh cuda_12.4.0_545.23.08_linux.run --extract=/opt/cuda-extracted
+      rm ./cuda_12.8.1_570.124.06_linux.run
       cp -r /opt/cuda-extracted/cuda-toolkit/* /opt/cuda/
       export PATH=/opt/cuda/bin:$PATH
       export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
       export CUDA_HOME=/opt/cuda
-  
+      
   - runs: |
       ./configure \
         --prefix=/usr \
