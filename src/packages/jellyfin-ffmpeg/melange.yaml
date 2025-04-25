@@ -20,6 +20,7 @@ environment:
       - libvpx-dev
       - zimg-dev
       - zvbi-dev
+      - nv-codec-headers
 pipeline:
   - uses: git-checkout
     with:
