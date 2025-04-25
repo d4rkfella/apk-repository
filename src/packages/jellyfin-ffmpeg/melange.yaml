@@ -19,6 +19,7 @@ environment:
       - libass-dev
       - libvpx-dev
       - zimg-dev
+      - zvbi-dev
 pipeline:
   - uses: git-checkout
     with:
