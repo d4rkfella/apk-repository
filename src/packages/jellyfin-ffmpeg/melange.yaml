@@ -66,9 +66,11 @@ pipeline:
   - working-directory: /home/build/nvidia-cuda-toolkit
     runs: |
       wget --no-verbose https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda_12.8.1_570.124.06_linux.run
-      chmod +x ./cuda_12.8.1_570.124.06_linux.run
+      wget --no-verbose https://us.download.nvidia.com/XFree86/Linux-x86_64/570.144/NVIDIA-Linux-x86_64-570.144.run
+      chmod +x ./cuda_12.8.1_570.124.06_linux.run ./NVIDIA-Linux-x86_64-570.144.run
       sh ./cuda_12.8.1_570.124.06_linux.run --silent --toolkit --override
-      rm ./cuda*.run
+      sh ./NVIDIA-Linux-x86_64-570.144.run --silent --no-kernel-modules
+      rm ./cuda*.run ./NVIDIA*.run
       export CUDA_HOME="/usr/local/cuda-12.8"
       export PATH="$CUDA_HOME/bin:$PATH"
 
