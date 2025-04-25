@@ -23,6 +23,9 @@ CUDA_PACKAGE_PATTERNS=(
     "cuda-nvptxcompiler"
     "cuda-nvrtc"
     "cuda-cccl"
+    "cuda-nvvm"
+    "cuda-nvdisasm"
+    "cuda-nvtx"
 )
 
 # Find all the .deb files in the CUDA repository folder
