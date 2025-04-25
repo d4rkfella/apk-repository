@@ -16,7 +16,7 @@ pipeline:
       tag: release-${{package.version}}
       expected-commit: e5b0de6bebbcbc66732ed5afaafef6b2c7dfef87
 
-  -uses: autoconf/configure
+  - uses: autoconf/configure
 
   - uses: autoconf/make
  
