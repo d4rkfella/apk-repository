@@ -25,6 +25,8 @@ pipeline:
   - uses: autoconf/configure
 
   - uses: autoconf/make
+
+  - runs: make check
  
   - uses: autoconf/make-install
 
