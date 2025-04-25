@@ -10,7 +10,7 @@ environment:
     packages:
       - wolfi-base
       - build-base
-      - wget
+      - curl
       - chromaprint-dev
       - libbluray-dev
       - fdk-aac-dev
