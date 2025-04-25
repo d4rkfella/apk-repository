@@ -82,7 +82,7 @@ pipeline:
         --extra-version=Jellyfin \
         --enable-nonfree \
         --extra-cflags="-I$CUDA_HOME/include -I$CUDA_HOME/nvvm/include" \
-        --extra-ldflags="-L/usr/lib/x86_64-linux-gnu -L$CUDA_HOME/lib64 -L$CUDA_HOME/nvvm/lib64 -L$CUDA_HOME/targets/x86_64-linux/lib/stubs -lcuda -lnvrtc -lnvvm \
+        --extra-ldflags="-L/usr/lib/x86_64-linux-gnu -L$CUDA_HOME/lib64 -L$CUDA_HOME/nvvm/lib64 -L$CUDA_HOME/targets/x86_64-linux/lib/stubs -lcuda -lnvrtc -lnvvm" \
         --extra-ldexeflags=-pie \
         --extra-libs=-ldl \
         --enable-gpl \
