@@ -1,0 +1,64 @@
+package:
+  name: zvbi
+  version: 0.2.44
+  epoch: 0
+  description: VBI capture and decoding tools
+  copyright:
+    - license: GPL-2.0-or-later
+environment:
+  contents:
+    packages:
+      - build-base
+      - libtool
+      - libpng-dev
+      - libpng-static
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/zapping-vbi/zvbi
+      tag: v${{package.version}}
+      expected-commit: 5169a428d51c3ae8ff7b0897e8a687d8e05e37b5
+  
+  - runs: ./autogen.sh
+
+  - uses: autoconf/configure
+
+  - uses: autoconf/make
+ 
+  - uses: autoconf/make-install
+
+  - uses: strip
+
+
+subpackages:
+  - name: ${{package.name}}-static
+    pipeline:
+      - uses: split/static
+    description: ${{package.name}} static libraries
+
+  - name: ${{package.name}}-dev
+    dependencies:
+      runtime:
+        - ${{package.name}}
+        - ${{package.name}}-static
+    pipeline:
+      - uses: split/dev
+    test:
+      pipeline:
+        - uses: test/pkgconf
+        - uses: test/tw/ldd-check
+          with:
+            packages: ${{package.name}}-dev
+    description: ${{package.name}} dev
+  
+  - name: ${{package.name}}-doc
+    description: ${{package.name}} documentation
+    pipeline:
+      - uses: split/manpages
+      - uses: split/infodir
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/share
+          mv ${{targets.destdir}}/usr/share/doc ${{targets.subpkgdir}}/usr/share
+test:
+  pipeline:
+    - uses: test/tw/ldd-check
