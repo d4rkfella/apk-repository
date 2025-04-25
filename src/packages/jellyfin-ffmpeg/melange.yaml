@@ -65,7 +65,12 @@ pipeline:
     runs: |
       curl -fsSLO https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda_12.8.1_570.124.06_linux.run
       chmod +x ./cuda_12.8.1_570.124.06_linux.run
-      ./cuda_12.8.1_570.124.06_linux.run
+      mkdir -p /opt/cuda-extracted /opt/cuda
+      sh cuda_12.4.0_545.23.08_linux.run --extract=/opt/cuda-extracted
+      cp -r /opt/cuda-extracted/cuda-toolkit/* /opt/cuda/
+      export PATH=/opt/cuda/bin:$PATH
+      export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
+      export CUDA_HOME=/opt/cuda
   
   - runs: |
       ./configure \
@@ -77,8 +82,8 @@ pipeline:
         --extra-version=Jellyfin \
         --enable-nonfree \
         --extra-cxxflags= \
-        --extra-cflags="-I/usr/include/libplacebo" \
-        --extra-ldflags="-L/usr/lib -lplacebo" \
+        --extra-cflags=-I/opt/cuda/include \
+        --extra-ldflags=-L/opt/cuda/lib64 \
         --extra-ldexeflags=-pie \
         --extra-libs=-ldl \
         --enable-gpl \
