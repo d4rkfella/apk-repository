@@ -17,4 +17,4 @@ pipeline:
   
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/include/AMF
-      cp -r AMF/amf/public/include/core AMF/amf/public/include/components ${{targets.destdir}}/usr/include/AMF/
+      cp -r /home/build/AMF/amf/public/include/core /home/build/AMF/amf/public/include/components ${{targets.destdir}}/usr/include/AMF/
