@@ -66,7 +66,7 @@ pipeline:
       curl -fsSLO https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda_12.8.1_570.124.06_linux.run
       chmod +x ./cuda_12.8.1_570.124.06_linux.run
       mkdir -p /opt/cuda-extracted /opt/cuda
-      sh ./cuda_12.4.0_545.23.08_linux.run --extract=/opt/cuda-extracted
+      sh ./cuda_12.8.1_570.124.06_linux.run --extract=/opt/cuda-extracted
       rm ./cuda_12.8.1_570.124.06_linux.run
       cp -r /opt/cuda-extracted/cuda-toolkit/* /opt/cuda/
       export PATH=/opt/cuda/bin:$PATH
