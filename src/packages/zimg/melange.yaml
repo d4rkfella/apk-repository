@@ -46,7 +46,15 @@ subpackages:
           with:
             packages: ${{package.name}}-dev
     description: ${{package.name}} dev
-
+  
+  - name: ${{package.name}}-doc
+    description: ${{package.name}} documentation
+    pipeline:
+      - uses: split/manpages
+      - uses: split/infodir
+      - runs: |
+          mkdir -p ${{targets.subpkgdir}}/usr/share
+          mv ${{targets.destdir}}/usr/share/doc ${{targets.subpkgdir}}/usr/share
 test:
   pipeline:
     - uses: test/tw/ldd-check
