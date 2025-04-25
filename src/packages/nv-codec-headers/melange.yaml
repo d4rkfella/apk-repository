@@ -1,0 +1,22 @@
+package:
+  name: nv-codec-headers
+  version: 13.0.19.0
+  epoch: 0
+  description: FFmpeg version of headers required to interface with Nvidias codec APIs.
+environment:
+  contents:
+    packages:
+      - build-base
+      - make
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://git.videolan.org/?p=ffmpeg/nv-codec-headers.git
+      tag: n${{package.version}}
+      expected-commit: 5169a428d51c3ae8ff7b0897e8a687d8e05e37b5
+  
+  - runs: make && make install
+
+test:
+  pipeline:
+    - uses: test/tw/ldd-check
