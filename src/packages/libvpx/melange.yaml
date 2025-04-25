@@ -24,7 +24,6 @@ pipeline:
 
   - runs: |
       ./configure
-        --disable-install-srcs \
         --enable-static \
         --enable-libs \
         --enable-multithread \
