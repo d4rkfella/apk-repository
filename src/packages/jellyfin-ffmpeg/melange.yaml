@@ -54,7 +54,6 @@ pipeline:
         zlib-dev \
         zlib-static \
         vulkan-headers \
-        vulkan-loader \
         libtheora-dev \
         svt-av1-dev \
         libtheora-static \
@@ -62,7 +61,6 @@ pipeline:
         libdrm-dev \
         libva-dev \
         alsa-lib-dev \
-        sndio-dev \
         perl-dev \
         xz-dev \
         coreutils \
@@ -82,6 +80,10 @@ pipeline:
     working-directory: /
     with:
       patches: /home/build/fix-math-functions.patch
+
+  - uses: patch
+    with:
+      patches: svtav1-fix.patch
       
   - runs: |
       export CUDA_HOME="/usr/local/cuda-12.8"
