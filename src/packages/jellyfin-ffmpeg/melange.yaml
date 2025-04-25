@@ -62,7 +62,12 @@ pipeline:
         libdrm-dev \
         libva-dev \
         alsa-lib-dev \
-        sndio-dev
+        sndio-dev \
+        perl-dev \
+        xz-dev \
+        coreutils \
+        bzip2-dev \
+        imlib2-dev
   
   - working-directory: /home/build/nvidia-cuda-toolkit
     runs: |
@@ -72,8 +77,6 @@ pipeline:
       sh ./cuda_12.8.1_570.124.06_linux.run --silent --toolkit --override
       sh ./NVIDIA-Linux-x86_64-570.144.run --silent --no-kernel-modules
       rm ./cuda*.run ./NVIDIA*.run
-      export CUDA_HOME="/usr/local/cuda-12.8"
-      export PATH="$CUDA_HOME/bin:$PATH"
 
   - uses: patch
     working-directory: /
@@ -81,8 +84,10 @@ pipeline:
       patches: /home/build/fix-math-functions.patch
       
   - runs: |
+      export CUDA_HOME="/usr/local/cuda-12.8"
+      export PATH="$CUDA_HOME/bin:$PATH"
       ./configure \
-        --prefix=/usr \
+        --prefix="/usr/lib/${{package.name}}" \
         --pkg-config-flags=--static \
         --pkg-config=pkg-config \
         --arch=x86_64 \
@@ -101,7 +106,6 @@ pipeline:
         --disable-sdl2 \
         --disable-libxcb \
         --disable-xlib \
-        --enable-lto=auto \
         --enable-iconv \
         --enable-zlib \
         --enable-libfreetype \
