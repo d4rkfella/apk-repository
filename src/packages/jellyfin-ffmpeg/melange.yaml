@@ -73,8 +73,9 @@ pipeline:
       export PATH="$CUDA_HOME/bin:$PATH"
 
   - uses: patch
+    working-directory: /
     with:
-      patches: fix-math-functions.patch
+      patches: /home/build/fix-math-functions.patch
       
   - runs: |
       ./configure \
