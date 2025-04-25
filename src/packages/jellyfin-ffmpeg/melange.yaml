@@ -86,9 +86,7 @@ pipeline:
       patches: svtav1-fix.patch
       
   - runs: |
-      export CUDA_HOME="/usr/local/cuda-12.8"
-      export PATH="$CUDA_HOME/bin:$PATH"
-      ./configure \
+      CUDA_HOME="/usr/local/cuda-12.8" export PATH="$CUDA_HOME/bin:$PATH" ./configure \
         --prefix="/usr/lib/${{package.name}}" \
         --pkg-config-flags=--static \
         --pkg-config=pkg-config \
