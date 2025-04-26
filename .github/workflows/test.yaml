@@ -1,0 +1,19 @@
+name: Test
+
+on: 
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:  
+  build:
+    runs-on: apk-repository-runner
+    container:
+      image: cgr.dev/chainguard/melange
+      volumes:
+        - ${{ github.workspace }}:${{ github.workspace }}
+    steps:
+      - name: Check for dockerenv file
+        run: keygen ${{ github.workspace }}/melange.rsa
+      
