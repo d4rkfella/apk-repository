@@ -75,6 +75,7 @@ pipeline:
       sh ./cuda_12.8.1_570.124.06_linux.run --silent --toolkit --override
       sh ./NVIDIA-Linux-x86_64-570.144.run --silent --no-kernel-modules
       rm ./cuda*.run ./NVIDIA*.run
+      ln -s /usr/local/cuda-12.8/bin/nvcc /usr/bin/nvcc
 
   - uses: patch
     working-directory: /
@@ -86,7 +87,7 @@ pipeline:
       patches: svtav1-fix.patch
       
   - runs: |
-      CUDA_HOME="/usr/local/cuda-12.8" export PATH="$CUDA_HOME/bin:$PATH" ./configure \
+      ./configure \
         --prefix="/usr/lib/${{package.name}}" \
         --pkg-config-flags=--static \
         --pkg-config=pkg-config \
