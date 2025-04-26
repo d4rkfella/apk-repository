@@ -11,8 +11,6 @@ jobs:
     runs-on: apk-repository-runner
     container:
       image: ghcr.io/d4rkfella/melange-autoupdate:1.0.0
-      volumes:
-        - ${{ github.workspace }}:${{ github.workspace }}
     steps:
       - name: Check for dockerenv file
         run: melange keygen ${{ github.workspace }}/melange.rsa
