@@ -87,6 +87,7 @@ pipeline:
       patches: svtav1-fix.patch
       
   - runs: |
+      export PATH="/usr/local/cuda-12.8/bin:$PATH"
       ./configure \
         --prefix="/usr/lib/${{package.name}}" \
         --pkg-config-flags=--static \
@@ -150,8 +151,7 @@ pipeline:
         --enable-libx265 \
         --enable-libzimg \
         --enable-libzvbi
-  
-  - uses: autoconf/make
+      make -C . -j$(nproc) V=1
 
   - uses: autoconf/make-install
 
