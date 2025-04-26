@@ -15,5 +15,5 @@ jobs:
         - ${{ github.workspace }}:${{ github.workspace }}
     steps:
       - name: Check for dockerenv file
-        run: keygen ${{ github.workspace }}/melange.rsa
+        run: melange keygen ${{ github.workspace }}/melange.rsa
       
