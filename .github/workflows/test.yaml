@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: apk-repository-runner
     container:
-      image: cgr.dev/chainguard/melange
+      image: ghcr.io/d4rkfella/melange-autoupdate:1.0.0
       volumes:
         - ${{ github.workspace }}:${{ github.workspace }}
     steps:
