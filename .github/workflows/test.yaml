@@ -38,6 +38,7 @@ jobs:
       fail-fast: false
     container:
       image: ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:745513862dc9de75722a943eb48b97b338c90a0229abb18095d6560edccb1d87
+      options: --cap-add SYS_ADMIN --security-opt apparmor=unconfined --security-opt seccomp=unconfined
       volumes:
         - ${{ github.workspace }}:${{ github.workspace }}
     steps:
