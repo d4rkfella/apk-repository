@@ -30,8 +30,8 @@ jobs:
       - name: Pull and save Docker image
         run: |
           mkdir /tmp/docker-images
-          docker pull ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9
-          docker tag ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:78696a5e09ffb1984a3df48ce508ee98daa7d258922ae4883103c0fa8ecccca9 melange-autoupdate:cached
+          docker pull ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:43a46b7e377730682e2a31735a5e0fef9ac4de79998b00a26d784295426b746d
+          docker tag ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:43a46b7e377730682e2a31735a5e0fef9ac4de79998b00a26d784295426b746d melange-autoupdate:cached
           docker save melange-autoupdate:cached -o /tmp/docker-images/melange-autoupdate.tar
 
       - name: Save Docker image to cache
