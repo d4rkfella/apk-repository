@@ -37,7 +37,7 @@ jobs:
       max-parallel: 4
       fail-fast: false
     container:
-      image: ghcr.io/d4rkfella/melange-autoupdate:1.0.0
+      image: ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:357fd801ab344359b4f34063e6818266c804f80bb35c005317a44be7cb050067
       volumes:
         - ${{ github.workspace }}:${{ github.workspace }}
     steps:
