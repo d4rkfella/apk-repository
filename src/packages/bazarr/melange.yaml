@@ -130,6 +130,7 @@ test:
         - bash
         - jq
         - yq
+  
   pipeline: 
     - name: Run test script
       runs: |
