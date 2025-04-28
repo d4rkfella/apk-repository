@@ -11,12 +11,10 @@ package:
 environment:
   contents:
     repositories:
-      - https://dl-cdn.alpinelinux.org/alpine/v3.21/main
-      - https://dl-cdn.alpinelinux.org/alpine/v3.21/community
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+      - https://dl-cdn.alpinelinux.org/alpine/edge/community
     packages:
-      - alpine-base
-      - ca-certificates-bundle
-      - bash
+      - apk-tools
 var-transforms:
   - from: ${{package.version}}
     match: _p(\d)(\d)(\d{2})$
@@ -28,6 +26,8 @@ pipeline:
       repository: https://github.com/userdocs/qbittorrent-nox-static
       tag: release-${{vars.qbittorrent-package-version}}
       expected-commit: "9f1c3ced34ed26093b024b68c9e7f84fdcee1858"
+  - runs: |
+      apk add alpine-base ca-certificates-bundle bash
   - runs: |
       printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
       printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
