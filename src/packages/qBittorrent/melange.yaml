@@ -16,7 +16,6 @@ environment:
     packages:
       - alpine-base
       - ca-certificates-bundle
-      - apk-tools
       - bash
 var-transforms:
   - from: ${{package.version}}
