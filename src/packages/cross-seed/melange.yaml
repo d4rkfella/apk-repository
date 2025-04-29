@@ -1,6 +1,6 @@
 package:
   name: cross-seed
-  version: "6.12.1"
+  version: "6.12.2"
   epoch: 0
   description: "Fully-automatic cross-seeding with Torznab"
   copyright:
@@ -25,7 +25,7 @@ pipeline:
     with:
       repository: https://github.com/cross-seed/cross-seed
       tag: v${{package.version}}
-      expected-commit: "c1484110de7ca42e7df71e49ce9d08ef6e64ef61"
+      expected-commit: "96d5eddb2bf38bf6c3ac52c9e9c5a99bee175524"
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
