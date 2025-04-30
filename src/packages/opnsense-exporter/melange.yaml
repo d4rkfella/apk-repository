@@ -21,5 +21,4 @@ pipeline:
     with:
       packages: main.go
       output: opnsense-exporter
-      strip: "-s -w"
       ldflags: -X 'main.version=${{package.version}}'
