@@ -1,26 +1,22 @@
 package:
   name: cni-plugins-install
-  version: "1.0.0"
+  version: "1.0.2"
   epoch: 0
   copyright:
     - license: MIT
-
-environment:
-  contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/d4rkfella/cni-plugins-install
-      branch: main
-      expected-commit: "e33498e08c0802afe3cac1a6c990b980cf398023"
-  
+      tag: v${{package.version}}
+      expected-commit: "4a88c6f83553165b70c3a4f7f4a2414335b84868"
   - uses: go/build
     with:
       packages: main.go
       output: cni-plugins-install
-      strip: "-s -w"
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
+update:
+  enabled: true
+  github:
+    identifier: d4rkfella/cni-plugins-install
+    strip-prefix: v
