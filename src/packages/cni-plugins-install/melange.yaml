@@ -9,7 +9,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/cni-plugins-install
       tag: v${{package.version}}
-      expected-commit: "d419cebc16c526cc1bf270243ea145e7b512c1a7"
+      expected-commit: "aaf03d5016f5d5aba81a7647b2fc5cdfb203a1f2"
   - uses: go/build
     with:
       packages: cmd/cni-plugins-install/main.go
