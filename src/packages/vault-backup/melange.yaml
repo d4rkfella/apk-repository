@@ -1,6 +1,6 @@
 package:
   name: vault-backup
-  version: "1.0.1"
+  version: "1.0.0"
   epoch: 0
   copyright:
     - license: MIT
@@ -15,12 +15,11 @@ pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/d4rkfella/vault-backup
-      branch: main
-      expected-commit: "5915e2fe5364e931d5d44daf2681be23c3fa3d00"
+      tag: v${{package.version}}
+      expected-commit: "a9f05cc705059a3ed79a3230ea0c6e6c880a6523"
   
   - uses: go/build
     with:
-      packages: main.go
+      packages: cmd/vault-backup/main.go
       output: vault-backup
-      strip: "-s -w"
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
