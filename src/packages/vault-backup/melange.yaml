@@ -13,6 +13,6 @@ pipeline:
   
   - uses: go/build
     with:
-      packages: cmd/vault-backup/main.go
+      packages: main.go
       output: vault-backup
       ldflags: -X 'main.version=${{package.version}}'
