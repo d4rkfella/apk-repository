@@ -68,6 +68,7 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/bin
       mv qbt-build/bin/qbittorrent-nox ${{targets.destdir}}/usr/bin/qbittorrent-nox
       chmod 755 ${{targets.destdir}}/usr/bin/qbittorrent-nox
+
 update:
   enabled: true
   version-transform:
