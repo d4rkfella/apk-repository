@@ -16,10 +16,10 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/vault-backup
       tag: v${{package.version}}
-      expected-commit: "6033adcc84da69dadfc5d29e47f972986a4fa655"
+      expected-commit: "b24e95b060cd23d21bb38812b7a6a0ec04dcd786"
   
   - uses: go/build
     with:
       packages: cmd/vault-backup/main.go
       output: vault-backup
-      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
+      ldflags: -X 'main.version=${{package.version}}'
