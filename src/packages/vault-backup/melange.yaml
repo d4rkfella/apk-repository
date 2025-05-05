@@ -4,13 +4,6 @@ package:
   epoch: 0
   copyright:
     - license: MIT
-
-environment:
-  contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
 pipeline:
   - uses: git-checkout
     with:
