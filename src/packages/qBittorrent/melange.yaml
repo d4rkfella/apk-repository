@@ -15,8 +15,6 @@ environment:
       - https://dl-cdn.alpinelinux.org/alpine/edge/community
     packages:
       - apk-tools
-      - bash
-      - ca-certificates-bundle
 var-transforms:
   - from: ${{package.version}}
     match: _p(\d)(\d)(\d{2})$
