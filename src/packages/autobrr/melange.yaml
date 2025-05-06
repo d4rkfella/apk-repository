@@ -29,7 +29,7 @@ pipeline:
       volta install "node@$(sed -n 's/.*node:\([0-9]\+\)\..*/\1/p' Dockerfile)"
       volta install "$(jq -r '.packageManager' web/package.json)"
   - name: Build frontend
-    working-directory: /home/build/web
+    working-directory: /web
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       pnpm install --frozen-lockfile
