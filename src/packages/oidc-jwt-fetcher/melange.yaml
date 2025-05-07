@@ -9,7 +9,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/oidc-jwt-fetcher
       tag: v${{package.version}}
-      expected-commit: "1462d8dbc618f01fde80579aabe802017c7f8d5b"
+      expected-commit: b0daad3b3afde6090c068a0a06fd9bac662a7ca2
   - uses: go/build
     with:
       packages: main.go
