@@ -31,7 +31,8 @@ pipeline:
       
       mkdir -p "${APPDIR}" 
       virtualenv --copies "${APPDIR}/venv"
-      sh -c "source '${APPDIR}/venv/bin/activate' && uv pip install --link-mode=copy --upgrade --no-cache ."
+      sh -c "source '${APPDIR}/venv/bin/activate' && uv pip install --link-mode=copy --upgrade --no-cache-dir ."
+      rm -f ${APPDIR}/venv/lib/python*/site-packages/*/uv_cache.json"
 
 test:
   environment:
