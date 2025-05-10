@@ -21,11 +21,14 @@ pipeline:
       tag: v${{package.version}}  
   
   - name: Prepare package
+    working-directory: /home/build/app
     runs: |     
       export LANG=C.UTF-8
       export PYTHONHASHSEED=0
       export PYTHONDONTWRITEBYTECODE=1
       export PYTHONUNBUFFERED=1
+
+      cp -r /home/build/pyproject.toml /home/build/setup.py /home/build/VERSION /home/build/app/
       
       APPDIR="${{targets.destdir}}/usr/lib/qbitmanage/app"
             
