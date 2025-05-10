@@ -32,9 +32,9 @@ pipeline:
       mkdir -p "${APPDIR}" 
       virtualenv --copies "${APPDIR}/venv"
       sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir ."
-      
-      rsync -av --exclude-from=.dockerignore ./ "${APPDIR}/"
 
+      cp -af /home/build/modules /home/build/scripts ${APPDIR}/
+      
 test:
   environment:
     contents:
