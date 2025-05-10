@@ -28,7 +28,7 @@ pipeline:
       export PYTHONDONTWRITEBYTECODE=1
       export PYTHONUNBUFFERED=1
 
-      cp /home/build/pyproject.toml /home/build/setup.py /home/build/VERSION /home/build/app/
+      cp /home/build/pyproject.toml /home/build/LICENSE /home/build/setup.py /home/build/app/
       
       APPDIR="${{targets.destdir}}/usr/lib/qbitmanage/app"
             
@@ -36,7 +36,7 @@ pipeline:
       virtualenv --copies "${APPDIR}/venv"
       sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir ."
 
-      cp -af /home/build/modules /home/build/qbit_manage.py /home/build/LICENSE /home/build/scripts ${APPDIR}/
+      cp -af /home/build/modules /home/build/qbit_manage.py /home/build/VERSION /home/build/LICENSE /home/build/scripts ${APPDIR}/
       
 test:
   environment:
