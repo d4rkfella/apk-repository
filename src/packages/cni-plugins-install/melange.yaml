@@ -15,6 +15,7 @@ pipeline:
       packages: cmd/cni-plugins-install/main.go
       output: cni-plugins-install
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
+  - uses: strip
 update:
   enabled: true
   github:
