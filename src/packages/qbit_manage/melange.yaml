@@ -11,7 +11,6 @@ environment:
       - python-3.13
       - py3.13-pip
       - py3.13-virtualenv-bin
-      - uv
       - busybox
 pipeline:
   - uses: git-checkout
@@ -31,8 +30,7 @@ pipeline:
       
       mkdir -p "${APPDIR}" 
       virtualenv --copies "${APPDIR}/venv"
-      sh -c "source '${APPDIR}/venv/bin/activate' && uv pip install --link-mode=copy --upgrade --no-cache-dir ."
-      rm -f ${APPDIR}/venv/lib/python*/site-packages/*/uv_cache.json"
+      sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir ."
 
 test:
   environment:
