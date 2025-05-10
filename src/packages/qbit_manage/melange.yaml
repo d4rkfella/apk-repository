@@ -12,6 +12,7 @@ environment:
       - py3.13-pip
       - py3.13-virtualenv-bin
       - busybox
+      - rsync
 pipeline:
   - uses: git-checkout
     with:
@@ -20,19 +21,19 @@ pipeline:
       tag: v${{package.version}}  
   
   - name: Prepare package
-    working-directory: /home/build/app
     runs: |     
       export LANG=C.UTF-8
       export PYTHONHASHSEED=0
       export PYTHONDONTWRITEBYTECODE=1
       export PYTHONUNBUFFERED=1
       
-      APPDIR="${{targets.destdir}}/usr/lib/qbitmanage/app"
-      cp /home/build/pyproject.toml /home/build/setup.py /home/build/VERSION /home/build/app/
-      
+      APPDIR="/usr/lib/qbitmanage/app"
+            
       mkdir -p "${APPDIR}" 
       virtualenv --copies "${APPDIR}/venv"
       sh -c "source '${APPDIR}/venv/bin/activate' && pip install --no-cache-dir ."
+      
+      rsync -av --exclude-from=.dockerignore ./ "${APPDIR}/"
 
 test:
   environment:
