@@ -27,7 +27,7 @@ pipeline:
       export PYTHONDONTWRITEBYTECODE=1
       export PYTHONUNBUFFERED=1
       
-      APPDIR="/usr/lib/qbitmanage/app"
+      APPDIR="${{targets.destdir}}/usr/lib/qbitmanage/app"
             
       mkdir -p "${APPDIR}" 
       virtualenv --copies "${APPDIR}/venv"
