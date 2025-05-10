@@ -1,0 +1,48 @@
+package:
+  name: qbit_manage
+  version: "4.3.0"
+  epoch: 0
+  description: This tool will help manage tedious tasks in qBittorrent and automate them. Tag, categorize, remove Orphaned data, remove unregistered torrents and much much more.
+  copyright:
+    - license: GPL-3.0-only
+environment:
+  contents:
+    packages:
+      - python-3.13
+      - py3.13-pip
+      - py3.13-virtualenv-bin
+      - uv
+      - busybox
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 06abe3cfb02d6dfa7998ddf2fe233a9f29b6d649
+      repository: https://github.com/StuffAnThings/qbit_manage
+      tag: v${{package.version}}  
+  
+  - name: Prepare package
+    runs: |     
+      export LANG=C.UTF-8
+      export PYTHONHASHSEED=0
+      export PYTHONDONTWRITEBYTECODE=1
+      export PYTHONUNBUFFERED=1
+      
+      APPDIR="${{targets.destdir}}/usr/lib/qbitmanage/app"
+      
+      mkdir -p "${APPDIR}" 
+      virtualenv --copies "${APPDIR}/venv"
+      sh -c "source '${APPDIR}/venv/bin/activate' && uv pip install --upgrade --no-cache-dir ."
+
+test:
+  environment:
+    contents:
+      packages:
+        - curl
+        - bash
+        - jq
+        - yq 
+  pipeline:
+    - name: Check for missing dependancies
+      uses: test/tw/ldd-check
+      with:
+        packages: ${{package.name}}
