@@ -20,6 +20,7 @@ pipeline:
       tag: v${{package.version}}  
   
   - name: Prepare package
+    working-directory: /home/build/app
     runs: |     
       export LANG=C.UTF-8
       export PYTHONHASHSEED=0
@@ -27,6 +28,7 @@ pipeline:
       export PYTHONUNBUFFERED=1
       
       APPDIR="${{targets.destdir}}/usr/lib/qbitmanage/app"
+      cp /home/build/pyproject.toml /home/build/setup.py /home/build/VERSION /home/build/app/
       
       mkdir -p "${APPDIR}" 
       virtualenv --copies "${APPDIR}/venv"
