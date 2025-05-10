@@ -1,6 +1,6 @@
 package:
   name: bazarr
-  version: "1.5.2_beta45"
+  version: "1.5.2_beta48"
   epoch: 0
   description: Bazarr is a companion application to Sonarr and Radarr. It manages and downloads subtitles based on your requirements. You define your preferences by TV show or movie and Bazarr takes care of everything for you.
   copyright:
@@ -26,7 +26,7 @@ var-transforms:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: "c853de8bd76b22cb394ebe88152aadc0f5743fd9"
+      expected-commit: 71cd0c80c7e99b079aa7abee573bc6e959dbcf18
       repository: https://github.com/morpheus65535/bazarr
       tag: v${{vars.transformed-version}}
   - uses: patch
@@ -52,6 +52,7 @@ pipeline:
       
       pip download --no-deps --dest="$DEST_DIR" waitress==3.0.1
       pip download --no-deps --dest="$DEST_DIR" jinja2==3.1.6
+      pip download --no-deps --dest="$DEST_DIR" h11==0.16.0
       
       if [ -d "$LIBS_DIR/waitress-3.0.0.dist-info" ]; then
           rm -rf "$LIBS_DIR/waitress-3.0.0.dist-info"
@@ -64,6 +65,12 @@ pipeline:
       else
           echo "Warning: $LIBS_DIR/jinja2-3.1.5.dist-info not found, skipping"
       fi
+
+      if [ -d "$LIBS_DIR/h11-0.14.0.dist-info" ]; then
+          rm -rf "$LIBS_DIR/h11-0.14.0.dist-info"
+      else
+          echo "Warning: $LIBS_DIR/h11-0.14.0.dist-info not found, skipping"
+      fi
       
       if [ ! -f "$DEST_DIR/waitress-3.0.1-py3-none-any.whl" ]; then
           echo "Error: Wheel file for waitress not found!"
@@ -74,9 +81,15 @@ pipeline:
           echo "Error: Wheel file for jinja2 not found!"
           exit 1
       fi
+
+      if [ ! -f "$DEST_DIR/h11-0.16.0-py3-none-any.whl" ]; then
+          echo "Error: Wheel file for h11 not found!"
+          exit 1
+      fi
       
       python3 -m zipfile -e "$DEST_DIR/waitress-3.0.1-py3-none-any.whl" "$LIBS_DIR/"
       python3 -m zipfile -e "$DEST_DIR/jinja2-3.1.6-py3-none-any.whl" "$LIBS_DIR/"
+      python3 -m zipfile -e "$DEST_DIR/h11-0.16.0-py3-none-any.whl" "$LIBS_DIR/"
       
       echo "✅ All tasks completed successfully!"
   - name: Enable SSL verification
