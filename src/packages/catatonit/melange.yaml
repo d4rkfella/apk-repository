@@ -8,15 +8,10 @@ package:
 
 environment:
   contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
     packages:
       - build-base
       - libtool
       - busybox
-
 pipeline:
   - uses: git-checkout
     with:
