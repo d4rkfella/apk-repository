@@ -118,6 +118,7 @@ test:
     - uses: test/ldd-check
       with:
         packages: ${{package.name}}
+    
     - name: Check if resty utility is available
       runs: |
         resty -h
@@ -131,9 +132,11 @@ test:
         restydoc -h
         nginx -v
         nginx -h
+    
     - name: Run a simple Lua script
       runs: |
         resty -e 'print("hello")' | grep "hello" || exit 1
+    
     - name: Setup configuration
       runs: |
         mkdir -p tests/conf
@@ -154,6 +157,7 @@ test:
             }
         }
         EOF
+    
     - name: Start nginx server and test
       runs: |
         cd tests
