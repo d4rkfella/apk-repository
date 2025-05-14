@@ -16,6 +16,7 @@ environment:
       - jellyfin-custom
       - nodejs
       - npm
+
 pipeline:
   - uses: git-checkout
     with:
