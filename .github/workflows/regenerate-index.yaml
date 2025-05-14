@@ -13,9 +13,10 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
       
-      - name: Install Melange
+      - name: Install dependencies
         run: |
           brew install melange
+          brew install jfrog-cli
       
       - name: Save private key
         run: |
@@ -24,12 +25,25 @@ jobs:
           chmod 400 ${{ github.workspace }}/melange.rsa
           set -x
           
-      - name: Regenerate index and upload back to S3
+      - name: Configure JFrog CLI
         run: |
-          aws s3 cp s3://packages/x86_64/ /tmp/packages/ --endpoint-url=$ENDPOINT_URL --recursive --exclude "*" --include "*.apk"
-          melange index --signing-key ${{ github.workspace }}/melange.rsa --output /tmp/APKINDEX.tar.gz /tmp/packages/*.apk
-          aws s3 cp /tmp/APKINDEX.tar.gz s3://packages/x86_64/APKINDEX.tar.gz --endpoint-url $ENDPOINT_URL --checksum-algorithm CRC32
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
+          jf c add artifactory \
+            --url=https://packages.darkfellanetwork.com/artifactory \
+            --access-token="${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" \
+            --interactive=false
+      
+      - name: Download packages from Artifactory
+        run: |
+          mkdir -p /tmp/packages
+          jf rt download "wolfi-os/x86_64/" /tmp/packages/ --include="*.apk" --flat=true
+      
+      - name: Regenerate index
+        run: |
+          melange index \
+            --signing-key ${{ github.workspace }}/melange.rsa \
+            --output /tmp/APKINDEX.tar.gz \
+            /tmp/packages/*.apk
+      
+      - name: Upload index to Artifactory
+        run: |
+          jf rt upload /tmp/APKINDEX.tar.gz "wolfi-os/x86_64/APKINDEX.tar.gz"
