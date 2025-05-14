@@ -54,7 +54,6 @@ pipeline:
       curl -L https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v7.1.1-1/jellyfin-ffmpeg_7.1.1-1_portable_linux64-gpl.tar.xz | tar -xJ -C "${{targets.destdir}}"/usr/lib/jellyfin-ffmpeg
       ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg "${{targets.destdir}}"/usr/bin/ffmpeg
       ln -s /usr/lib/jellyfin-ffmpeg/ffprobe "${{targets.destdir}}"/usr/bin/ffprobe
-      
 
 test:
   environment:
