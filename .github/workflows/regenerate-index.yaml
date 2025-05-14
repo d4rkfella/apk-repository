@@ -28,7 +28,7 @@ jobs:
       - name: Configure JFrog CLI
         run: |
           jf c add artifactory \
-            --url=https://packages.darkfellanetwork.com/artifactory \
+            --url=https://packages.darkfellanetwork.com \
             --access-token="${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}" \
             --interactive=false
       
