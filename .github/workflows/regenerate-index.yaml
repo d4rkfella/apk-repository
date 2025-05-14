@@ -46,4 +46,7 @@ jobs:
       
       - name: Upload index to Artifactory
         run: |
-          jf rt upload "/tmp/APKINDEX.tar.gz" "wolfi-os/x86_64/"
+          jf rt upload \
+            --flat=true \
+            "/tmp/APKINDEX.tar.gz" \
+            "wolfi-apk/x86_64/APKINDEX.tar.gz"
