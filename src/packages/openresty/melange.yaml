@@ -18,12 +18,6 @@ package:
       - luajit-custom
 environment:
   contents:
-    keyring:
-      - https://packages.darkfellanetwork.com/melange.rsa.pub
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.darkfellanetwork.com
-      - https://packages.wolfi.dev/os
     packages:
       - build-base
       - busybox
@@ -44,12 +38,14 @@ pipeline:
     with:
       uri: https://openresty.org/download/openresty-${{package.version}}.tar.gz
       expected-sha256: 74f076f7e364b2a99a6c5f9bb531c27610c78985abe956b442b192a2295f7548
+  
   - uses: build/gpg-verify
     with:
       signature-uri: https://openresty.org/download/openresty-${{package.version}}.tar.gz.asc
       keyserver: keyserver.ubuntu.com
       receiver-key: 25451EB088460026195BD62CB550E09EA0E98066
       filename: openresty-${{package.version}}.tar.gz
+  
   - runs: |
       ./configure \
         --build=${{host.triplet.gnu}} \
@@ -97,8 +93,11 @@ pipeline:
         --with-luajit=/usr \
         --with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT' \
         --with-pcre-jit
+  
   - uses: autoconf/make
+  
   - uses: autoconf/make-install
+  
   - name: Setup default config files
     runs: |
       mkdir -p ${{targets.destdir}}/var/run/openresty/
@@ -107,7 +106,9 @@ pipeline:
       rm ${{targets.destdir}}/etc/nginx/nginx.conf
       ln -sf /dev/stdout ${{targets.destdir}}/var/log/openresty/access.log
       ln -sf /dev/stderr ${{targets.destdir}}/var/log/openresty/error.log
+  
   - uses: strip
+
 test:
   environment:
     contents:
@@ -159,6 +160,7 @@ test:
         openresty -p `pwd`/ -c conf/nginx.conf
         echo "Testing web service..."
         curl -s http://localhost:8080 | grep "hello, world" || { echo "Failed to find 'hello, world' in response"; exit 1; }
+
 update:
   enabled: true
   release-monitor:
