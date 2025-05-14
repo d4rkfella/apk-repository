@@ -7,20 +7,14 @@ package:
   dependencies:
     runtime:
       - melange
-environment:
-  contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/d4rkfella/melange-autoupdate
       branch: main
       expected-commit: "dc8416e8e5437fe4d76b4b7e92b6c6c9d5741813"
+  
   - uses: go/build
     with:
       packages: main.go
       output: melange-autoupdate
-      strip: "-s -w"
