@@ -13,10 +13,6 @@ package:
       - zlib
 environment:
   contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
     packages:
       - build-base
       - busybox
@@ -84,7 +80,9 @@ pipeline:
       cp -af "$_artifacts" "$_destdir"/bin
       
       ln -s /usr/lib/sonarr/bin/Sonarr "${{targets.destdir}}"/usr/bin/Sonarr
+  
   - uses: strip
+
 test:
   environment:
     contents:
@@ -102,6 +100,7 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
+
 update:
   enabled: true
   github:
