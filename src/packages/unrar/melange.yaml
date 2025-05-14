@@ -16,18 +16,23 @@ pipeline:
     with:
       uri: https://www.rarlab.com/rar/unrarsrc-${{package.version}}.tar.gz
       expected-sha256: ca5e1da37dd6fa1b78bb5ed675486413f79e4a917709744aa04b6f93dfd914f0
+  
   - runs: |
       sed -i 's|LDFLAGS=-pthread|LDFLAGS=-pthread -static|' makefile
       sed -i 's|CXXFLAGS=-march=native |CXXFLAGS=|' makefile
+  
   - uses: autoconf/make
+  
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       install -v -m755 unrar ${{targets.destdir}}/usr/bin
+
 test:
   pipeline:
     - uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
+
 update:
   enabled: true
   release-monitor:
