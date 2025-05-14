@@ -13,10 +13,6 @@ package:
       - icu-libs
 environment:
   contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
     packages:
       - dotnet-8-sdk
       - aspnet-8-runtime
@@ -31,9 +27,11 @@ pipeline:
       repository: https://github.com/jellyfin/jellyfin
       tag: v${{package.version}}
       expected-commit: "aefb9b2cffca3ccb7a95d89af0d9fb2040de6ed3"
+  
   - uses: patch
     with:
       patches: GHSA-qrmm-w75w-3wpx.patch
+  
   - runs: |
       dotnet publish \
         --configuration Release Jellyfin.Server \
@@ -47,7 +45,9 @@ pipeline:
       cp -dr publish "${{targets.destdir}}"/usr/lib/jellyfin
 
       ln -s /usr/lib/jellyfin/jellyfin "${{targets.destdir}}"/usr/bin/jellyfin
+  
   - uses: strip
+  
   - runs: |
       ./fallback-fonts.sh
       curl -L https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v7.1.1-1/jellyfin-ffmpeg_7.1.1-1_portable_linux64-gpl.tar.xz | tar -xJ -C "${{targets.destdir}}"/usr/lib/jellyfin-ffmpeg
@@ -100,6 +100,7 @@ test:
           exit 1
         fi
     - uses: test/tw/ldd-check
+
 update:
   enabled: true
   ignore-regex-patterns:
