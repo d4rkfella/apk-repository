@@ -36,7 +36,7 @@ pipeline:
   - runs: |
       ./configure \
         --prefix=/usr \
-        --with-lua-include=/usr/include/lua \  
+        --with-lua-include=/usr/include/lua
   
   - uses: autoconf/make
  
