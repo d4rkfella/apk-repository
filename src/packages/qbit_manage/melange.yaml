@@ -35,15 +35,13 @@ pipeline:
       virtualenv --copies "${APPDIR}/venv"
       sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir ."
 
-      cp -af /home/build/modules /home/build/qbit_manage.py /home/build/VERSION /home/build/LICENSE /home/build/scripts ${APPDIR}/
-      
+      cp -af /home/build/modules /home/build/qbit_manage.py /home/build/VERSION /home/build/LICENSE /home/build/scripts ${APPDIR}/   
 test:
   pipeline:
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
-
 update:
   enabled: true
   github:
