@@ -29,6 +29,7 @@ pipeline:
       repository: https://github.com/userdocs/qbittorrent-nox-static
       tag: release-${{vars.qbittorrent-package-version}}
       expected-commit: 9f1c3ced34ed26093b024b68c9e7f84fdcee1858
+  
   - runs: |
       printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
       printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
@@ -49,6 +50,7 @@ pipeline:
       printf '%s\n' "qbt_standard=20" >> env.custom
       printf '%s\n' "qbt_static_ish=no" >> env.custom
       printf '%s\n' "qbt_optimise=no" >> env.custom
+  
   - runs: |
       export $(cat env.custom)
       /usr/bin/env bash ./qbt-nox-static.bash
@@ -65,10 +67,12 @@ pipeline:
       /usr/bin/env bash ./qbt-nox-static.bash qtbase
       /usr/bin/env bash ./qbt-nox-static.bash qttools
       /usr/bin/env bash ./qbt-nox-static.bash qbittorrent
+  
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       mv qbt-build/bin/qbittorrent-nox ${{targets.destdir}}/usr/bin/qbittorrent-nox
       chmod 755 ${{targets.destdir}}/usr/bin/qbittorrent-nox
+
 update:
   enabled: true
   version-transform:
