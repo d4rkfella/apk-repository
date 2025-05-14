@@ -13,10 +13,6 @@ package:
       - zlib
 environment:
   contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
     packages:
       - libstdc++
       - icu-libs
@@ -30,12 +26,15 @@ pipeline:
       expected-commit: "c61cfcd312c7744358a28074e4408fa3cb0cebf3"
       repository: https://github.com/Prowlarr/Prowlarr
       tag: v${{package.version}}
+  
   - name: Install dependancies
     runs: |
       curl -sSL https://get.volta.sh | bash
       curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $(yq '.variables.dotnetVersion' azure-pipelines.yml)
+  
   - name: Build
     runs: "PATH=\"$HOME/.volta/bin:$HOME/.dotnet:$PATH\"\nexport BROWSERSLIST_IGNORE_OLD_DATA=true\n\nvolta install node@$(yq '.variables.nodeVersion' azure-pipelines.yml)\nvolta install yarn@1.22\n\n_dotnet_arch=\"x64\"\n_runtime=\"linux-$_dotnet_arch\"\n_framework=\"net6.0\"\n_output=\"_output\"\n_destdir=\"${{targets.destdir}}/usr/lib/prowlarr\"\n_artifacts=\"$_output/$_framework/$_runtime/publish\"    \n\nyarn install --frozen-lockfile --network-timeout 120000       \n\nulimit -n 4096\n\ndotnet build src \\\n  -p:AssemblyConfiguration=\"master\" \\\n  -p:AssemblyVersion=\"${{package.version}}\" \\\n  -p:RuntimeIdentifiers=\"$_runtime\" \\\n  -p:Configuration=Release \\\n  -p:DebugSymbols=false \\\n  -p:DebugType=none \\\n  -p:SentryCliExecutable= \\\n  -p:SentryUploadSymbols=false \\\n  -p:SentryIncludeSources=false \\\n  -p:EmbedAllSources=false \\\n  -t:PublishAllRids\nyarn build --env production --no-stats\n      \nfind \"$_artifacts\" \\( \\\n  -name \"ServiceUninstall.*\" -o \\\n  -name \"ServiceInstall.*\" -o \\\n  -name \"Prowlarr.Windows.*\" \\) -delete\n\nmv \"$_output\"/UI \"$_artifacts\"\n\necho \"Preparing package\"\n\nmkdir -p \"$_destdir\" \"${{targets.destdir}}\"/usr/bin\nprintf \"UpdateMethod=docker\\nBranch=%s\\nPackageVersion=%s\\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\\n\" \"master\" \"${{package.version}}\" > \"$_destdir\"/package_info\n\ncp -af \"$_artifacts\" \"$_destdir\"/bin\n\nln -s /usr/lib/prowlarr/bin/Prowlarr \"${{targets.destdir}}\"/usr/bin/Prowlarr\n"
+
 test:
   environment:
     contents:
@@ -53,6 +52,7 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
+
 update:
   enabled: true
   github:
