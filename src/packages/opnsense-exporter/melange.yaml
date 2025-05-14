@@ -5,18 +5,13 @@ package:
   description: OPNsense Exporter for Prometheus
   copyright:
     - license: Apache-2.0
-environment:
-  contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/AthennaMind/opnsense-exporter
       tag: v${{package.version}}
       expected-commit: "93c4703d731396e7523f707793e3e124f9f48bfc"
+  
   - uses: go/build
     with:
       packages: main.go
