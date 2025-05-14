@@ -4,6 +4,7 @@ package:
   epoch: 0
   copyright:
     - license: MIT
+
 pipeline:
   - uses: git-checkout
     with:
