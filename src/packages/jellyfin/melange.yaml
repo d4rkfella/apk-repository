@@ -21,6 +21,7 @@ environment:
       - bash
       - unzip
       - woff2
+
 pipeline:
   - uses: git-checkout
     with:
