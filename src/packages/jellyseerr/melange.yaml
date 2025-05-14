@@ -29,10 +29,12 @@ pipeline:
       repository: https://github.com/fallenbagel/jellyseerr
       tag: v${{package.version}}
       destination: jellyseerr
+  
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
+  
   - name: Build
     working-directory: /home/build/jellyseerr
     runs: |
@@ -48,6 +50,7 @@ pipeline:
       pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
+  
   - name: Delete linux-musl node-modules
     working-directory: /home/build/jellyseerr
     runs: |
@@ -56,6 +59,7 @@ pipeline:
         -print \
         -exec rm -rf {} + \
         -prune
+  
   - name: Prepare package
     working-directory: /home/build/jellyseerr
     runs: |
