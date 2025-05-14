@@ -22,21 +22,25 @@ pipeline:
       repository: https://github.com/cross-seed/cross-seed
       tag: v${{package.version}}
       expected-commit: "2f9f02e60c18878eabd02b22286fac03cc82b21a"
+  
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
       volta install node@$(cat .nvmrc)
+  
   - name: Build
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       npm ci --no-fund
       npm run build
       npm prune --omit=dev
+  
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/cross-seed
       cp -R node_modules dist package-lock.json package.json ${{targets.destdir}}/usr/lib/cross-seed
+
 update:
   enabled: true
   github:
