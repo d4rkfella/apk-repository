@@ -35,7 +35,7 @@ jobs:
       - name: Download packages from Artifactory
         run: |
           mkdir -p /tmp/packages
-          jf rt download "wolfi-os/x86_64/" /tmp/packages/ --include="*.apk" --flat=true
+          jf rt download "wolfi-os/x86_64/*.apk" "/tmp/packages/" --flat=true
       
       - name: Regenerate index
         run: |
@@ -46,4 +46,4 @@ jobs:
       
       - name: Upload index to Artifactory
         run: |
-          jf rt upload /tmp/APKINDEX.tar.gz "wolfi-os/x86_64/APKINDEX.tar.gz"
+          jf rt upload "/tmp/APKINDEX.tar.gz" "wolfi-os/x86_64/"
