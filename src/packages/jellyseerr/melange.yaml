@@ -12,10 +12,6 @@ environment:
   environment:
     REPRODUCIBLE: false
   contents:
-    keyring:
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.wolfi.dev/os
     packages:
       - wolfi-baselayout
       - build-base
@@ -84,6 +80,7 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
+
 update:
   enabled: true
   github:
