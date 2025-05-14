@@ -11,12 +11,6 @@ package:
       - nodejs
 environment:
   contents:
-    keyring:
-      - https://packages.darkfellanetwork.com/melange.rsa.pub
-      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-    repositories:
-      - https://packages.darkfellanetwork.com
-      - https://packages.wolfi.dev/os
     packages:
       - busybox
       - jellyfin-custom
@@ -28,13 +22,16 @@ pipeline:
       repository: https://github.com/jellyfin/jellyfin-web
       tag: v${{package.version}}
       expected-commit: "f4b8aa0ed4c5b571a3a6cc3bb027bb8ecebe5b68"
+  
   - runs: |
       npm ci --no-audit --unsafe-perm
       npm run build:production
 
       mkdir -p "${{targets.destdir}}"/usr/lib/jellyfin/jellyfin-web
       cp -r dist/* "${{targets.destdir}}"/usr/lib/jellyfin/jellyfin-web
+  
   - uses: strip
+
 test:
   environment:
     contents:
@@ -53,6 +50,7 @@ test:
 
         # Use wget to check that all the links referenced from index.html are valid
         wget --spider --recursive -e robots=off --page-requisites http://localhost:8000
+
 update:
   enabled: true
   ignore-regex-patterns:
