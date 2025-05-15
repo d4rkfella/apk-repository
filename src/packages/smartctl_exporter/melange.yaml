@@ -14,7 +14,7 @@ pipeline:
   
   - uses: go/build
     with:
-      packages: main.go
+      packages: .
       output: smartctl_exporter 
   
   - uses: strip
