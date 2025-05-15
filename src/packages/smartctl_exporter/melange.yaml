@@ -1,0 +1,26 @@
+package:
+  name: smartctl_exporter
+  description: Export smartctl statistics to prometheus
+  version: "0.14.0"
+  epoch: 0
+  copyright:
+    - license: Apache-2.0
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/prometheus-community/smartctl_exporter
+      tag: v${{package.version}}
+      expected-commit: ef5c03de02cb793e6a1540bef943fe6a167de635
+  
+  - uses: go/build
+    with:
+      packages: main.go
+      output: smartctl_exporter 
+  
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: d4rkfella/cni-plugins-install
+    strip-prefix: v
