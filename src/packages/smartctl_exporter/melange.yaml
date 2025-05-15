@@ -5,6 +5,9 @@ package:
   epoch: 0
   copyright:
     - license: Apache-2.0
+  dependencies:
+    runtime:
+      - smartmontools
 pipeline:
   - uses: git-checkout
     with:
@@ -22,5 +25,5 @@ pipeline:
 update:
   enabled: true
   github:
-    identifier: d4rkfella/cni-plugins-install
+    identifier: prometheus-community/smartctl_exporter
     strip-prefix: v
