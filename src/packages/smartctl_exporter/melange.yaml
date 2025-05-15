@@ -24,7 +24,7 @@ pipeline:
         -X 'github.com/prometheus/common/version.Revision=$(git rev-parse HEAD)'
         -X 'github.com/prometheus/common/version.Branch=$(git rev-parse --abbrev-ref HEAD)'
         -X 'github.com/prometheus/common/version.BuildUser=$(whoami)@$(hostname)'
-        -X 'github.com/prometheus/common/version.BuildDate=$(date -u +'%Y%m%d-%H:%M:%S')'
+        -X 'github.com/prometheus/common/version.BuildDate=$(git log -1 --format=%cd --date=format:'%Y%m%d-%H:%M:%S')'
   
   - uses: strip
 
