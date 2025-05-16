@@ -12,6 +12,7 @@ RUN addgroup -S runner && adduser -S runner -G runner
 # Install software
 RUN apk add --no-cache \
   aspnet-${DOTNET_VERSION}-runtime \
+  sudo \
   bash \
   build-base \
   ca-certificates \
