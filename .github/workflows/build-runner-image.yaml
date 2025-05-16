@@ -6,7 +6,7 @@ on:
       runner_version:
         description: 'GitHub Actions runner version'
         required: true
-        default: '2.323.0'
+        default: '2.324.0'
       container_hooks_version:
         description: 'Runner container hooks version'
         required: true
