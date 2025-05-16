@@ -78,6 +78,7 @@ test:
         else
           echo "Test passed: Jellyfin started successfully."
         fi
+    
     - name: "Verify Jellyfin HTTP service on port 8096"
       runs: |
         echo "Checking if Jellyfin is listening on port 8096..."
@@ -99,6 +100,7 @@ test:
           kill $JELLYFIN_PID || true
           exit 1
         fi
+    
     - uses: test/tw/ldd-check
 
 update:
