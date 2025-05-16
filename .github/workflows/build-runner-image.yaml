@@ -17,7 +17,7 @@ on:
         default: '8'
 
 env:
-  IMAGE_NAME: ghcr.io/d4rkfella/wolfi-runner
+  IMAGE_NAME: wolfi-actions-runner
 
 jobs:
   build-and-push:
@@ -28,33 +28,266 @@ jobs:
       contents: read
 
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
+        with:
+          egress-policy: audit
+  
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
-
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+  
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+  
+      - name: Set up Cosign
+        uses: sigstore/cosign-installer@3454372f43399081ed03b604cb2d021dabca52bb # v3.8.2
+  
+      - name: Set up crane
+        uses: imjasonh/setup-crane@31b88efe9de28ae0ffa220711af4b60be9435f6e # v0.4
+      
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          node-version: 22.x
 
-      - name: Build and push Docker image
+      - name: Set up Syft
+        shell: bash
+        run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+  
+      - name: Install Semver
+        run: npm install semver
+
+      - name: Build Docker Image
         uses: docker/build-push-action@1dc73863535b631f98b2378be8619f83b136f4a0 # v6.17.0
+        id: build
         with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ inputs.runner_version }}
           build-args: |
             TARGETPLATFORM=linux/amd64
             RUNNER_VERSION=${{ inputs.runner_version }}
             RUNNER_CONTAINER_HOOKS_VERSION=${{ inputs.container_hooks_version }}
             DOTNET_VERSION=${{ inputs.dotnet_version }}
+          labels: |
+            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.url=https://ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+            org.opencontainers.image.version=${{ inputs.runner_version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.vendor=${{ github.repository_owner }}
+          platforms: linux/amd64
+          file: Dockerfile
+          context: .
+          provenance: false
+          sbom: false
+          outputs: |
+            type=docker
+            ${{ format('type=image,name=ghcr.io/{0}/{1},push-by-digest=true,name-canonical=true,push=true', github.repository_owner, env.IMAGE_NAME) }}
+
+      - name: Determine Definitive Version
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        id: version
+        with:
+          script: |
+            const semver = require('semver');
+            function extractVersionFromTag(tag) {
+              const versionRegex = /(\d+\.\d+\.\d+)/;
+              const match = tag.match(versionRegex);
+              return match ? match[0] : null;
+            }
+            function sanitizeInputVersion(version) {
+              return version.split('-')[0]; // Remove any pre-release suffixes
+            }
+            const tag = '${{ inputs.runner_version }}';
+            const extractedVersion = extractVersionFromTag(tag);
+            const validSemverRegex = /^v?(\d+(\.\d+)?(\.\d+)?)/;
+            const date = new Date();
+            const parsedVersion = validSemverRegex.exec(extractedVersion);
+            const validSemver = parsedVersion !== null;
+            const parsedSemver = validSemver ? semver.coerce(parsedVersion[0]) : null;
+            const outputVersion = validSemver
+              ? `${parsedSemver.major}.${parsedSemver.minor}.${parsedSemver.patch}` // Use the extracted version
+              : `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`; // Fallback to date-based version
+            const sanitizedInputVersion = validSemver ? sanitizeInputVersion(extractedVersion) : tag;
+            core.setOutput('version', outputVersion);
+            core.setOutput('validSemver', validSemver);
+            core.setOutput('sanitizedInputVersion', sanitizedInputVersion);
+  
+      - name: Build Meta
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
+        id: meta
+        with:
+          flavor: latest=false
+          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}},value=${{ steps.version.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ steps.version.outputs.version }},enable=${{ steps.version.outputs.validSemver }}
+            type=semver,pattern={{major}},value=${{ steps.version.outputs.version }},enable=${{ steps.version.outputs.validSemver }}
+            type=raw,value=${{ steps.version.outputs.sanitizedInputVersion }},enable=${{ steps.version.outputs.validSemver }}
+            type=raw,value=rolling
+      
+      - name: Push Images
+        uses: Noelware/docker-manifest-action@b33ab348026b120a895167160f5605b0197f0862 # 0.4.3
+        id: push
+        with:
+          inputs: ${{ join(fromJSON(steps.meta.outputs.json).tags, ',') }}
+          images: >-
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }},
+          push: true
+  
+      - name: Export index digest
+        id: digest
+        run: |
+          digest=$(echo "${{ steps.push.outputs.images }}" | grep -oP 'sha256:[^, ]+' | head -n1)
+          echo "digest=${digest}" >> $GITHUB_OUTPUT
+  
+      - name: Extract the digests for each architecture
+        id: extract
+        shell: bash
+        run: |
+          output="digest-index=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}@${{ steps.digest.outputs.digest }}"
+          echo "Adding GitHub step output: ${output}"
+          echo "${output}" >> $GITHUB_OUTPUT
+          output="shortdigest-index=$(echo "ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}@${{ steps.digest.outputs.digest }}" | cut -d@ -f 2)"
+          echo "Adding GitHub step output: ${output}"
+          echo "${output}" >> $GITHUB_OUTPUT
+  
+          CRANE_MANIFEST_OUTPUT="$(crane manifest ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}@${{ steps.digest.outputs.digest }})"
+          if [[ "$(echo $CRANE_MANIFEST_OUTPUT | jq -r .mediaType)" == "application/vnd.docker.distribution.manifest.list.v2+json" ]]; then
+            for combo in `echo $CRANE_MANIFEST_OUTPUT | jq -r '.manifests[] | .platform.architecture + .platform.variant + "_" + .digest'`; do
+              arch="$(echo "${combo}" | cut -d "_" -f1)"
+              digest="$(echo "${combo}" | cut -d "_" -f2)"
+              output="digest-${arch}=ghcr.io/${{ github.repository }}@${digest}"
+              echo "Adding GitHub step output: ${output}"
+              echo "${output}" >> $GITHUB_OUTPUT
+              output="shortdigest-${arch}=${digest}"
+              echo "Adding GitHub step output: ${output}"
+              echo "${output}" >> $GITHUB_OUTPUT
+            done
+          fi
+      
+      - name: Sign digests using cosign
+        shell: bash
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          function sign_digests {
+            arch="${1}"
+            digest="${2}"
+            echo "Signing ${digest} (arch: ${arch}) ..."
+            cosign sign --yes "${digest}" \
+            --fulcio-url ${{ env.FULCIO_URL }}  --rekor-url ${{ env.REKOR_URL }} \
+            -a sha=${{ github.sha }} \
+            -a run_id=${{ github.run_id }} \
+            -a run_attempt=${{ github.run_attempt }}
+          }
+  
+          sign_digests "index" "${{ steps.extract.outputs.digest-index }}"
+  
+          [[ "${{ steps.extract.outputs.digest-amd64 }}" == "" ]] || sign_digests "amd64" "${{ steps.extract.outputs.digest-amd64 }}"
+          [[ "${{ steps.extract.outputs.digest-arm64 }}" == "" ]] || sign_digests "arm64" "${{ steps.extract.outputs.digest-arm64 }}"
+          [[ "${{ steps.extract.outputs.digest-386 }}" == "" ]] || sign_digests "386" "${{ steps.extract.outputs.digest-386 }}"
+          [[ "${{ steps.extract.outputs.digest-armv6 }}" == "" ]] || sign_digests "armv6" "${{ steps.extract.outputs.digest-armv6 }}"
+          [[ "${{ steps.extract.outputs.digest-armv7 }}" == "" ]] || sign_digests "armv7" "${{ steps.extract.outputs.digest-armv7 }}"
+          [[ "${{ steps.extract.outputs.digest-ppc64le }}" == "" ]] || sign_digests "ppc64le" "${{ steps.extract.outputs.digest-ppc64le }}"
+          [[ "${{ steps.extract.outputs.digest-riscv64 }}" == "" ]] || sign_digests "riscv64" "${{ steps.extract.outputs.digest-riscv64 }}"
+          [[ "${{ steps.extract.outputs.digest-s390x }}" == "" ]] || sign_digests "s390x" "${{ steps.extract.outputs.digest-s390x }}"
+  
+      - name: Create SBOMs
+        shell: bash
+        run: |
+          function create_sbom {
+            arch="${1}"
+            digest="${2}"
+            sbomfile="${3}"
+  
+            echo "Creating SBOM for ${digest} (arch: ${arch}) ..."
+            syft "${digest}" -o spdx-json > "${sbomfile}"
+            echo "SBOM saved to ${sbomfile}"
+          }
+      
+          create_sbom "index" "${{ steps.extract.outputs.digest-index }}" "sbom-index.spdx.json"
+      
+          [[ "${{ steps.extract.outputs.digest-amd64 }}" == "" ]] || create_sbom "amd64" "${{ steps.extract.outputs.digest-amd64 }}" "sbom-amd64.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-arm64 }}" == "" ]] || create_sbom "arm64" "${{ steps.extract.outputs.digest-arm64 }}" "sbom-arm64.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-386 }}" == "" ]] || create_sbom "386" "${{ steps.extract.outputs.digest-386 }}" "sbom-386.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-armv6 }}" == "" ]] || create_sbom "armv6" "${{ steps.extract.outputs.digest-armv6 }}" "sbom-armv6.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-armv7 }}" == "" ]] || create_sbom "armv7" "${{ steps.extract.outputs.digest-armv7 }}" "sbom-armv7.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-ppc64le }}" == "" ]] || create_sbom "ppc64le" "${{ steps.extract.outputs.digest-ppc64le }}" "sbom-ppc64le.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-riscv64 }}" == "" ]] || create_sbom "riscv64" "${{ steps.extract.outputs.digest-riscv64 }}" "sbom-riscv64.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-s390x }}" == "" ]] || create_sbom "s390x" "${{ steps.extract.outputs.digest-s390x }}" "sbom-s390x.spdx.json"
+  
+      - name: Upload SBOMs as attestations
+        shell: bash
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          function attest_sbom {
+            arch="${1}"
+            digest="${2}"
+            sbomfile="${3}"
+            if [[ "${sbomfile}" == "" ]]; then
+              echo "Unknown architecture: ${arch}. Exiting."
+              exit 1
+            fi
+            if [[ ! -f "${sbomfile}" ]]; then
+              echo "Unable to find SBOM on disk: ${sbomfile} (arch: ${arch}). Exiting."
+              exit 1
+            fi
+            echo "Attaching ${sbomfile} to ${digest} as spdxjson attestation (arch: ${arch}) ..."
+            cosign attest --yes --type spdxjson --predicate "${sbomfile}" "${digest}"
+            rm -f "${sbomfile}"
+          }
+  
+          attest_sbom "index" "${{ steps.extract.outputs.digest-index }}" "sbom-index.spdx.json"
+  
+          [[ "${{ steps.extract.outputs.digest-amd64 }}" == "" ]] || attest_sbom "amd64" "${{ steps.extract.outputs.digest-amd64 }}" "sbom-amd64.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-arm64 }}" == "" ]] || attest_sbom "arm64" "${{ steps.extract.outputs.digest-arm64 }}" "sbom-arm64.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-386 }}" == "" ]] || attest_sbom "386" "${{ steps.extract.outputs.digest-386 }}" "sbom-386.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-armv6 }}" == "" ]] || attest_sbom "armv6" "${{ steps.extract.outputs.digest-armv6 }}" "sbom-armv6.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-armv7 }}" == "" ]] || attest_sbom "armv7" "${{ steps.extract.outputs.digest-armv7 }}" "sbom-armv7.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-ppc64le }}" == "" ]] || attest_sbom "ppc64le" "${{ steps.extract.outputs.digest-ppc64le }}" "sbom-ppc64le.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-riscv64 }}" == "" ]] || attest_sbom "riscv64" "${{ steps.extract.outputs.digest-riscv64 }}" "sbom-riscv64.spdx.json"
+          [[ "${{ steps.extract.outputs.digest-s390x }}" == "" ]] || attest_sbom "s390x" "${{ steps.extract.outputs.digest-s390x }}" "sbom-s390x.spdx.json"
+  
+      - name: 'SLSA: Generate provenance and attest'
+        shell: bash
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+          GENERATOR_REPOSITORY: slsa-framework/slsa-github-generator
+          GENERATOR_RELEASE_TAG: v2.0.0
+          GENERATOR_RELEASE_BINARY: slsa-generator-container-linux-amd64
+          GENERATOR_RELEASE_BINARY_SHA256: 5f293677eb3433328140c547232a760c0aa513a049c2d2f4557fefe686acdcf8
+          GH_TOKEN: "${{ github.token }}"
+          GITHUB_CONTEXT: "${{ toJSON(github) }}"
+        run: |
+          set -x
+        
+          gh release -R "${GENERATOR_REPOSITORY}" download "${GENERATOR_RELEASE_TAG}" -p "${GENERATOR_RELEASE_BINARY}"
+          COMPUTED_HASH="$(sha256sum "${GENERATOR_RELEASE_BINARY}" | awk '{print $1}')"
+          if [[ "${COMPUTED_HASH}" != "${GENERATOR_RELEASE_BINARY_SHA256}" ]]; then
+            echo "Mismatched checksums (wanted ${GENERATOR_RELEASE_BINARY_SHA256} got ${COMPUTED_HASH}). Exiting."
+            exit 1
+          fi
+          chmod +x "${GENERATOR_RELEASE_BINARY}"
+  
+          trap "rm -f provenance.json" EXIT
+          echo "Generating SLSA build provenance ..."
+          "./${GENERATOR_RELEASE_BINARY}" generate --predicate="provenance.json"
+          echo "Provenance doc:"
+          cat provenance.json | jq
+  
+          function attest_slsa {
+            arch="${1}"
+            digest="${2}"
+            echo "Attaching SLSA build provenance to ${digest} (arch: ${arch}) ..."
+            cosign attest --yes --type slsaprovenance --predicate="provenance.json" "${digest}"
+          }
+  
+          attest_slsa "index" "${{ steps.extract.outputs.digest-index }}"
+  
+          [[ "${{ steps.extract.outputs.digest-amd64 }}" == "" ]] || attest_slsa "amd64" "${{ steps.extract.outputs.digest-amd64 }}"
+          [[ "${{ steps.extract.outputs.digest-arm64 }}" == "" ]] || attest_slsa "arm64" "${{ steps.extract.outputs.digest-arm64 }}"
+          [[ "${{ steps.extract.outputs.digest-386 }}" == "" ]] || attest_slsa "386" "${{ steps.extract.outputs.digest-386 }}"
+          [[ "${{ steps.extract.outputs.digest-armv6 }}" == "" ]] || attest_slsa "armv6" "${{ steps.extract.outputs.digest-armv6 }}"
+          [[ "${{ steps.extract.outputs.digest-armv7 }}" == "" ]] || attest_slsa "armv7" "${{ steps.extract.outputs.digest-armv7 }}"
+          [[ "${{ steps.extract.outputs.digest-ppc64le }}" == "" ]] || attest_slsa "ppc64le" "${{ steps.extract.outputs.digest-ppc64le }}"
+          [[ "${{ steps.extract.outputs.digest-riscv64 }}" == "" ]] || attest_slsa "riscv64" "${{ steps.extract.outputs.digest-riscv64 }}"
+          [[ "${{ steps.extract.outputs.digest-s390x }}" == "" ]] || attest_slsa "s390x" "${{ steps.extract.outputs.digest-s390x }}"
