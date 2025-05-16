@@ -22,6 +22,8 @@ pipeline:
       sed -i 's|CXXFLAGS=-march=native |CXXFLAGS=|' makefile
   
   - uses: autoconf/make
+
+  - uses: strip
   
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
