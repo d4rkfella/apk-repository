@@ -157,7 +157,7 @@ jobs:
             for combo in `echo $CRANE_MANIFEST_OUTPUT | jq -r '.manifests[] | .platform.architecture + .platform.variant + "_" + .digest'`; do
               arch="$(echo "${combo}" | cut -d "_" -f1)"
               digest="$(echo "${combo}" | cut -d "_" -f2)"
-              output="digest-${arch}=ghcr.io/${{ github.repository }}@${digest}"
+              output="digest-${arch}=ghcr.io/${{ env.IMAGE_NAME }}@${digest}"
               echo "Adding GitHub step output: ${output}"
               echo "${output}" >> $GITHUB_OUTPUT
               output="shortdigest-${arch}=${digest}"
