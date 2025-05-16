@@ -15,17 +15,20 @@ on:
         description: '.NET runtime version'
         required: true
         default: '8'
-
-env:
-  IMAGE_NAME: wolfi-actions-runner
-
 jobs:
   build-and-push:
     runs-on: ubuntu-24.04
 
     permissions:
+      id-token: write
       packages: write
       contents: read
+      security-events: write
+
+    env:
+      IMAGE_NAME: wolfi-actions-runner
+      FULCIO_URL: "https://fulcio.sigstore.dev"
+      REKOR_URL: "https://rekor.sigstore.dev"
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
