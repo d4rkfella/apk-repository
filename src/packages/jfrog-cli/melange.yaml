@@ -1,0 +1,26 @@
+package:
+  name: jfrog-cli
+  version: "2.75.1"
+  epoch: 0
+  copyright:
+    - license: Apache-2.0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/jfrog/jfrog-cli
+      tag: v${{package.version}}
+      expected-commit: "e13c4dc82166fa9258bc531dfa7ddd87d597f710"
+  
+  - uses: go/build
+    with:
+      packages: main.go
+      output: jfrog-cli
+  
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: jfrog/jfrog-cli
+    strip-prefix: v
