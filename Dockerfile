@@ -5,38 +5,33 @@ ARG TARGETPLATFORM
 ARG RUNNER_VERSION=2.323.0
 ARG RUNNER_CONTAINER_HOOKS_VERSION=0.7.0
 ARG DOTNET_VERSION=8
+ARG RUNNER_UID=1001
+ARG RUNNER_GID=1001
 
 # Set up the non-root user (runner)
-RUN addgroup -S runner && adduser -S runner -G runner
+RUN addgroup -g ${RUNNER_GID} -S runner && \
+    adduser -u ${RUNNER_UID} -S runner -G runner
+
+RUN echo "https://packages.darkfellanetwork.com/wolfi-os" >> /etc/apk/repositories && curl -sL https://packages.darkfellanetwork.com/wolfi-os/melange.rsa.pub -o /etc/apk/keys/melange.rsa.pub
 
 # Install software
 RUN apk add --no-cache \
   aspnet-${DOTNET_VERSION}-runtime \
   sudo \
   bash \
-  build-base \
   ca-certificates \
   curl \
-  docker-cli \
-  dumb-init \
   git \
   gh \
-  helm \
-  icu \
   jq \
-  krb5-libs \
-  lttng-ust \
   nodejs \
-  openssl \
-  openssl-dev \
   wget \
   unzip \
-  yaml-dev \
-  zlib \
   yq \
   melange \
-  bubblewrap
-
+  bubblewrap \
+  jfrog-cli
+  
 RUN export PATH=$HOME/.local/bin:$PATH
 
 # Shell setup
@@ -75,6 +70,12 @@ RUN chmod -R 777 /opt /usr/share
 # squash it!
 FROM scratch AS final
 
+USER runner
+
+COPY --from=build / /
+
+WORKDIR /home/runner
+
 LABEL org.opencontainers.image.source="https://github.com/d4rkfella/apk-repository"
 LABEL org.opencontainers.image.title="wolfi"
 LABEL org.opencontainers.image.description="A Chainguard Wolfi based runner image for GitHub Actions"
@@ -83,7 +84,4 @@ LABEL org.opencontainers.image.licenses="MIT"
 
 ENV RUNNER_MANUALLY_TRAP_SIG=1
 ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1
-
-USER runner
-
-COPY --from=build / /
+ENV DOTNET_RUNNING_IN_CONTAINER=true
