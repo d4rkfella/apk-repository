@@ -46,6 +46,10 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir -p /home/runner \
   && chown -R runner:runner /home/runner
 
+# Allow passwordless sudo for runner user
+RUN echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner \
+ && chmod 0440 /etc/sudoers.d/runner
+
 WORKDIR /home/runner
 
 RUN test -n "$TARGETPLATFORM" || (echo "TARGETPLATFORM must be set" && false)
