@@ -12,8 +12,6 @@ ARG RUNNER_GID=1001
 RUN addgroup -g ${RUNNER_GID} -S runner && \
     adduser -u ${RUNNER_UID} -S runner -G runner
 
-RUN echo "https://packages.darkfellanetwork.com/wolfi-os" >> /etc/apk/repositories && curl -sL https://packages.darkfellanetwork.com/wolfi-os/melange.rsa.pub -o /etc/apk/keys/melange.rsa.pub
-
 # Install software
 RUN apk add --no-cache \
   aspnet-${DOTNET_VERSION}-runtime \
@@ -29,7 +27,11 @@ RUN apk add --no-cache \
   unzip \
   yq \
   melange \
-  bubblewrap \
+  bubblewrap
+
+RUN echo "https://packages.darkfellanetwork.com/wolfi-os" >> /etc/apk/repositories && curl -sL https://packages.darkfellanetwork.com/wolfi-os/melange.rsa.pub -o /etc/apk/keys/melange.rsa.pub
+
+RUN apk add --no-cache \
   jfrog-cli
   
 RUN export PATH=$HOME/.local/bin:$PATH
