@@ -5,7 +5,6 @@ package:
   description: LTTng 2.0 Userspace Tracer
   copyright:
     - license: LGPL-2.1-or-later
-
 environment:
   contents:
     packages:
