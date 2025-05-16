@@ -11,6 +11,7 @@ environment:
       - alpine-base
       - build-base
       - ca-certificates-bundle
+
 pipeline:
   - uses: fetch
     with:
