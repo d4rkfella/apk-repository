@@ -86,7 +86,7 @@ subpackages:
           export KC_DB=postgres
           mkdir -p "${{targets.subpkgdir}}"/opt
           ln -s /usr/share/java/keycloak "${{targets.subpkgdir}}"/opt/
-          cd /opt/keycloak && /opt/keycloak/bin/kc.sh build
+          cd "${{targets.subpkgdir}}"/opt/keycloak && "${{targets.subpkgdir}}"/opt/keycloak/bin/kc.sh build
           
     dependencies:
       runtime:
