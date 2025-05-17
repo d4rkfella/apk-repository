@@ -144,7 +144,7 @@ jobs:
       - name: Generate SBOM
         uses: anchore/sbom-action@e11c554f704a0b820cbf8c51673f6945e0731532 # v0.20.0
         with:
-          image: "ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ steps.build-and-push.outputs.digest }}"
+          image: "ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}"
           artifact-name: "${{ env.IMAGE_NAME }}-${{ steps.build-and-push.outputs.digest }}.sbom"
 
       - name: Sign the images with GitHub OIDC Token
