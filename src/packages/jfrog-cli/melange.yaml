@@ -4,7 +4,6 @@ package:
   epoch: 0
   copyright:
     - license: Apache-2.0
-
 pipeline:
   - uses: git-checkout
     with:
