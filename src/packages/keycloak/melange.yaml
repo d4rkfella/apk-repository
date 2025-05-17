@@ -72,6 +72,7 @@ subpackages:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/opt
           ln -s /usr/share/java/keycloak "${{targets.subpkgdir}}"/opt/
+          
     dependencies:
       runtime:
         - merged-usrsbin
@@ -80,19 +81,18 @@ subpackages:
   - name: keycloak-compat-custom-optimized
     pipeline:
       - runs: |
+          export KC_HEALTH_ENABLED=true
+          export KC_METRICS_ENABLED=true
+          export KC_DB=postgres
           mkdir -p "${{targets.subpkgdir}}"/opt
           ln -s /usr/share/java/keycloak "${{targets.subpkgdir}}"/opt/
-    scriptlets:
-      post-install: |
-        #!/bin/sh
-        export KC_HEALTH_ENABLED=true
-        export KC_METRICS_ENABLED=true
-        export KC_DB=postgres
-        cd /opt/keycloak && /opt/keycloak/bin/kc.sh build
+          cd /opt/keycloak && /opt/keycloak/bin/kc.sh build
+          
     dependencies:
       runtime:
         - merged-usrsbin
-        - wolfi-baselayout
+        - wolfi-baselayout  
+
 test:
   pipeline:
     - name: "start daemon on localhost"
