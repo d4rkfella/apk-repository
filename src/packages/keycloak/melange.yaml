@@ -68,7 +68,7 @@ pipeline:
       export KC_METRICS_ENABLED=true
       export KC_DB=postgres
       
-      cd "${{targets.destdir}}"/opt/keycloak && "${{targets.destdir}}"/opt/keycloak/bin/kc.sh build
+      cd "${{targets.destdir}}"/usr/share/java/keycloak && "${{targets.destdir}}"/usr/share/java/keycloak/bin/kc.sh build
 
 # images like keycloak-operator may need it as they expect it to find keycloak in /opt/keycloak
 # For ref: https://github.com/keycloak/keycloak/blob/4b194d00bed51458acb3d125eba9a0ba654c930a/operator/Dockerfile#L11
