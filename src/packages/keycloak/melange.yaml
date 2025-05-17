@@ -12,15 +12,6 @@ package:
       - openjdk-21-default-jdk # TODO: Change to JRE
       - wolfi-baselayout
 
-# Create a new major-version variable that contains only the major version
-# to use in the bitnami/compat pipeline to find out the correct folder for the image.
-# e.g. 25.0.2 will create a new var major-version=25
-var-transforms:
-  - from: ${{package.version}}
-    match: ^(\d+).*
-    replace: $1
-    to: major-version
-
 environment:
   contents:
     packages:
