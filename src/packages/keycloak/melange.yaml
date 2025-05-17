@@ -69,16 +69,20 @@ subpackages:
   - name: keycloak-compat
     pipeline:
       - runs: |
-          export KC_HEALTH_ENABLED=true
-          export KC_METRICS_ENABLED=true
-          export KC_DB=postgres
           mkdir -p "${{targets.subpkgdir}}"/opt
           ln -s /usr/share/java/keycloak "${{targets.subpkgdir}}"/opt/
-          /opt/keycloak/bin/kc.sh build
+    scriptlets:
+      post-install: |
+        #!/bin/sh
+        export KC_HEALTH_ENABLED=true
+        export KC_METRICS_ENABLED=true
+        export KC_DB=postgres
+        cd /opt/keycloak && /opt/keycloak/bin/kc.sh build
     dependencies:
       runtime:
         - merged-usrsbin
         - wolfi-baselayout
+        - keycloak-optimized
 
 test:
   pipeline:
