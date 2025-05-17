@@ -116,7 +116,7 @@ jobs:
           sbom: false
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.docker_meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}
 
       - name: Attest the build
         uses: actions/attest-build-provenance@db473fddc028af60658334401dc6fa3ffd8669fd # v2.3.0
@@ -149,7 +149,7 @@ jobs:
       - name: Sign the images with GitHub OIDC Token
         env:
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
-          TAGS: ${{ steps.docker_meta.outputs.tags }}
+          TAGS: ${{ steps.meta.outputs.tags }}
         run: |
           images=""
           for tag in ${TAGS}; do
