@@ -130,7 +130,8 @@ jobs:
         uses: anchore/scan-action@2c901ab7378897c01b8efaa2d0c9bf519cc64b9e # v6.2.0
         id: scan
         with:
-          image: "ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ steps.build-and-push.outputs.digest }}"
+          image: "ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}"
+          output-format: sarif
           fail-build: false
 
       - name: Upload the container scan report
