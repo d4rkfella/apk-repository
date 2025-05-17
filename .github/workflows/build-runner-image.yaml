@@ -24,6 +24,7 @@ jobs:
       packages: write
       contents: read
       security-events: write
+      attestations: write
 
     env:
       IMAGE_NAME: wolfi-actions-runner
