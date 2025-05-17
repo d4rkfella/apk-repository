@@ -42,6 +42,10 @@ jobs:
     steps:             
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+
+      - name: Install docker-cli
+        run: |
+          sudo apk add docker-cli
     
       - name: Build Packages
         uses: d4rkfella/actions/melange-build@main
