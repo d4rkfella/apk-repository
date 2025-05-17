@@ -1,5 +1,5 @@
 package:
-  name: keycloak-optimized
+  name: keycloak-custom
   version: "26.2.4"
   epoch: 0
   description: Open Source Identity and Access Management For Modern Applications and Services
@@ -26,6 +26,7 @@ environment:
   environment:
     LANG: en_US.UTF-8
     JAVA_HOME: /usr/lib/jvm/java-21-openjdk
+    REPRODUCIBLE: false
 
 pipeline:
   - uses: git-checkout
@@ -66,7 +67,18 @@ pipeline:
 # images like keycloak-operator may need it as they expect it to find keycloak in /opt/keycloak
 # For ref: https://github.com/keycloak/keycloak/blob/4b194d00bed51458acb3d125eba9a0ba654c930a/operator/Dockerfile#L11
 subpackages:
-  - name: keycloak-compat
+  - name: keycloak-compat-custom
+    pipeline:
+      - runs: |
+          mkdir -p "${{targets.subpkgdir}}"/opt
+          ln -s /usr/share/java/keycloak "${{targets.subpkgdir}}"/opt/
+    dependencies:
+      runtime:
+        - merged-usrsbin
+        - wolfi-baselayout
+        - keycloak-custom
+  
+  - name: keycloak-compat-custom-optimized
     pipeline:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/opt
@@ -77,7 +89,7 @@ subpackages:
         export KC_HEALTH_ENABLED=true
         export KC_METRICS_ENABLED=true
         export KC_DB=postgres
-        cd /opt/keycloak && /opt/keycloak/bin/kc.sh build
+        cd /opt/keycloak && ./kc.sh build
     dependencies:
       runtime:
         - merged-usrsbin
