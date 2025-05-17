@@ -63,6 +63,12 @@ pipeline:
       for i in kc.sh kcadm.sh kcreg.sh; do
         ln -sf /usr/share/java/keycloak/bin/$i ${{targets.destdir}}/usr/bin/$i
       done
+      
+      export KC_HEALTH_ENABLED=true
+      export KC_METRICS_ENABLED=true
+      export KC_DB=postgres
+      
+      cd "${{targets.destdir}}"/opt/keycloak && "${{targets.destdir}}"/opt/keycloak/bin/kc.sh build
 
 # images like keycloak-operator may need it as they expect it to find keycloak in /opt/keycloak
 # For ref: https://github.com/keycloak/keycloak/blob/4b194d00bed51458acb3d125eba9a0ba654c930a/operator/Dockerfile#L11
@@ -72,21 +78,6 @@ subpackages:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/opt
           ln -s /usr/share/java/keycloak "${{targets.subpkgdir}}"/opt/
-          
-    dependencies:
-      runtime:
-        - merged-usrsbin
-        - wolfi-baselayout  
-  
-  - name: keycloak-compat-custom-optimized
-    pipeline:
-      - runs: |
-          export KC_HEALTH_ENABLED=true
-          export KC_METRICS_ENABLED=true
-          export KC_DB=postgres
-          mkdir -p "${{targets.subpkgdir}}"/opt
-          ln -s /usr/share/java/keycloak "${{targets.subpkgdir}}"/opt/
-          cd "${{targets.subpkgdir}}"/opt/keycloak && "${{targets.subpkgdir}}"/opt/keycloak/bin/kc.sh build
           
     dependencies:
       runtime:
