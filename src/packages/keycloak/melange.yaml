@@ -88,7 +88,7 @@ subpackages:
         export KC_HEALTH_ENABLED=true
         export KC_METRICS_ENABLED=true
         export KC_DB=postgres
-        cd /opt/keycloak && ./kc.sh build
+        cd /opt/keycloak && /opt/keycloak/bin/kc.sh build
     dependencies:
       runtime:
         - merged-usrsbin
