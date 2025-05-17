@@ -11,7 +11,6 @@ package:
       - merged-usrsbin
       - openjdk-21-default-jdk # TODO: Change to JRE
       - wolfi-baselayout
-
 environment:
   contents:
     packages:
