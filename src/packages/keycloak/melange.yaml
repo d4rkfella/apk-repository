@@ -75,8 +75,7 @@ subpackages:
     dependencies:
       runtime:
         - merged-usrsbin
-        - wolfi-baselayout
-        - keycloak-custom
+        - wolfi-baselayout  
   
   - name: keycloak-compat-custom-optimized
     pipeline:
@@ -94,8 +93,6 @@ subpackages:
       runtime:
         - merged-usrsbin
         - wolfi-baselayout
-        - keycloak-optimized
-
 test:
   pipeline:
     - name: "start daemon on localhost"
