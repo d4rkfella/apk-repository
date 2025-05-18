@@ -17,6 +17,7 @@ package:
       - gh
       - sudo
       - curl
+      - openssl
 environment:
   contents:
     packages:
