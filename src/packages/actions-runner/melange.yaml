@@ -33,11 +33,16 @@ pipeline:
       ./dev.sh layout Release linux-x64
       mkdir -p "${{targets.destdir}}"/home/runner
       cp -a /home/build/_layout/. "${{targets.destdir}}"/home/runner/
-      chown -R 1001:1001 "${{targets.destdir}}"/home/runner/
+      chown -R 1001:1001 "${{targets.destdir}}"/home/runner
       rm -rf "${{targets.destdir}}"/home/runner/externals/node20_alpine
       rm "${{targets.destdir}}"/home/runner/externals/node20/bin/node && ln -s /usr/bin/node "${{targets.destdir}}"/home/runner/externals/node20/bin/node
       
   - uses: strip
+
+scriptlets:
+  post-install: |
+    #!/bin/sh
+    chown -R runner:runner /home/runner
 
 test:
   environment:
