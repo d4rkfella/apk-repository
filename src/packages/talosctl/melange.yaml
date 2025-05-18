@@ -1,0 +1,24 @@
+package:
+  name: talosctl
+  version: "1.10.2"
+  epoch: 0
+  copyright:
+    - license: MPL-2.0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/siderolabs/talos
+      tag: v${{package.version}}
+      expected-commit: "1cf5914b6e9c7ff9ffd1576602e6beafcffc147b"
+  
+  - runs: |
+      make talosctl-linux-amd64
+  
+  - uses: strip
+
+update:
+  enabled: true
+  github:
+    identifier: siderolabs/talos
+    strip-prefix: v
