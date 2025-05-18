@@ -45,6 +45,7 @@ test:
       packages:
         - lttng-ust
   pipeline:
+    - runs: ln -s /usr/lib/liblttng-ust.so.1 /usr/lib/liblttng-ust.so.0
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
       with:
