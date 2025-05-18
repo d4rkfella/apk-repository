@@ -1,0 +1,42 @@
+package:
+  name: runner-container-hooks
+  version: "0.7.0"
+  epoch: 0
+  copyright:
+    - license: MIT
+  dependencies:
+    runtime:
+      - actions-runner
+environment:
+  contents:
+    packages:
+      - wolfi-baselayout
+      - busybox
+      - nodejs
+      - npm
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/actions/runner-container-hooks
+      tag: v${{package.version}}
+      expected-commit: "7da5474a5d6bafa8df9ab504af76b415fb01594c"  
+  
+  - runs: |
+      npm install
+      npm run bootstrap
+      npm run build-all
+      
+  - uses: strip
+
+test:
+  pipeline:
+    - name: Check for missing dependancies
+      uses: test/tw/ldd-check
+      with:
+        packages: ${{package.name}}
+
+update:
+  enabled: true
+  github:
+    identifier: actions/runner-container-hooks
+    strip-prefix: v
