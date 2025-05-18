@@ -11,6 +11,7 @@ environment:
       - busybox
       - bash
       - curl
+      - icu
 
 pipeline:
   - uses: git-checkout
