@@ -19,6 +19,7 @@ pipeline:
   
   - runs: |
       cd src
+      ls -la
       ./dev.sh layout Release linux-x64
       ./dev.sh test
       
