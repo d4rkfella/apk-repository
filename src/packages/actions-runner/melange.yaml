@@ -25,8 +25,16 @@ pipeline:
       ./dev.sh layout Release linux-x64
       mkdir -p "${{targets.destdir}}"/home/runner
       cp -a /home/build/_layout/. "${{targets.destdir}}"/home/runner/
+      chown -R runner:runner "${{targets.destdir}}"/home/runner/
       
   - uses: strip
+
+test:
+  pipeline:
+    - name: Check for missing dependancies
+      uses: test/tw/ldd-check
+      with:
+        packages: ${{package.name}}
 
 update:
   enabled: true
