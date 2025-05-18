@@ -16,7 +16,7 @@ package:
       - git
       - gh
       - sudo
-
+      - curl
 environment:
   contents:
     packages:
