@@ -23,7 +23,8 @@ pipeline:
   - runs: |
       cd ./src
       ./dev.sh layout Release linux-x64
-      ./dev.sh test
+      mkdir -p "${{targets.destdir}}"/home/runner
+      cp -a /home/build/_layout/. "${{targets.destdir}}"/home/runner/
       
   - uses: strip
 
