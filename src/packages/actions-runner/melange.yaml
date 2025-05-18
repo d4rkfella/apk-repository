@@ -16,6 +16,14 @@ package:
       - git
       - gh
       - sudo
+  scriptlets:
+    post-install: |
+      #!/bin/sh
+      chown -R 1001:1001 /home/runner
+      echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner && chmod 0440 /etc/sudoers.d/runner
+    post-deinstall: |
+      #!/bin/sh
+      rm -rf /home/runner /etc/sudoers.d/runner
 
 environment:
   contents:
@@ -44,12 +52,6 @@ pipeline:
       rm "${{targets.destdir}}"/home/runner/externals/node20/bin/node && ln -s /usr/bin/node "${{targets.destdir}}"/home/runner/externals/node20/bin/node
       
   - uses: strip
-
-scriptlets:
-  post-install: |
-    #!/bin/sh
-    chown -R 1001:1001 /home/runner
-    echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner && chmod 0440 /etc/sudoers.d/runner
 
 test:
   environment:
