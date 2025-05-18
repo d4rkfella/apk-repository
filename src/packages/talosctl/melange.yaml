@@ -4,17 +4,23 @@ package:
   epoch: 0
   copyright:
     - license: MPL-2.0
+
+environment:
+  environment:
+    CGO_ENABLED: "0"
+
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/siderolabs/talos
       tag: v${{package.version}}
-      expected-commit: "1cf5914b6e9c7ff9ffd1576602e6beafcffc147b"
+      expected-commit: "1cf5914b6e9c7ff9ffd1576602e6beafcffc147b" 
   
   - uses: go/build
     with:
       packages: cmd/talosctl/main.go
       output: talosctl
+      tags: grpcnotrace
   
   - uses: strip
 
