@@ -4,13 +4,6 @@ package:
   epoch: 0
   copyright:
     - license: MPL-2.0
-
-environment:
-  contents:
-    packages:
-      - busybox
-      - build-base
-
 pipeline:
   - uses: git-checkout
     with:
@@ -18,8 +11,10 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: "1cf5914b6e9c7ff9ffd1576602e6beafcffc147b"
   
-  - runs: |
-      make talosctl-linux-amd64
+  - uses: go/build
+    with:
+      packages: cmd/talosctl/main.go
+      output: talosctl
   
   - uses: strip
 
