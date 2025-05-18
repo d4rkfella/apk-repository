@@ -16,17 +16,6 @@ package:
       - git
       - gh
       - sudo
-  scriptlets:
-    post-install: |
-      #!/bin/sh
-      chown -R 1001:1001 /home/runner
-      chown 1001:1001 /home/runner
-      chmod 700 /home/runner
-      echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner
-      chmod 0440 /etc/sudoers.d/runner
-    post-deinstall: |
-      #!/bin/sh
-      rm -rf /home/runner /etc/sudoers.d/runner
 
 environment:
   contents:
@@ -48,12 +37,14 @@ pipeline:
   - runs: |
       cd ./src
       ./dev.sh layout Release linux-x64
-      mkdir -p "${{targets.destdir}}"/home/runner
+      mkdir -p "${{targets.destdir}}"/home/runner "${{targets.destdir}}"/etc/sudoers.d
       cp -a /home/build/_layout/. "${{targets.destdir}}"/home/runner/
-      chown -R 1001:1001 "${{targets.destdir}}"/home/runner
       rm -rf "${{targets.destdir}}"/home/runner/externals/node20_alpine
-      rm "${{targets.destdir}}"/home/runner/externals/node20/bin/node && ln -s /usr/bin/node "${{targets.destdir}}"/home/runner/externals/node20/bin/node
-      
+      rm "${{targets.destdir}}"/home/runner/externals/node20/bin/node 
+      ln -s /usr/bin/node "${{targets.destdir}}"/home/runner/externals/node20/bin/node
+      echo "runner ALL=(ALL) NOPASSWD:ALL" > "${{targets.destdir}}"/etc/sudoers.d/runner
+      chmod 0440 "${{targets.destdir}}"/etc/sudoers.d/runner        
+  
   - uses: strip
 
 test:
