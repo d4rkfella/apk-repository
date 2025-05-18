@@ -1,6 +1,6 @@
 package:
   name: radarr
-  version: "5.22.4.9896"
+  version: "5.23.3.9987"
   epoch: 0
   description: Movie download automation for usenet and torrents.
   copyright:
@@ -23,20 +23,16 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: "981a3c2db392099394c4c0b7c182b190877ae3f1"
+      expected-commit: "e0b93a03fdc699185120785cb77e2fc94efc1fb9"
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
-  
   - name: Install dependancies
     runs: |
       curl -sSL https://get.volta.sh | bash
       curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $(yq '.variables.dotnetVersion' azure-pipelines.yml)
-  
   - name: Build
     runs: "PATH=\"$HOME/.volta/bin:$HOME/.dotnet:$PATH\"\n\nexport BROWSERSLIST_IGNORE_OLD_DATA=true\n\n_dotnet_arch=\"x64\"\n_runtime=\"linux-$_dotnet_arch\"\n_framework=\"net6.0\"\n_output=\"_output\"\n_destdir=\"${{targets.destdir}}/usr/lib/radarr\"\n_artifacts=\"$_output/$_framework/$_runtime/publish\"    \n\nyarn install --frozen-lockfile --network-timeout 120000       \n\nulimit -n 4096\n\ndotnet build src \\\n  -p:AssemblyConfiguration=\"master\" \\\n  -p:AssemblyVersion=\"${{package.version}}\" \\\n  -p:RuntimeIdentifiers=\"$_runtime\" \\\n  -p:Configuration=Release \\\n  -p:DebugSymbols=false \\\n  -p:DebugType=none \\\n  -p:SentryCliExecutable= \\\n  -p:SentryUploadSymbols=false \\\n  -p:SentryIncludeSources=false \\\n  -p:EmbedAllSources=false \\\n  -t:PublishAllRids\nyarn build --env production --no-stats\n\nchmod +x \"$_artifacts\"/ffprobe\n\nfind \"$_artifacts\" \\( \\\n  -name \"ServiceUninstall.*\" -o \\\n  -name \"ServiceInstall.*\" -o \\\n  -name \"Radarr.Windows.*\" \\) -delete\n\nmv \"$_output\"/UI \"$_artifacts\"\n\necho \"Preparing package\"\n\nmkdir -p \"$_destdir\" \"${{targets.destdir}}\"/usr/bin\nprintf \"UpdateMethod=docker\\nBranch=%s\\nPackageVersion=%s\\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\\n\" \"master\" \"${{package.version}}\" > \"$_destdir\"/package_info\n\ncp -af \"$_artifacts\" \"$_destdir\"/bin\n\nln -s /usr/lib/radarr/bin/Radarr \"${{targets.destdir}}\"/usr/bin/Radarr\n"
-  
   - uses: strip
-
 test:
   environment:
     contents:
@@ -54,7 +50,6 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
-
 update:
   enabled: true
   github:
