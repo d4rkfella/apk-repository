@@ -43,7 +43,7 @@ test:
   environment:
     contents:
       packages:
-        - lttng-ust-dotnet6-compat
+        - lttng-ust
   pipeline:
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
