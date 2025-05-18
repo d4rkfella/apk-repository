@@ -9,6 +9,7 @@ environment:
     packages:
       - wolfi-baselayout
       - busybox
+      - bash
 
 pipeline:
   - uses: git-checkout
@@ -19,7 +20,6 @@ pipeline:
   
   - runs: |
       cd ./src
-      ls -la
       ./dev.sh layout Release linux-x64
       ./dev.sh test
       
