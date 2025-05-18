@@ -15,6 +15,7 @@ package:
       - ca-certificates
       - git
       - gh
+      - sudo
 environment:
   contents:
     packages:
@@ -45,7 +46,8 @@ pipeline:
 scriptlets:
   post-install: |
     #!/bin/sh
-    chown -R runner:runner /home/runner
+    chown -R 1001:1001 /home/runner
+    echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner && chmod 0440 /etc/sudoers.d/runner
 
 test:
   environment:
