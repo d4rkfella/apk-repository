@@ -25,7 +25,7 @@ pipeline:
       ./dev.sh layout Release linux-x64
       mkdir -p "${{targets.destdir}}"/home/runner
       cp -a /home/build/_layout/. "${{targets.destdir}}"/home/runner/
-      chown -R runner:runner "${{targets.destdir}}"/home/runner/
+      chown -R 1001:1001 "${{targets.destdir}}"/home/runner/
       
   - uses: strip
 
