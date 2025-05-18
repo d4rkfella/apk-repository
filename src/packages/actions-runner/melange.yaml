@@ -10,6 +10,7 @@ environment:
       - wolfi-baselayout
       - busybox
       - bash
+      - curl
 
 pipeline:
   - uses: git-checkout
