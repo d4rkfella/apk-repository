@@ -26,7 +26,7 @@ pipeline:
       npm install --prefix packages/hooklib && npm install --prefix packages/k8s
       npm run build --prefix packages/hooklib && npm run build --prefix packages/k8s
       mkdir -p "${{targets.destdir}}"/home/runner/k8s
-      cp packages/k8s/index.js "${{targets.destdir}}"/home/runner/k8s/
+      cp packages/k8s/dist/index.js "${{targets.destdir}}"/home/runner/k8s/
 
 test:
   pipeline:
