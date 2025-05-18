@@ -16,6 +16,7 @@ package:
       - git
       - gh
       - sudo
+
 environment:
   contents:
     packages:
@@ -25,6 +26,7 @@ environment:
       - curl
       - icu
       - nodejs
+
 pipeline:
   - uses: git-checkout
     with:
