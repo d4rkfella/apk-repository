@@ -18,17 +18,12 @@ environment:
       - busybox
       - bash
       - curl
-var-transforms:
-  - from: ${{package.version}}
-    match: "_beta(\\d+)$"
-    replace: "-beta.$1"
-    to: transformed-version
 pipeline:
   - uses: git-checkout
     with:
       expected-commit: eacb8b70682363b33db74ca4beee1be5d4a09c6d
       repository: https://github.com/morpheus65535/bazarr
-      tag: v${{vars.transformed-version}}
+      tag: v${{package.version}}
   - uses: patch
     with:
       patches: GHSA-h95x-26f3-88hr.patch
@@ -142,7 +137,7 @@ test:
         - curl
         - bash
         - jq
-        - yq 
+        - yq
   pipeline:
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
