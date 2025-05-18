@@ -20,7 +20,10 @@ package:
     post-install: |
       #!/bin/sh
       chown -R 1001:1001 /home/runner
-      echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner && chmod 0440 /etc/sudoers.d/runner
+      chown 1001:1001 /home/runner
+      chmod 700 /home/runner
+      echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner
+      chmod 0440 /etc/sudoers.d/runner
     post-deinstall: |
       #!/bin/sh
       rm -rf /home/runner /etc/sudoers.d/runner
