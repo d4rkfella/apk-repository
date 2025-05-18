@@ -7,11 +7,14 @@ package:
   dependencies:
     runtime:
       - wolfi-base
+      - wolfi-baselayout
       - bash
       - aspnet-8-runtime
       - jq
       - nodejs
       - ca-certificates
+      - git
+      - gh
 environment:
   contents:
     packages:
