@@ -1,5 +1,5 @@
 package:
-  name: runner-container-hooks
+  name: runner-container-hooks-k8s
   version: "0.7.0"
   epoch: 0
   copyright:
@@ -23,10 +23,10 @@ pipeline:
   
   - runs: |
       npm install
-      npm run bootstrap
-      npm run build-all
-      
-  - uses: strip
+      npm install --prefix packages/hooklib && npm install --prefix packages/k8s
+      npm run build --prefix packages/hooklib && npm run build --prefix packages/k8s
+      mkdir -p "${{targets.destdir}}"/home/runner/k8s
+      cp packages/k8s/index.js "${{targets.destdir}}"/home/runner/k8s/
 
 test:
   pipeline:
