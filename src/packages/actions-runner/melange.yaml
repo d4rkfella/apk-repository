@@ -17,10 +17,10 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: "da3412efd49b1cf1a0fbdcbcee4e4ac4cc2177c8"
   
-  - working-directory: src
+  - working-directory: /home/build/src
     runs: |
-      dev.sh layout Release linux-x64
-      dev.sh test
+      ./dev.sh layout Release linux-x64
+      ./dev.sh test
       
   - uses: strip
 
