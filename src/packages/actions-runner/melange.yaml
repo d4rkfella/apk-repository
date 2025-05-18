@@ -4,6 +4,14 @@ package:
   epoch: 0
   copyright:
     - license: MIT
+  dependencies:
+    runtime:
+      - wolfi-base
+      - bash
+      - aspnet-8-runtime
+      - jq
+      - nodejs
+      - ca-certificates
 environment:
   contents:
     packages:
@@ -12,7 +20,7 @@ environment:
       - bash
       - curl
       - icu
-
+      - nodejs
 pipeline:
   - uses: git-checkout
     with:
@@ -26,6 +34,8 @@ pipeline:
       mkdir -p "${{targets.destdir}}"/home/runner
       cp -a /home/build/_layout/. "${{targets.destdir}}"/home/runner/
       chown -R 1001:1001 "${{targets.destdir}}"/home/runner/
+      rm -rf "${{targets.destdir}}"/home/runner/externals/node20_alpine
+      rm /home/runner/externals/node20/bin/node && ln -s /usr/bin/node /home/runner/externals/node20/bin/node
       
   - uses: strip
 
