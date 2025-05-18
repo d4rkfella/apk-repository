@@ -40,6 +40,10 @@ pipeline:
   - uses: strip
 
 test:
+  environment:
+    contents:
+      packages:
+        - lttng-ust-dotnet6-compat
   pipeline:
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
