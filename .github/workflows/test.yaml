@@ -112,7 +112,7 @@ jobs:
       - name: Build Packages
         uses: d4rkfella/actions/melange-build@main
         with:
-
+          archs: aarch64
           artifactory-access-token: ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}
           artifactory-url: https://packages.darkfellanetwork.com
           artifactory-repository-path: wolfi-apk
