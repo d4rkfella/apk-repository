@@ -97,25 +97,26 @@ test:
         echo "Checking Jellyfin service status..."
         max_retries=10
         retry_interval=5
+        i=1
     
-        for ((i=1; i<=max_retries; i++)); do
-          # Use architecture-aware process check
+        while [ "$i" -le "$max_retries" ]; do
+          # POSIX-compliant process and port check
           if pgrep -f "jellyfin.dll" >/dev/null && \
-             (ss -ltn | grep -q ':8096') || \
-             (netstat -tuln | grep -q ':8096'); then
+             (netstat -tuln | awk '$4 ~ /:8096$/ {exit 0}'); then
             echo "Jellyfin is running and listening on port 8096"
             exit 0
           fi
           
           echo "Attempt $i/$max_retries: Service not ready. Waiting $retry_interval seconds..."
-          sleep $retry_interval
+          sleep "$retry_interval"
+          i=$((i + 1))
         done
     
         # Debugging info
         echo "----- Process List -----"
         ps aux
         echo "----- Network Status -----"
-        ss -ltnp | grep 8096 || netstat -tulnp | grep 8096
+        netstat -tuln
         echo "----- Jellyfin Logs -----"
         cat /tmp/jellyfin.log
     
