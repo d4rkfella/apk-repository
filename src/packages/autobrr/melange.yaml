@@ -5,6 +5,7 @@ package:
   description: "Autobrr download automation tool"
   copyright:
     - license: GPL-2.0-or-later
+
 environment:
   contents:
     packages:
@@ -12,35 +13,42 @@ environment:
       - bash
       - jq
       - curl
+
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/autobrr/autobrr
       tag: v${{package.version}}
       expected-commit: "fe4f385a2263d4b5ad2c0a0c60cfd65108b8c1e2"
+  
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
       volta install "node@$(sed -n 's/.*node:\([0-9]\+\)\..*/\1/p' Dockerfile)"
       volta install "$(jq -r '.packageManager' web/package.json)"
+  
   - name: Build frontend
     working-directory: /home/build/web
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       pnpm install --frozen-lockfile
       pnpm run build
+  
   - uses: go/build
     with:
       packages: cmd/autobrr/main.go
       output: autobrr
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
+  
   - uses: go/build
     with:
       packages: cmd/autobrrctl/main.go
       output: autobrrctl
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
+  
   - uses: strip
+
 update:
   enabled: true
   github:
