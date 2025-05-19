@@ -7,6 +7,90 @@ jobs:
     name: Test
     runs-on: self-hosted
     steps:
-      - name: Script
-        uses: chainguard-dev/actions/setup-melange@0cda751b114eb55c388e88f7479292668165602a # v1.0.2
-          
+      - name: 'Install qemu emulator binaries'
+        shell: bash
+        run: |
+          sudo apt update && sudo apt install -y qemu-user-static
+      - uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5.4.0
+        with:
+          go-version: '1.24'
+          check-latest: true
+      - name: 'Install dependencies'
+        shell: bash
+        run: |
+          sudo apt install -y build-essential git jq
+      # TODO: the bubblewrap package available from "apt install"
+      # is outdated and missing newer features such as --clearenv flag,
+      # so instead we download the wolfi .apk and use the binary in there
+      - name: 'Install dependencies (bubblewrap)'
+        shell: bash
+        run: |
+          sudo apt install -y libcap-dev meson ninja-build pkg-config
+          git clone https://github.com/containers/bubblewrap
+          pushd bubblewrap
+          meson setup --prefix=/usr -Drequire_userns=true . output
+          cd output
+          ninja
+          sudo ninja install
+          popd
+          rm -rf bubblewrap
+  
+      - name: 'Install melange'
+        shell: bash
+        run: |
+          set -ex
+  
+          # Install melange:
+          # - if version is "tip", install from tip of main.
+          # - if version is "latest-release", look up latest release.
+          # - otherwise, install the specified version.
+          case ${{ inputs.version }} in
+          tip)
+            TMP_CLONE_DIR="$(mktemp -d)"
+            git clone https://github.com/chainguard-dev/melange "${TMP_CLONE_DIR}"
+            pushd "${TMP_CLONE_DIR}"
+            make melange
+            sudo env "PATH=$PATH" make install
+            popd
+            rm -rf "${TMP_CLONE_DIR}"
+            ;;
+          latest-release)
+            # fetch the latest 20 releases, we need to filter by the ones that have assets.
+            releases=$(curl -s -u "username:${{ github.token }}" https://api.github.com/repos/chainguard-dev/melange/releases?per_page=20)
+  
+            # search for the first release that has assets.
+            tag=$(echo $releases | jq -r 'first(.[] | select(.assets | length > 0) | .tag_name)')
+            if [[ -z ${tag} ]]; then
+              # this should, ideally, never happen.
+              echo "No melange release with assets found"
+              exit 1
+            fi
+            ;;
+          *)
+            tag="${{ inputs.version }}"
+          esac
+  
+          if [[ ! -z ${tag} ]]; then
+            case "$(echo $RUNNER_ARCH | awk '{print tolower($0)}')" in
+            x86|x64) ARCH=amd64;;
+            arm64)   ARCH=arm64;;
+            *)
+              echo Unsupported RUNNER_ARCH \"$RUNNER_ARCH\"
+              exit -1
+              ;;
+            esac
+            case "$(echo $RUNNER_OS | awk '{print tolower($0)}')" in
+            "linux") OS=linux;;
+            "macos") OS=osx;;
+            *)
+              echo Unsupported RUNNER_OS \"$RUNNER_OS\"
+              exit -1
+              ;;
+            esac
+  
+            without_v=${tag#"v"}
+            echo "Installing melange @ ${tag}"
+            curl -fsL https://github.com/chainguard-dev/melange/releases/download/${tag}/melange_${without_v}_${OS}_${ARCH}.tar.gz | sudo tar xzf - --strip-components=1 -C /usr/local/bin
+          fi
+  
+          melange version
