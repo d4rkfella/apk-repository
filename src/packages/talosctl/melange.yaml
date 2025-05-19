@@ -14,7 +14,7 @@ pipeline:
     with:
       repository: https://github.com/siderolabs/talos
       tag: v${{package.version}}
-      expected-commit: "1cf5914b6e9c7ff9ffd1576602e6beafcffc147b" 
+      expected-commit: 1cf5914b6e9c7ff9ffd1576602e6beafcffc147b
   
   - uses: go/build
     with:
