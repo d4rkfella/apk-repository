@@ -1,12 +1,48 @@
-name: Runner Test Pipeline
-on:
-  workflow_dispatch:
+name: Build Packages
+
+on: 
+  push:
+    branches: ["main"]
+    paths: ["src/packages/**/melange.yaml"]
+
+permissions:
+  contents: read
 
 jobs:
-  Test:
-    name: Test
-    runs-on: self-hosted
+  changed-files:
+    runs-on: ubuntu-24.04
+    outputs:
+      packages: ${{ steps.changed-files.outputs.all_changed_files }}   
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+
+      - name: Get Changed Files
+        id: changed-files
+        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c # 46.0.5
+        with:
+          files: src/packages/**/melange.yaml
+          matrix: true      
+
+  build:
+    needs: changed-files
+    runs-on: apk-repository-runner
+    if: ${{ needs.changed-files.outputs.packages != '[]' }}
+    strategy:
+      matrix:
+        packages: ${{ fromJSON(needs.changed-files.outputs.packages) }}
+
+      max-parallel: 4
+      fail-fast: false
+    steps:             
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+
       - name: 'Install qemu emulator binaries'
         shell: bash
         run: |
@@ -28,7 +64,7 @@ jobs:
           sudo apt install -y libcap-dev meson ninja-build pkg-config
           git clone https://github.com/containers/bubblewrap
           pushd bubblewrap
-          meson setup --prefix=/usr -Drequire_userns=true . output
+          meson --prefix=/usr -Drequire_userns=true . output
           cd output
           ninja
           sudo ninja install
@@ -40,35 +76,13 @@ jobs:
         run: |
           set -ex
   
-          # Install melange:
-          # - if version is "tip", install from tip of main.
-          # - if version is "latest-release", look up latest release.
-          # - otherwise, install the specified version.
-          case ${{ inputs.version }} in
-          tip)
-            TMP_CLONE_DIR="$(mktemp -d)"
-            git clone https://github.com/chainguard-dev/melange "${TMP_CLONE_DIR}"
-            pushd "${TMP_CLONE_DIR}"
-            make melange
-            sudo env "PATH=$PATH" make install
-            popd
-            rm -rf "${TMP_CLONE_DIR}"
-            ;;
-          latest-release)
-            # fetch the latest 20 releases, we need to filter by the ones that have assets.
-            releases=$(curl -s -u "username:${{ github.token }}" https://api.github.com/repos/chainguard-dev/melange/releases?per_page=20)
-  
-            # search for the first release that has assets.
-            tag=$(echo $releases | jq -r 'first(.[] | select(.assets | length > 0) | .tag_name)')
-            if [[ -z ${tag} ]]; then
-              # this should, ideally, never happen.
-              echo "No melange release with assets found"
-              exit 1
-            fi
-            ;;
-          *)
-            tag="${{ inputs.version }}"
-          esac
+          TMP_CLONE_DIR="$(mktemp -d)"
+          git clone https://github.com/chainguard-dev/melange "${TMP_CLONE_DIR}"
+          pushd "${TMP_CLONE_DIR}"
+          make melange
+          sudo env "PATH=$PATH" make install
+          popd
+          rm -rf "${TMP_CLONE_DIR}"
   
           if [[ ! -z ${tag} ]]; then
             case "$(echo $RUNNER_ARCH | awk '{print tolower($0)}')" in
@@ -94,3 +108,24 @@ jobs:
           fi
   
           melange version
+
+      - name: Build Packages
+        uses: d4rkfella/actions/melange-build@main
+        with:
+
+          artifactory-access-token: ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}
+          artifactory-url: https://packages.darkfellanetwork.com
+          artifactory-repository-path: wolfi-apk
+          config: ${{ matrix.packages }}
+          sign-with-key: true
+          signing-key-path: ${{ github.workspace }}/melange.rsa
+          namespace: wolfi
+          pipeline-dir: ${{ github.workspace }}/pipelines
+          repository-append: https://packages.darkfellanetwork.com/wolfi-os,https://packages.wolfi.dev/os
+          keyring-append: https://packages.darkfellanetwork.com/wolfi-os/melange.rsa.pub,https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+          tests-repository-append: https://packages.darkfellanetwork.com/wolfi-os,https://packages.wolfi.dev/os
+          tests-keyring-append: https://packages.darkfellanetwork.com/wolfi-os/melange.rsa.pub,https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+        env:
+          MELANGE_PRIVATE_KEY: ${{ secrets.MELANGE_PRIVATE_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         
