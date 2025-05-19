@@ -9,6 +9,7 @@ package:
     runtime:
       - jellyfin-custom
       - nodejs
+
 environment:
   contents:
     packages:
