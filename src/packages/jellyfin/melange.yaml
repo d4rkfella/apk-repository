@@ -94,26 +94,36 @@ test:
     
     - name: "Verify Jellyfin HTTP service on port 8096"
       runs: |
-        echo "Checking if Jellyfin is listening on port 8096..."
-        for i in {1..5}; do
-          if netstat -tuln | grep -q ":8096"; then
-            echo "Port 8096 is open for Jellyfin."
+        echo "Checking Jellyfin service status..."
+        max_retries=10
+        retry_interval=5
+    
+        for ((i=1; i<=max_retries; i++)); do
+          # Use architecture-aware process check
+          if pgrep -f "jellyfin.dll" >/dev/null && \
+             (ss -ltn | grep -q ':8096') || \
+             (netstat -tuln | grep -q ':8096'); then
+            echo "Jellyfin is running and listening on port 8096"
             exit 0
-          else
-            echo "Port 8096 not yet open. Retrying in 5 seconds..."
-            sleep 5
           fi
+          
+          echo "Attempt $i/$max_retries: Service not ready. Waiting $retry_interval seconds..."
+          sleep $retry_interval
         done
-
-        # Final check after retries
-        if ! netstat -tuln | grep -q ":8096"; then
-          echo "Test failed: Jellyfin is not listening on port 8096."
-          echo "----- Jellyfin Debug Logs -----"
-          cat /tmp/jellyfin.log
-          kill $JELLYFIN_PID || true
-          exit 1
-        fi
+    
+        # Debugging info
+        echo "----- Process List -----"
+        ps aux
+        echo "----- Network Status -----"
+        ss -ltnp | grep 8096 || netstat -tulnp | grep 8096
+        echo "----- Jellyfin Logs -----"
+        cat /tmp/jellyfin.log
+    
+        echo "Test failed: Jellyfin service verification timed out"
+        exit 1
+    
     - runs: ln -s /usr/lib/liblttng-ust.so.1 /usr/lib/liblttng-ust.so.0
+    
     - uses: test/tw/ldd-check
 
 update:
