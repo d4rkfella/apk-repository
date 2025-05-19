@@ -1,0 +1,11 @@
+name: Runner Test Pipeline
+on:
+  workflow_dispatch:
+
+jobs:
+  Test:
+    name: Test
+    runs-on: self-hosted
+    steps:
+      - name: Script
+        run: echo HELLO WORLD
