@@ -16,4 +16,3 @@ pipeline:
     with:
       packages: main.go
       output: vault-backup
-      ldflags: -X 'cmd.version=${{package.version}}'
