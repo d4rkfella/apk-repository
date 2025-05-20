@@ -40,7 +40,7 @@ jobs:
           - arch: x86_64
             runner: apk-repository-runner
           - arch: aarch64
-            runner: ubuntu-22.04-arm64
+            runner: ubuntu-24.04-arm
       max-parallel: 4
       fail-fast: false
     runs-on: ${{ matrix.runner }}
