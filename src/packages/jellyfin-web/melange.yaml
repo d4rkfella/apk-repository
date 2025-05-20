@@ -40,6 +40,7 @@ test:
       packages:
         - python3
         - wget
+  
   pipeline:
     - runs: |
         cd /usr/lib/jellyfin/jellyfin-web
