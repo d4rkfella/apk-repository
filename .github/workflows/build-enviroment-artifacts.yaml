@@ -24,6 +24,14 @@ jobs:
           go-version: '1.24'
           check-latest: true
 
+      - name: Build yq
+        run: |
+          git clone https://github.com/mikefarah/yq
+          pushd yq
+          GOAMD64="v2" GOARM64="v8.0" go build -o /usr/local/bin/yq -ldflags -w -trimpath -buildmode default yq.go
+          popd
+          rm -rf yq
+
       - name: Build jfrog-cli
         run: |
           git clone https://github.com/jfrog/jfrog-cli
@@ -107,3 +115,4 @@ jobs:
             /usr/local/bin/jf
             /usr/local/bin/bwrap
             /usr/local/bin/melange
+            /usr/local/bin/yq
