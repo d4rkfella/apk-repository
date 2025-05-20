@@ -2,7 +2,11 @@ name: Build Binaries
 
 on:
   workflow_dispatch:
-
+    inputs:
+      version:
+        description: 'Melange version to install (e.g. tip, latest-release, v0.5.5)'
+        required: true
+        default: 'latest-release'
 jobs:
   build-binaries:
     strategy:
@@ -46,7 +50,7 @@ jobs:
         run: |
           set -ex
           
-          case ${{ inputs.version }} in
+          case "${{ github.event.inputs.version }}" in
           tip)
             TMP_CLONE_DIR="$(mktemp -d)"
             git clone https://github.com/chainguard-dev/melange "${TMP_CLONE_DIR}"
@@ -67,7 +71,7 @@ jobs:
             fi
             ;;
           *)
-            tag="${{ inputs.version }}"
+            tag="${{ github.event.inputs.version }}"
           esac
   
           if [[ ! -z ${tag} ]]; then
