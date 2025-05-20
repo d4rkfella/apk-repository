@@ -9,6 +9,7 @@ package:
     runtime:
       - unrar
       - ffmpeg
+
 environment:
   contents:
     packages:
@@ -16,28 +17,27 @@ environment:
       - py3.13-pip
       - py3.13-virtualenv-bin
       - busybox
-      - bash
-      - curl
+      - nodejs
+      - npm
+
 pipeline:
   - uses: git-checkout
     with:
       expected-commit: eacb8b70682363b33db74ca4beee1be5d4a09c6d
       repository: https://github.com/morpheus65535/bazarr
       tag: v${{package.version}}
+  
   - uses: patch
     with:
       patches: GHSA-h95x-26f3-88hr.patch
-  - name: Install volta
-    runs: |
-      curl -sSL https://get.volta.sh | bash 
+  
   - name: Build frontend
     working-directory: /home/build/frontend
     runs: |
-      PATH="$PATH:$HOME/.volta/bin"
-      volta install node@$(cat .nvmrc)
       npx update-browserslist-db@latest
       npm install
       npm run build
+  
   - runs: |
       set -euo pipefail     
       
@@ -87,6 +87,7 @@ pipeline:
       python3 -m zipfile -e "$DEST_DIR/h11-0.16.0-py3-none-any.whl" "$LIBS_DIR/"
       
       echo "✅ All tasks completed successfully!"
+  
   - name: Enable SSL verification
     runs: |
       set -euo pipefail
@@ -99,6 +100,7 @@ pipeline:
       fi
       
       sed -i 's/cert_reqs=self\.cert_reqs/cert_reqs=ssl.CERT_REQUIRED/' "libs/urllib3/connectionpool.py"  
+  
   - name: Prepare package
     runs: |
       set -euo pipefail
