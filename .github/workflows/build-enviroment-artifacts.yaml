@@ -38,13 +38,12 @@ jobs:
           sudo apt install -y libcap-dev meson ninja-build pkg-config
           git clone https://github.com/containers/bubblewrap
           pushd bubblewrap
-          meson setup --prefix=/usr -Drequire_userns=true . output
+          meson setup --prefix=/usr/local -Drequire_userns=true . output
           cd output
           ninja
           sudo ninja install
           popd
           rm -rf bubblewrap
-          which bwrap
 
       - name: Build melange from tip
         shell: bash
