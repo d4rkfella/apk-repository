@@ -106,4 +106,4 @@ jobs:
           path: |
             /usr/local/bin/jf
             /usr/local/bin/bwrap
-            /usr/local/bin//melange
+            /usr/local/bin/melange
