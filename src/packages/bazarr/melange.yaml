@@ -144,6 +144,7 @@ test:
       uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
+    
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" test/test.sh
