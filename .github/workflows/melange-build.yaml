@@ -34,7 +34,11 @@ jobs:
     if: ${{ needs.changed-files.outputs.packages != '[]' }}
     strategy:
       matrix:
-        arch: [x86_64, aarch64]
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
       max-parallel: 2
       fail-fast: true
     runs-on: ${{ matrix.runner }}
@@ -120,7 +124,6 @@ jobs:
     strategy:
       matrix:
         packages: ${{ fromJSON(needs.changed-files.outputs.packages) }}
-        arch: [x86_64, aarch64]
         include:
           - arch: x86_64
             runner: ubuntu-24.04
