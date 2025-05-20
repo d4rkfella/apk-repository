@@ -41,16 +41,31 @@ test:
         - python3
         - wget
   pipeline:
-    - runs: |
-        # Run a basic HTTP server for the generated content
+    - run: |
         cd /usr/lib/jellyfin/jellyfin-web
         python3 -m http.server &
-
-        # Give the server time to come up
-        sleep 1
-
-        # Use wget to check that all the links referenced from index.html are valid
+        SERVER_PID=$!
+    
+        retries=15
+        while [[ $retries -gt 0 ]]; do
+          if wget --spider -q http://localhost:8000; then
+            echo "Server is up!"
+            break
+          else
+            echo "Waiting for server to start..."
+            ((retries--))
+            sleep 2
+          fi
+        done
+    
+        if [[ $retries -eq 0 ]]; then
+          echo "Error: Server failed to start within timeout"
+          kill $SERVER_PID
+          exit 1
+        fi
+    
         wget --spider --recursive -e robots=off --page-requisites http://localhost:8000
+        kill $SERVER_PID
 
 update:
   enabled: true
