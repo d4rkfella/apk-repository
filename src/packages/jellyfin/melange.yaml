@@ -11,6 +11,7 @@ package:
       - ttf-dejavu
       - sqlite-libs
       - icu-libs
+
 environment:
   contents:
     packages:
@@ -73,16 +74,15 @@ test:
     contents:
       packages:
         - lttng-ust
+  
   pipeline:
     - name: "Start Jellyfin server"
       runs: |
         jellyfin --nowebclient > /tmp/jellyfin.log 2>&1 &
         JELLYFIN_PID=$!
 
-        # Wait a few seconds to let Jellyfin attempt to start
         sleep 10
 
-        # Check if Jellyfin process is still running
         if ! ps | grep -q "$JELLYFIN_PID"; then
           echo "Test failed: Jellyfin failed to start."
           echo "----- Jellyfin Debug Logs -----"
@@ -100,7 +100,6 @@ test:
         i=1
     
         while [ "$i" -le "$max_retries" ]; do
-          # POSIX-compliant process and port check
           if pgrep -f "jellyfin.dll" >/dev/null && \
              (netstat -tuln | awk '$4 ~ /:8096$/ {exit 0}'); then
             echo "Jellyfin is running and listening on port 8096"
@@ -112,7 +111,6 @@ test:
           i=$((i + 1))
         done
     
-        # Debugging info
         echo "----- Process List -----"
         ps aux
         echo "----- Network Status -----"
@@ -120,7 +118,7 @@ test:
         echo "----- Jellyfin Logs -----"
         cat /tmp/jellyfin.log
     
-        echo "Test failed: Jellyfin service verification timed out"
+        echo "Test failed: Jellyfin service verification timed out."
         exit 1
     
     - runs: ln -s /usr/lib/liblttng-ust.so.1 /usr/lib/liblttng-ust.so.0
