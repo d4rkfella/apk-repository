@@ -31,12 +31,13 @@ jobs:
 
   build:
     needs: changed-files
-    runs-on: apk-repository-runner
+    runs-on: ${{ matrix.runner }}
     if: ${{ needs.changed-files.outputs.packages != '[]' }}
     strategy:
       matrix:
         packages: ${{ fromJSON(needs.changed-files.outputs.packages) }}
         arch: [x86_64, aarch64]
+        runner: ${{ matrix.arch == 'x86_64' && 'apk-repository-runner' || 'ubuntu-22.04-arm64' }}
       max-parallel: 4
       fail-fast: false
     steps:             
