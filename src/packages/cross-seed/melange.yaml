@@ -8,6 +8,7 @@ package:
   dependencies:
     runtime:
       - nodejs-20
+
 environment:
   contents:
     packages:
@@ -16,27 +17,32 @@ environment:
       - busybox
       - bash
       - curl
+
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/cross-seed/cross-seed
       tag: v${{package.version}}
       expected-commit: "74125049d2f48c4d682b91953a0e9bbd47750187"
+  
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       curl -sSL https://get.volta.sh | bash
       volta install node@$(cat .nvmrc)
+  
   - name: Build
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
       npm ci --no-fund
       npm run build
       npm prune --omit=dev
+  
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/cross-seed
       cp -R node_modules dist package-lock.json package.json ${{targets.destdir}}/usr/lib/cross-seed
+
 update:
   enabled: true
   github:
