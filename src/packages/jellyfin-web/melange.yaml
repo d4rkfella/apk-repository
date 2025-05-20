@@ -41,7 +41,7 @@ test:
         - python3
         - wget
   pipeline:
-    - run: |
+    - runs: |
         cd /usr/lib/jellyfin/jellyfin-web
         python3 -m http.server &
         SERVER_PID=$!
