@@ -15,9 +15,6 @@ jobs:
       max-parallel: 2
     runs-on: ${{ matrix.runner }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5.4.0
         with:
           go-version: '1.24'
@@ -99,7 +96,7 @@ jobs:
           melange version
       
       - name: Upload binaries as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: prebuilt-binaries-${{ runner.arch }}
           path: |
