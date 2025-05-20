@@ -41,7 +41,6 @@ pipeline:
   - runs: |
       set -euo pipefail     
       
-      
       DEST_DIR="/tmp"
       LIBS_DIR="libs"
       
