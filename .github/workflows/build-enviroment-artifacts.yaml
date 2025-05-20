@@ -44,6 +44,7 @@ jobs:
           sudo ninja install
           popd
           rm -rf bubblewrap
+          which bwrap
 
       - name: Build melange from tip
         shell: bash
