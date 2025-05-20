@@ -47,20 +47,20 @@ test:
         SERVER_PID=$!
     
         retries=15
-        while [[ $retries -gt 0 ]]; do
+        while [ "$retries" -gt 0 ]; do
           if wget --spider -q http://localhost:8000; then
             echo "Server is up!"
             break
           else
-            echo "Waiting for server to start..."
-            ((retries--))
+            echo "Waiting for server to start... (retries left: $retries)"
+            retries=$((retries - 1))
             sleep 2
           fi
         done
     
-        if [[ $retries -eq 0 ]]; then
+        if [ "$retries" -eq 0 ]; then
           echo "Error: Server failed to start within timeout"
-          kill $SERVER_PID
+          kill $SERVER_PID 2>/dev/null
           exit 1
         fi
     
