@@ -18,7 +18,8 @@ jobs:
   
   regenerate-index:
     name: Regenerate APK index for ${{ matrix.arch }}
-    runs-on: ubuntu-24.04
+    needs: setup
+    runs-on: ${{ matrix.arch == 'x86_64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
     strategy:
       matrix:
         arch: [x86_64, aarch64]
@@ -41,8 +42,8 @@ jobs:
       - name: Save private key
         run: |
           set +x
-          echo -n "${{ secrets.MELANGE_PRIVATE_KEY }}" > ${{ github.workspace }}/melange.rsa
-          chmod 400 ${{ github.workspace }}/melange.rsa
+          echo -n "${{ secrets.MELANGE_PRIVATE_KEY }}" > "${{ github.workspace }}"/melange.rsa
+          chmod 400 "${{ github.workspace }}"/melange.rsa
           set -x
 
       - name: Configure JFrog CLI
@@ -60,8 +61,9 @@ jobs:
       - name: Regenerate index for ${{ matrix.arch }}
         run: |
           melange index \
-            --signing-key ${{ github.workspace }}/melange.rsa \
+            --signing-key "${{ github.workspace }}"/melange.rsa \
             --output /tmp/APKINDEX.tar.gz \
+            --arch "${{ matrix.arch }}" \
             /tmp/packages/*.apk
 
       - name: Upload index to Artifactory
@@ -69,4 +71,4 @@ jobs:
           jf rt upload \
             --flat=true \
             "/tmp/APKINDEX.tar.gz" \
-            "wolfi-apk/${{ matrix.arch }}/APKINDEX.tar.gz"
+            "wolfi-apk/"${{ matrix.arch }}"/APKINDEX.tar.gz"
