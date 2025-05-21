@@ -60,11 +60,7 @@ pipeline:
   - name: Delete incompatible hermesc binary on arm64
     if: ${{build.arch}} == 'aarch64'
     runs: |
-      HERMESC_PATH="./usr/lib/jellyseerr/node_modules/.pnpm/react-native@0.74.2_@babel+core@7.24.7_@babel+preset-env@7.24.7_@babel+core@7.24.7__@ty_4bfb90f3af2c2d37a5ddd988b1957395/node_modules/react-native/sdks/hermesc/linux64-bin/hermesc"
-      if [ -f "$HERMESC_PATH" ]; then
-        echo "Deleting incompatible hermesc binary: $HERMESC_PATH"
-        rm -f "$HERMESC_PATH"
-      fi
+      find "${{targets.destdir}}"/usr/lib/jellyseerr/node_modules -path "*linux64-bin/hermesc" -exec rm -f {} +
 
   - uses: strip
 
