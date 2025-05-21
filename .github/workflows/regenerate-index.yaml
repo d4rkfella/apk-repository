@@ -8,7 +8,6 @@ permissions:
 
 jobs:
   setup:
-    if: ${{ needs.changed-files.outputs.packages != '[]' }}
     strategy:
       matrix:
         arch: [x86_64, aarch64]
