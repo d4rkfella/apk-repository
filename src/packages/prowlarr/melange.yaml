@@ -7,33 +7,79 @@ package:
     - license: GPL-3.0-only
   dependencies:
     runtime:
-      - icu-libs
+      - aspnet-6-runtime
       - sqlite-libs
-      - libssl3
-      - zlib
+
 environment:
   contents:
     packages:
-      - libstdc++
-      - icu-libs
+      - wolfi-baselayout
       - busybox
-      - bash
-      - curl
-      - yq
+      - dotnet-6-sdk
+      - nodejs
+      - yarn
+
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: "c61cfcd312c7744358a28074e4408fa3cb0cebf3"
+      expected-commit: c61cfcd312c7744358a28074e4408fa3cb0cebf3
       repository: https://github.com/Prowlarr/Prowlarr
       tag: v${{package.version}}
   
-  - name: Install dependancies
-    runs: |
-      curl -sSL https://get.volta.sh | bash
-      curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --version $(yq '.variables.dotnetVersion' azure-pipelines.yml)
-  
   - name: Build
-    runs: "PATH=\"$HOME/.volta/bin:$HOME/.dotnet:$PATH\"\nexport BROWSERSLIST_IGNORE_OLD_DATA=true\n\nvolta install node@$(yq '.variables.nodeVersion' azure-pipelines.yml)\nvolta install yarn@1.22\n\n_dotnet_arch=\"x64\"\n_runtime=\"linux-$_dotnet_arch\"\n_framework=\"net6.0\"\n_output=\"_output\"\n_destdir=\"${{targets.destdir}}/usr/lib/prowlarr\"\n_artifacts=\"$_output/$_framework/$_runtime/publish\"    \n\nyarn install --frozen-lockfile --network-timeout 120000       \n\nulimit -n 4096\n\ndotnet build src \\\n  -p:AssemblyConfiguration=\"master\" \\\n  -p:AssemblyVersion=\"${{package.version}}\" \\\n  -p:RuntimeIdentifiers=\"$_runtime\" \\\n  -p:Configuration=Release \\\n  -p:DebugSymbols=false \\\n  -p:DebugType=none \\\n  -p:SentryCliExecutable= \\\n  -p:SentryUploadSymbols=false \\\n  -p:SentryIncludeSources=false \\\n  -p:EmbedAllSources=false \\\n  -t:PublishAllRids\nyarn build --env production --no-stats\n      \nfind \"$_artifacts\" \\( \\\n  -name \"ServiceUninstall.*\" -o \\\n  -name \"ServiceInstall.*\" -o \\\n  -name \"Prowlarr.Windows.*\" \\) -delete\n\nmv \"$_output\"/UI \"$_artifacts\"\n\necho \"Preparing package\"\n\nmkdir -p \"$_destdir\" \"${{targets.destdir}}\"/usr/bin\nprintf \"UpdateMethod=docker\\nBranch=%s\\nPackageVersion=%s\\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\\n\" \"master\" \"${{package.version}}\" > \"$_destdir\"/package_info\n\ncp -af \"$_artifacts\" \"$_destdir\"/bin\n\nln -s /usr/lib/prowlarr/bin/Prowlarr \"${{targets.destdir}}\"/usr/bin/Prowlarr\n"
+    runs: |
+      if [[ "${{build.arch}}" == "aarch64" ]]; then
+        runtime_arch="arm64"
+      elif [[ "${{build.arch}}" == "x86_64" ]]; then
+        runtime_arch="x64"
+      fi
+      
+      export BROWSERSLIST_IGNORE_OLD_DATA=true
+
+      yarn install --frozen-lockfile --network-timeout 120000
+    
+      _dotnet_arch="$runtime_arch"
+      _runtime="linux-$_dotnet_arch"
+      _framework="net6.0"
+      _output="_output"
+      _destdir="${{targets.destdir}}/usr/lib/prowlarr"
+      _artifacts="$_output/$_framework/$_runtime/publish"
+    
+      ulimit -n 4096
+    
+      dotnet publish src \
+        -p:AssemblyConfiguration="master" \
+        -p:AssemblyVersion="${{package.version}}" \
+        -p:RuntimeIdentifier="$_runtime" \
+        -p:Configuration=Release \
+        -p:DebugSymbols=false \
+        -p:DebugType=none \
+        -p:SelfContained=false \
+        -p:SentryCliExecutable= \
+        -p:SentryUploadSymbols=false \
+        -p:SentryIncludeSources=false \
+        -p:EmbedAllSources=false \
+        -f "$_framework"
+    
+      yarn build --env production --no-stats
+    
+      find "$_artifacts" \( \
+        -name "ServiceUninstall.*" -o \
+        -name "ServiceInstall.*" -o \
+        -name "Prowlarr.Windows.*" \
+      \) -delete
+    
+      mv "$_output"/UI "$_artifacts"
+    
+      echo "Preparing package"
+    
+      mkdir -p "$_destdir" "${{targets.destdir}}/usr/bin"
+    
+      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > "$_destdir/package_info"
+    
+      cp -af "$_artifacts" "$_destdir/bin"
+    
+      ln -s /usr/lib/prowlarr/bin/Prowlarr "${{targets.destdir}}/usr/bin/Prowlarr"
 
 test:
   environment:
@@ -43,8 +89,9 @@ test:
         - bash
         - jq
         - xmlstarlet
-        - lttng-ust-dotnet6-compat
+        - lttng-ust
   pipeline:
+    - runs: ln -s /usr/lib/liblttng-ust.so.1 /usr/lib/liblttng-ust.so.0
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
       with:
