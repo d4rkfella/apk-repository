@@ -8,14 +8,14 @@ package:
   dependencies:
     runtime:
       - aspnet-6-runtime
-      - nodejs
-      - yarn
 environment:
   contents:
     packages:
       - wolfi-baselayout
-      - dotnet-6-sdk
       - busybox
+      - dotnet-6-sdk
+      - nodejs
+      - yarn
 pipeline:
   - uses: git-checkout
     with:
