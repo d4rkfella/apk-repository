@@ -13,10 +13,7 @@ environment:
   contents:
     packages:
       - wolfi-baselayout
-      - build-base
       - busybox
-      - bash
-      - curl
       - nodejs
       - npm
 
