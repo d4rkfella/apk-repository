@@ -7,6 +7,7 @@ package:
   dependencies:
     runtime:
       - actions-runner
+
 environment:
   contents:
     packages:
@@ -14,12 +15,13 @@ environment:
       - busybox
       - nodejs
       - npm
+
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/actions/runner-container-hooks
       tag: v${{package.version}}
-      expected-commit: "7da5474a5d6bafa8df9ab504af76b415fb01594c"  
+      expected-commit: 7da5474a5d6bafa8df9ab504af76b415fb01594c
   
   - runs: |
       npm install
