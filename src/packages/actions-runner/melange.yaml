@@ -18,6 +18,7 @@ package:
       - sudo
       - curl
       - openssl
+
 environment:
   contents:
     packages:
@@ -36,8 +37,14 @@ pipeline:
       expected-commit: "da3412efd49b1cf1a0fbdcbcee4e4ac4cc2177c8"  
   
   - runs: |
+      if [[ "${{build.arch}}" == "aarch64" ]]; then
+        runtime_arch="arm64"
+      elif [[ "${{build.arch}}" == "x86_64" ]]; then
+        runtime_arch="x64"
+      fi
+      
       cd ./src
-      ./dev.sh layout Release linux-x64
+      ./dev.sh layout Release linux-$runtime_arch
       mkdir -p "${{targets.destdir}}"/home/runner "${{targets.destdir}}"/etc/sudoers.d
       cp -a /home/build/_layout/. "${{targets.destdir}}"/home/runner/
       rm -rf "${{targets.destdir}}"/home/runner/externals/node20_alpine
