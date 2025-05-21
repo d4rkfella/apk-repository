@@ -55,7 +55,8 @@ pipeline:
         -p:SentryCliExecutable= \
         -p:SentryUploadSymbols=false \
         -p:SentryIncludeSources=false \
-        -p:EmbedAllSources=false
+        -p:EmbedAllSources=false \
+        -f "$_framework"
       
       yarn build --env production --no-stats
       
