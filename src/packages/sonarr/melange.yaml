@@ -17,13 +17,14 @@ environment:
       - dotnet-6-sdk
       - nodejs
       - yarn
+      - jq
 pipeline:
   - uses: git-checkout
     with:
       expected-commit: 640e3e5d441b0f363d3b993f36dae3d22691608c
       repository: https://github.com/Sonarr/Sonarr
       tag: v${{package.version}}
-  
+
   - name: Build
     runs: |
       if [[ "${{build.arch}}" == "aarch64" ]]; then
@@ -35,6 +36,8 @@ pipeline:
       export BROWSERSLIST_IGNORE_OLD_DATA=true
 
       yarn install --frozen-lockfile --network-timeout 120000 
+
+      echo '{"sdk":{"version":"6.0.136"}}' > global.json
       
       _dotnet_arch="$runtime_arch"
       _runtime="linux-$_dotnet_arch"
