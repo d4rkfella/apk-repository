@@ -5,6 +5,7 @@ package:
   description: OPNsense Exporter for Prometheus
   copyright:
     - license: Apache-2.0
+
 pipeline:
   - uses: git-checkout
     with:
