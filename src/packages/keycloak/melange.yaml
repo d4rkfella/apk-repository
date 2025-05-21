@@ -70,8 +70,6 @@ pipeline:
       
       cd "${{targets.destdir}}"/usr/share/java/keycloak && "${{targets.destdir}}"/usr/share/java/keycloak/bin/kc.sh build
 
-# images like keycloak-operator may need it as they expect it to find keycloak in /opt/keycloak
-# For ref: https://github.com/keycloak/keycloak/blob/4b194d00bed51458acb3d125eba9a0ba654c930a/operator/Dockerfile#L11
 subpackages:
   - name: keycloak-compat-custom
     pipeline:
@@ -115,8 +113,6 @@ test:
         kcreg.sh --help
 
 update:
-  # The upstream repos releases contains a 'nightly' release. Which we want to
-  # exclude from discovery.
   ignore-regex-patterns:
     - ".*nightly.*"
   enabled: true
