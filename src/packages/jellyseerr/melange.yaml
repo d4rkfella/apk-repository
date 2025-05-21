@@ -54,8 +54,7 @@ pipeline:
     working-directory: /home/build/jellyseerr
     runs: |
       mkdir -p "${{targets.destdir}}/usr/lib/jellyseerr"
-      cp -dr .next dist public node_modules "${{targets.destdir}}/usr/lib/jellyseerr"
-      cp -d package.json jellyseerr-api.yml committag.json next.config.js "${{targets.destdir}}/usr/lib/jellyseerr"
+      cp -af package.json jellyseerr-api.yml committag.json next.config.js .next dist public node_modules "${{targets.destdir}}/usr/lib/jellyseerr"
       rm -rf "${{targets.destdir}}"/usr/lib/jellyseerr/.next/cache
 
   - uses: strip
