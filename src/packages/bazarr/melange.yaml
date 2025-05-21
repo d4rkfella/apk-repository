@@ -139,7 +139,6 @@ test:
         - bash
         - jq
         - yq
-  
   pipeline:
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
