@@ -24,7 +24,7 @@ pipeline:
       tag: v${{package.version}}
   
   - name: Build
-    runs:
+    runs: |
       if [[ "${{build.arch}}" == "aarch64" ]]; then
         runtime_arch="arm64"
       elif [[ "${{build.arch}}" == "x86_64" ]]; then
