@@ -1,0 +1,86 @@
+name: Setup Build Dependencies
+
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+
+jobs:
+  setup:
+    runs-on: ${{ inputs.arch == 'x86_64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
+    steps:
+      - name: Create Weekly Cache Key
+        id: cache
+        run: echo "key=$(date -u +'%G-%V')" >> $GITHUB_OUTPUT
+
+      - name: Restore build dependencies
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          key: build-dependancies-${{ inputs.arch }}-${{ steps.cache.outputs.key }}
+          path: |
+            /usr/local/bin/jf
+            /usr/local/bin/bwrap
+            /usr/local/bin/melange
+            /usr/local/bin/yq
+          lookup-only: true
+
+      - uses: actions/setup-go@v5
+        if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
+        with:
+          go-version: '1.24'
+          check-latest: true
+
+      - name: Build yq
+        if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
+        run: |
+          git clone https://github.com/mikefarah/yq
+          cd yq
+          go build -o /usr/local/bin/yq yq.go
+          cd ..
+          rm -rf yq
+
+      - name: Build jfrog-cli
+        if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
+        run: |
+          git clone https://github.com/jfrog/jfrog-cli
+          cd jfrog-cli
+          go build -o /usr/local/bin/jf main.go
+          cd ..
+          rm -rf jfrog-cli
+
+      - name: Build bubblewrap
+        if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
+        run: |
+          sudo apt update
+          sudo apt install -y libcap-dev meson ninja-build pkg-config
+          git clone https://github.com/containers/bubblewrap
+          cd bubblewrap
+          meson setup --prefix=/usr/local -Drequire_userns=true . output
+          cd output
+          ninja
+          sudo ninja install
+          cd ../..
+          rm -rf bubblewrap
+
+      - name: Build melange
+        if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
+        run: |
+          git clone https://github.com/chainguard-dev/melange
+          cd melange
+          go build -o /usr/local/bin/melange .
+          cd ..
+          rm -rf melange
+
+      - name: Save build dependencies to cache
+        if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          key: build-dependancies-${{ inputs.arch }}-${{ steps.cache.outputs.key }}
+          path: |
+            /usr/local/bin/jf
+            /usr/local/bin/bwrap
+            /usr/local/bin/melange
+            /usr/local/bin/yq
