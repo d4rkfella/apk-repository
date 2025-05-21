@@ -15,11 +15,11 @@ jobs:
         id: cache
         run: echo "key=$(date -u +'%G-%V')" >> $GITHUB_OUTPUT
 
-      - name: Restore build dependencies
+      - name: Check for cached dependencies
         id: cache-restore
         uses: actions/cache/restore@v4
         with:
-          key: build-dependancies-${{ inputs.arch }}-${{ steps.cache.outputs.key }}
+          key: build-dependencies-${{ inputs.arch }}-${{ steps.cache.outputs.key }}
           path: |
             /usr/local/bin/jf
             /usr/local/bin/bwrap
@@ -78,7 +78,7 @@ jobs:
         if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
         with:
-          key: build-dependancies-${{ inputs.arch }}-${{ steps.cache.outputs.key }}
+          key: build-dependencies-${{ inputs.arch }}-${{ steps.cache.outputs.key }}
           path: |
             /usr/local/bin/jf
             /usr/local/bin/bwrap
