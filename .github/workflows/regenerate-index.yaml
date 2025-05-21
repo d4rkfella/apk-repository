@@ -36,9 +36,6 @@ jobs:
             /usr/local/bin/jf
             /usr/local/bin/melange
       
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Save private key
         run: |
           set +x
