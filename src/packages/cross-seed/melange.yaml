@@ -7,14 +7,14 @@ package:
     - license: Apache-2.0
   dependencies:
     runtime:
-      - nodejs
+      - nodejs-20
 
 environment:
   contents:
     packages:
       - wolfi-baselayout
       - busybox
-      - nodejs
+      - nodejs-20
       - npm
 
 pipeline:
