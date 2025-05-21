@@ -57,7 +57,7 @@ jobs:
           path: melange-autoupdate.tar
   
   update-packages:
-    needs: prepare-matrix
+    needs: [prepare-matrix, setup]
     runs-on: ubuntu-latest
     strategy:
       matrix:
