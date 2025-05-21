@@ -14,7 +14,7 @@ environment:
   contents:
     packages:
       - wolfi-baselayout
-      - dotnet6-sdk
+      - dotnet-6-sdk
       - busybox
 pipeline:
   - uses: git-checkout
