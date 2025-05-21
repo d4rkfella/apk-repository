@@ -7,60 +7,58 @@ package:
     - license: GPL-3.0-only
   dependencies:
     runtime:
-      - icu-libs
+      - aspnet-6-runtime
       - sqlite-libs
-      - libssl3
-      - zlib
 environment:
   contents:
     packages:
-      - build-base
+      - wolfi-baselayout
       - busybox
-      - ca-certificates-bundle
-      - bash
-      - curl
-      - icu
+      - dotnet-6-sdk
+      - nodejs
+      - yarn
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: "640e3e5d441b0f363d3b993f36dae3d22691608c"
+      expected-commit: 640e3e5d441b0f363d3b993f36dae3d22691608c
       repository: https://github.com/Sonarr/Sonarr
       tag: v${{package.version}}
   
-  - name: Install dependancies
-    runs: |
-      curl -sSL https://get.volta.sh | bash
-      curl -sSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --jsonfile global.json
-  
   - name: Build
     runs: |
-      PATH="$HOME/.volta/bin:$HOME/.dotnet:$PATH"
+      if [[ "${{build.arch}}" == "aarch64" ]]; then
+        runtime_arch="arm64"
+      elif [[ "${{build.arch}}" == "x86_64" ]]; then
+        runtime_arch="x64"
+      fi
       
       export BROWSERSLIST_IGNORE_OLD_DATA=true
+
+      yarn install --frozen-lockfile --network-timeout 120000 
       
-      _dotnet_arch="x64"
+      _dotnet_arch="$runtime_arch"
       _runtime="linux-$_dotnet_arch"
       _framework="net6.0"
       _output="_output"
       _destdir="${{targets.destdir}}/usr/lib/sonarr"
-      _artifacts="$_output/$_framework/$_runtime/publish"    
-      
-      yarn install --frozen-lockfile --network-timeout 120000       
+      _artifacts="$_output/$_framework/$_runtime/publish"
       
       ulimit -n 4096
       
-      dotnet build src \
+      dotnet publish src \
         -p:AssemblyConfiguration="main" \
         -p:AssemblyVersion="${{package.version}}" \
-        -p:RuntimeIdentifiers="$_runtime" \
+        -p:RuntimeIdentifier="$_runtime" \
         -p:Configuration=Release \
         -p:DebugSymbols=false \
         -p:DebugType=none \
+        -p:SelfContained=false \
         -p:SentryCliExecutable= \
         -p:SentryUploadSymbols=false \
         -p:SentryIncludeSources=false \
         -p:EmbedAllSources=false \
-        -t:PublishAllRids
+        -f "$_framework"
+      
       yarn build --env production --no-stats
       
       chmod +x "$_artifacts"/ffprobe
@@ -91,8 +89,9 @@ test:
         - bash
         - jq
         - xmlstarlet
-        - lttng-ust-dotnet6-compat
+        - lttng-ust
   pipeline:
+    - runs: ln -s /usr/lib/liblttng-ust.so.1 /usr/lib/liblttng-ust.so.0
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
       with:
