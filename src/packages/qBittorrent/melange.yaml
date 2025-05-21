@@ -8,6 +8,7 @@ package:
   dependencies:
     runtime:
       - qbittorrent-init
+
 environment:
   contents:
     repositories:
@@ -18,19 +19,44 @@ environment:
       - ca-certificates-bundle
       - apk-tools
       - bash
+
 var-transforms:
   - from: ${{package.version}}
     match: _p(\d)(\d)(\d{2})$
     replace: _v$1.$2.$3
     to: qbittorrent-package-version
+
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/userdocs/qbittorrent-nox-static
       tag: release-${{vars.qbittorrent-package-version}}
       expected-commit: 9f1c3ced34ed26093b024b68c9e7f84fdcee1858
-  
-  - runs: |
+
+  - if: ${{build.arch}} == 'aarch64'
+    runs: |
+      printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
+      printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
+      printf '%s\n' "qbt_qt_version=6" >> env.custom
+      printf '%s\n' "qbt_build_tool=" >> env.custom
+      printf '%s\n' "qbt_cross_name=aarch64" >> env.custom
+      printf '%s\n' "qbt_patches_url=userdocs/qbittorrent-nox-static" >> env.custom
+      printf '%s\n' "qbt_skip_icu=yes" >> env.custom
+      printf '%s\n' "qbt_boost_tag=" >> env.custom
+      printf '%s\n' "qbt_libtorrent_tag=" >> env.custom
+      printf '%s\n' "qbt_qt_tag=" >> env.custom
+      printf '%s\n' "qbt_qbittorrent_tag=" >> env.custom
+      printf '%s\n' "qbt_libtorrent_master_jamfile=" >> env.custom
+      printf '%s\n' "qbt_workflow_files=" >> env.custom
+      printf '%s\n' "qbt_workflow_artifacts=" >> env.custom
+      printf '%s\n' "qbt_optimise_strip=yes" >> env.custom
+      printf '%s\n' "qbt_build_debug=no" >> env.custom
+      printf '%s\n' "qbt_standard=20" >> env.custom
+      printf '%s\n' "qbt_static_ish=no" >> env.custom
+      printf '%s\n' "qbt_optimise=no" >> env.custom
+
+  - if: ${{build.arch}} == 'x86_64'
+    runs: |
       printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
       printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
       printf '%s\n' "qbt_qt_version=6" >> env.custom
