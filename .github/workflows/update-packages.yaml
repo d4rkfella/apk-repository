@@ -98,7 +98,7 @@ jobs:
             -e GITHUB_TOKEN="$GITHUB_TOKEN" \
             -v "${{ github.workspace }}:${{ github.workspace }}" \
             -w "${{ github.workspace }}" \
-            ghcr.io/d4rkfella/melange-autoupdate \
+            ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:c8cb734f400caa96b4ba1a1df2ff5040059ad1d631334dc041c6467be92ecd91 \
             "${{ matrix.path }}"
 
       - name: Read output.json
