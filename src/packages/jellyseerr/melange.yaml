@@ -15,6 +15,7 @@ environment:
   contents:
     packages:
       - wolfi-baselayout
+      - nodejs-23
       - busybox
       - pnpm
       - patch
