@@ -39,22 +39,22 @@ jobs:
         id: check-cache
         uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
-          key: melange-autoupdate-${{ steps.cache.outputs.key }}
-          path: melange-autoupdate.tar
+          key: autoupdate-${{ steps.cache.outputs.key }}
+          path: autoupdate.tar
           lookup-only: true
 
       - name: Preload Image
         if: ${{ always() && steps.check-cache.outputs.cache-hit != 'true' }}
         run: |
-          docker pull ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:c8cb734f400caa96b4ba1a1df2ff5040059ad1d631334dc041c6467be92ecd91
-          docker save ghcr.io/d4rkfella/melange-autoupdate:1.0.0@sha256:c8cb734f400caa96b4ba1a1df2ff5040059ad1d631334dc041c6467be92ecd91 > melange-autoupdate.tar
+          docker pull ghcr.io/d4rkfella/melange-autoupdate:rolling
+          docker save ghcr.io/d4rkfella/melange-autoupdate:rolling > autoupdate.tar
 
       - name: Cache Image
         if: ${{ always() && steps.check-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
-          key: melange-autoupdate-${{ steps.cache.outputs.key }}
-          path: melange-autoupdate.tar
+          key: autoupdate-${{ steps.cache.outputs.key }}
+          path: autoupdate.tar
   
   update-packages:
     needs: [prepare-matrix, setup]
@@ -79,8 +79,8 @@ jobs:
       - name: Restore Image
         uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
-          key: melange-autoupdate-${{ steps.cache.outputs.key }}
-          path: melange-autoupdate.tar
+          key: autoupdate-${{ steps.cache.outputs.key }}
+          path: autoupdate.tar
 
       - name: Load Image
         run: |
@@ -98,7 +98,7 @@ jobs:
             -e GITHUB_TOKEN="$GITHUB_TOKEN" \
             -v "${{ github.workspace }}:${{ github.workspace }}" \
             -w "${{ github.workspace }}" \
-            ghcr.io/d4rkfella/melange-autoupdate:1.0.0 \
+            ghcr.io/d4rkfella/melange-autoupdate:rolling \
             "${{ matrix.path }}"
 
       - name: Read output.json
