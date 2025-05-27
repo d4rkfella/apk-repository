@@ -1,6 +1,6 @@
 package:
   name: radarr
-  version: "5.23.3.9987"
+  version: "5.25.0.10024"
   epoch: 0
   description: Movie download automation for usenet and torrents.
   copyright:
@@ -20,68 +20,12 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: "e0b93a03fdc699185120785cb77e2fc94efc1fb9"
+      expected-commit: "afbe0ebcd44b341dda8c4e609fec2156f3644c4b"
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
-  
   - name: Build
-    runs: |
-      if [[ "${{build.arch}}" == "aarch64" ]]; then
-        runtime_arch="arm64"
-      elif [[ "${{build.arch}}" == "x86_64" ]]; then
-        runtime_arch="x64"
-      fi
-
-      export BROWSERSLIST_IGNORE_OLD_DATA=true
-      yarn install --frozen-lockfile --network-timeout 120000
-
-      _dotnet_arch="$runtime_arch"
-      _runtime="linux-$_dotnet_arch"
-      _framework="net6.0"
-      _output="_output"
-      _destdir="${{targets.destdir}}/usr/lib/radarr"
-      _artifacts="$_output/$_framework/$_runtime/publish"
-       
-      ulimit -n 4096
-      
-      dotnet publish src \
-        -p:AssemblyConfiguration="master" \
-        -p:AssemblyVersion="${{package.version}}" \
-        -p:RuntimeIdentifier="$_runtime" \
-        -p:Configuration=Release \
-        -p:DebugSymbols=false \
-        -p:DebugType=none \
-        -p:SelfContained=false \
-        -p:SentryCliExecutable= \
-        -p:SentryUploadSymbols=false \
-        -p:SentryIncludeSources=false \
-        -p:EmbedAllSources=false \
-        -f "$_framework"
-      
-      yarn build --env production --no-stats
-      
-      chmod +x "$_artifacts/ffprobe"
-      
-      find "$_artifacts" \( \
-        -name "ServiceUninstall.*" -o \
-        -name "ServiceInstall.*" -o \
-        -name "Radarr.Windows.*" \
-      \) -delete
-      
-      mv "$_output/UI" "$_artifacts"
-      
-      echo "Preparing package"
-      
-      mkdir -p "$_destdir" "${{targets.destdir}}/usr/bin"
-      
-      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > "$_destdir/package_info"
-      
-      cp -af "$_artifacts" "$_destdir/bin"
-      
-      ln -s /usr/lib/radarr/bin/Radarr "${{targets.destdir}}/usr/bin/Radarr"
-  
+    runs: "if [[ \"${{build.arch}}\" == \"aarch64\" ]]; then\n  runtime_arch=\"arm64\"\nelif [[ \"${{build.arch}}\" == \"x86_64\" ]]; then\n  runtime_arch=\"x64\"\nfi\n\nexport BROWSERSLIST_IGNORE_OLD_DATA=true\nyarn install --frozen-lockfile --network-timeout 120000\n\n_dotnet_arch=\"$runtime_arch\"\n_runtime=\"linux-$_dotnet_arch\"\n_framework=\"net6.0\"\n_output=\"_output\"\n_destdir=\"${{targets.destdir}}/usr/lib/radarr\"\n_artifacts=\"$_output/$_framework/$_runtime/publish\"\n \nulimit -n 4096\n\ndotnet publish src \\\n  -p:AssemblyConfiguration=\"master\" \\\n  -p:AssemblyVersion=\"${{package.version}}\" \\\n  -p:RuntimeIdentifier=\"$_runtime\" \\\n  -p:Configuration=Release \\\n  -p:DebugSymbols=false \\\n  -p:DebugType=none \\\n  -p:SelfContained=false \\\n  -p:SentryCliExecutable= \\\n  -p:SentryUploadSymbols=false \\\n  -p:SentryIncludeSources=false \\\n  -p:EmbedAllSources=false \\\n  -f \"$_framework\"\n\nyarn build --env production --no-stats\n\nchmod +x \"$_artifacts/ffprobe\"\n\nfind \"$_artifacts\" \\( \\\n  -name \"ServiceUninstall.*\" -o \\\n  -name \"ServiceInstall.*\" -o \\\n  -name \"Radarr.Windows.*\" \\\n\\) -delete\n\nmv \"$_output/UI\" \"$_artifacts\"\n\necho \"Preparing package\"\n\nmkdir -p \"$_destdir\" \"${{targets.destdir}}/usr/bin\"\n\nprintf \"UpdateMethod=docker\\nBranch=%s\\nPackageVersion=%s\\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\\n\" \"master\" \"${{package.version}}\" > \"$_destdir/package_info\"\n\ncp -af \"$_artifacts\" \"$_destdir/bin\"\n\nln -s /usr/lib/radarr/bin/Radarr \"${{targets.destdir}}/usr/bin/Radarr\"\n"
   - uses: strip
-
 test:
   environment:
     contents:
@@ -91,7 +35,6 @@ test:
         - jq
         - xmlstarlet
         - lttng-ust
-  
   pipeline:
     - runs: ln -s /usr/lib/liblttng-ust.so.1 /usr/lib/liblttng-ust.so.0
     - name: Check for missing dependancies
@@ -101,7 +44,6 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
-
 update:
   enabled: true
   github:
