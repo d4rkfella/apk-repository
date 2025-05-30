@@ -1,6 +1,6 @@
 package:
   name: keycloak-custom
-  version: "26.2.4"
+  version: "26.2.5"
   epoch: 0
   description: Open Source Identity and Access Management For Modern Applications and Services
   copyright:
@@ -11,7 +11,6 @@ package:
       - merged-usrsbin
       - openjdk-21-default-jdk # TODO: Change to JRE
       - wolfi-baselayout
-
 environment:
   contents:
     packages:
@@ -27,19 +26,15 @@ environment:
     LANG: en_US.UTF-8
     JAVA_HOME: /usr/lib/jvm/java-21-openjdk
     REPRODUCIBLE: false
-
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/keycloak/keycloak
       tag: ${{package.version}}
-      expected-commit: 39a17c56f4ae8c77a17814815f73a1c3c2dbf6e7
-
+      expected-commit: 73e5f4bead7840f19210aaabcbd1a00895d46929
   - uses: maven/pombump
-
   - runs: |
       gcc napi-static-assert.c -o /tmp/preload.so -fPIC -shared -ldl
-
   - runs: |
       # Keycloak installation. Note we use the maven wrapper as configured in
       # the source repo to build - ensures the correct maven version for
@@ -63,25 +58,22 @@ pipeline:
       for i in kc.sh kcadm.sh kcreg.sh; do
         ln -sf /usr/share/java/keycloak/bin/$i ${{targets.destdir}}/usr/bin/$i
       done
-      
+
       export KC_HEALTH_ENABLED=true
       export KC_METRICS_ENABLED=true
       export KC_DB=postgres
-      
-      cd "${{targets.destdir}}"/usr/share/java/keycloak && "${{targets.destdir}}"/usr/share/java/keycloak/bin/kc.sh build
 
+      cd "${{targets.destdir}}"/usr/share/java/keycloak && "${{targets.destdir}}"/usr/share/java/keycloak/bin/kc.sh build
 subpackages:
   - name: keycloak-compat-custom
     pipeline:
       - runs: |
           mkdir -p "${{targets.subpkgdir}}"/opt
           ln -s /usr/share/java/keycloak "${{targets.subpkgdir}}"/opt/
-          
     dependencies:
       runtime:
         - merged-usrsbin
-        - wolfi-baselayout  
-
+        - wolfi-baselayout
 test:
   pipeline:
     - name: "start daemon on localhost"
@@ -111,7 +103,6 @@ test:
         kc.sh --help
         kcadm.sh --help
         kcreg.sh --help
-
 update:
   ignore-regex-patterns:
     - ".*nightly.*"
