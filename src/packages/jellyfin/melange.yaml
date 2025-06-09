@@ -1,6 +1,6 @@
 package:
   name: jellyfin-custom
-  version: "10.11.0_rc1"
+  version: "10.11.0-rc1"
   epoch: 0
   description: The Free Software Media System
   copyright:
@@ -28,7 +28,7 @@ pipeline:
     with:
       repository: https://github.com/jellyfin/jellyfin
       tag: v${{package.version}}
-      expected-commit: "aefb9b2cffca3ccb7a95d89af0d9fb2040de6ed3"
+      expected-commit: "c2cc27a8a9dc1555b6ccc5d24671ef3792a05589"
   
   - uses: patch
     with:
