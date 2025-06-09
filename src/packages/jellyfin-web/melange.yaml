@@ -23,7 +23,7 @@ pipeline:
     with:
       repository: https://github.com/jellyfin/jellyfin-web
       tag: v${{package.version}}
-      expected-commit: "f4b8aa0ed4c5b571a3a6cc3bb027bb8ecebe5b68"
+      expected-commit: "bd985dc4952fa4e563b757c65deb54e57fd0283d"
   
   - runs: |
       npm ci --no-audit --unsafe-perm
