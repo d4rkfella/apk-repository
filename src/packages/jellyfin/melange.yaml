@@ -13,6 +13,8 @@ package:
       - aspnet-9-runtime
 
 environment:
+  environment:
+    REPRODUCIBLE: false
   contents:
     packages:
       - dotnet-9-sdk
