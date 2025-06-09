@@ -1,6 +1,6 @@
 package:
   name: jellyfin-web-custom
-  version: "10.11.0_rc1"
+  version: "10.11.0-rc1"
   epoch: 0
   description: Web Client for Jellyfin
   copyright:
