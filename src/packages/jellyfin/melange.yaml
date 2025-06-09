@@ -1,6 +1,6 @@
 package:
   name: jellyfin-custom
-  version: "10.10.7"
+  version: "10.11.0_rc1"
   epoch: 0
   description: The Free Software Media System
   copyright:
@@ -10,7 +10,7 @@ package:
       - fontconfig
       - ttf-dejavu
       - sqlite-libs
-      - icu-libs
+      - aspnet-9-runtime
 
 environment:
   contents:
@@ -45,7 +45,7 @@ pipeline:
         --configuration Release Jellyfin.Server \
         --output publish \
         --runtime linux-$runtime_arch \
-        --self-contained true \
+        --self-contained false \
         -p:DebugSymbols=false \
         -p:DebugType=none
 
@@ -63,7 +63,7 @@ pipeline:
         runtime_arch="64"
       fi
 
-      curl -L https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v7.1.1-3/jellyfin-ffmpeg_7.1.1-3_portable_linux${runtime_arch}-gpl.tar.xz | tar -xJ -C "${{targets.destdir}}"/usr/lib/jellyfin-ffmpeg
+      curl -L https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v7.1.1-5/jellyfin-ffmpeg_7.1.1-5_portable_linux${runtime_arch}-gpl.tar.xz | tar -xJ -C "${{targets.destdir}}"/usr/lib/jellyfin-ffmpeg
       ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg "${{targets.destdir}}"/usr/bin/ffmpeg
       ln -s /usr/lib/jellyfin-ffmpeg/ffprobe "${{targets.destdir}}"/usr/bin/ffprobe
   
