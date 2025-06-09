@@ -11,8 +11,6 @@ package:
       - nodejs
 
 environment:
-  environment:
-    REPRODUCIBLE: false
   contents:
     packages:
       - busybox
