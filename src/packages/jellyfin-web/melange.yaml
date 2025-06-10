@@ -1,6 +1,6 @@
 package:
   name: jellyfin-web-custom
-  version: "10.11.0-rc1"
+  version: "10.11.0"
   epoch: 0
   description: Web Client for Jellyfin
   copyright:
@@ -22,7 +22,7 @@ pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/jellyfin/jellyfin-web
-      tag: v${{package.version}}
+      tag: v${{package.version}}-rc1
       expected-commit: "bd985dc4952fa4e563b757c65deb54e57fd0283d"
   
   - runs: |
