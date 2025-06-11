@@ -16,3 +16,9 @@ pipeline:
     with:
       packages: main.go
       output: vault-backup
+
+update:
+  enabled: true
+  github:
+    identifier: d4rkfella/vault-backup
+    strip-prefix: v
