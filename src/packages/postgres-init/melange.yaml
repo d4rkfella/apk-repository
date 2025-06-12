@@ -10,7 +10,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/postgres-init
       tag: v${{package.version}}
-      expected-commit: "8c89aabebdd4c9235410ea3eb3dfaeef9e9c8607"
+      expected-commit: "6b5e2e7887dfc57034643a1edba53edf849051a8"
   
   - uses: go/build
     with:
