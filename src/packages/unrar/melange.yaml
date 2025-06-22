@@ -29,8 +29,3 @@ test:
     - uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
-
-update:
-  enabled: true
-  release-monitor:
-    identifier: 13306
