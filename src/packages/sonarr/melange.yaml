@@ -1,6 +1,6 @@
 package:
   name: sonarr
-  version: "4.0.14.2939"
+  version: "4.0.15.2941"
   epoch: 0
   description: Sonarr is a PVR for Usenet and BitTorrent users. It can monitor multiple RSS feeds for new episodes of your favorite shows and will grab, sort and rename them. It can also be configured to automatically upgrade the quality of files already downloaded when a better quality format becomes available.
   copyright:
@@ -21,69 +21,12 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 640e3e5d441b0f363d3b993f36dae3d22691608c
+      expected-commit: 7db7567c8e410f571bd1c75c5a2b79f28d33f699
       repository: https://github.com/Sonarr/Sonarr
       tag: v${{package.version}}
-
   - name: Build
-    runs: |
-      if [[ "${{build.arch}}" == "aarch64" ]]; then
-        runtime_arch="arm64"
-      elif [[ "${{build.arch}}" == "x86_64" ]]; then
-        runtime_arch="x64"
-      fi
-      
-      export BROWSERSLIST_IGNORE_OLD_DATA=true
-
-      yarn install --frozen-lockfile --network-timeout 120000 
-
-      echo '{"sdk":{"version":"6.0.136"}}' > global.json
-      
-      _dotnet_arch="$runtime_arch"
-      _runtime="linux-$_dotnet_arch"
-      _framework="net6.0"
-      _output="_output"
-      _destdir="${{targets.destdir}}/usr/lib/sonarr"
-      _artifacts="$_output/$_framework/$_runtime/publish"
-      
-      ulimit -n 4096
-      
-      dotnet publish src \
-        -p:AssemblyConfiguration="main" \
-        -p:AssemblyVersion="${{package.version}}" \
-        -p:RuntimeIdentifier="$_runtime" \
-        -p:Configuration=Release \
-        -p:DebugSymbols=false \
-        -p:DebugType=none \
-        -p:SelfContained=false \
-        -p:SentryCliExecutable= \
-        -p:SentryUploadSymbols=false \
-        -p:SentryIncludeSources=false \
-        -p:EmbedAllSources=false \
-        -f "$_framework"
-      
-      yarn build --env production --no-stats
-      
-      chmod +x "$_artifacts"/ffprobe
-      
-      find "$_artifacts" \( \
-        -name "ServiceUninstall.*" -o \
-        -name "ServiceInstall.*" -o \
-        -name "Sonarr.Windows.*" \) -delete
-      
-      mv "$_output"/UI "$_artifacts"
-      
-      echo "Preparing package"
-      
-      mkdir -p "$_destdir" "${{targets.destdir}}"/usr/bin
-      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > "$_destdir"/package_info
-      
-      cp -af "$_artifacts" "$_destdir"/bin
-      
-      ln -s /usr/lib/sonarr/bin/Sonarr "${{targets.destdir}}"/usr/bin/Sonarr
-  
+    runs: "if [[ \"${{build.arch}}\" == \"aarch64\" ]]; then\n  runtime_arch=\"arm64\"\nelif [[ \"${{build.arch}}\" == \"x86_64\" ]]; then\n  runtime_arch=\"x64\"\nfi\n\nexport BROWSERSLIST_IGNORE_OLD_DATA=true\n\nyarn install --frozen-lockfile --network-timeout 120000 \n\necho '{\"sdk\":{\"version\":\"6.0.136\"}}' > global.json\n\n_dotnet_arch=\"$runtime_arch\"\n_runtime=\"linux-$_dotnet_arch\"\n_framework=\"net6.0\"\n_output=\"_output\"\n_destdir=\"${{targets.destdir}}/usr/lib/sonarr\"\n_artifacts=\"$_output/$_framework/$_runtime/publish\"\n\nulimit -n 4096\n\ndotnet publish src \\\n  -p:AssemblyConfiguration=\"main\" \\\n  -p:AssemblyVersion=\"${{package.version}}\" \\\n  -p:RuntimeIdentifier=\"$_runtime\" \\\n  -p:Configuration=Release \\\n  -p:DebugSymbols=false \\\n  -p:DebugType=none \\\n  -p:SelfContained=false \\\n  -p:SentryCliExecutable= \\\n  -p:SentryUploadSymbols=false \\\n  -p:SentryIncludeSources=false \\\n  -p:EmbedAllSources=false \\\n  -f \"$_framework\"\n\nyarn build --env production --no-stats\n\nchmod +x \"$_artifacts\"/ffprobe\n\nfind \"$_artifacts\" \\( \\\n  -name \"ServiceUninstall.*\" -o \\\n  -name \"ServiceInstall.*\" -o \\\n  -name \"Sonarr.Windows.*\" \\) -delete\n\nmv \"$_output\"/UI \"$_artifacts\"\n\necho \"Preparing package\"\n\nmkdir -p \"$_destdir\" \"${{targets.destdir}}\"/usr/bin\nprintf \"UpdateMethod=docker\\nBranch=%s\\nPackageVersion=%s\\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\\n\" \"master\" \"${{package.version}}\" > \"$_destdir\"/package_info\n\ncp -af \"$_artifacts\" \"$_destdir\"/bin\n\nln -s /usr/lib/sonarr/bin/Sonarr \"${{targets.destdir}}\"/usr/bin/Sonarr\n"
   - uses: strip
-
 test:
   environment:
     contents:
@@ -102,7 +45,6 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
-
 update:
   enabled: true
   github:
