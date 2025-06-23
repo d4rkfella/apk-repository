@@ -1,11 +1,10 @@
 package:
   name: qbit_manage
-  version: "4.3.0"
+  version: "4.4.0"
   epoch: 0
   description: This tool will help manage tedious tasks in qBittorrent and automate them. Tag, categorize, remove Orphaned data, remove unregistered torrents and much much more.
   copyright:
     - license: MIT
-
 environment:
   contents:
     packages:
@@ -13,39 +12,21 @@ environment:
       - py3.13-pip
       - py3.13-virtualenv-bin
       - busybox
-
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 06abe3cfb02d6dfa7998ddf2fe233a9f29b6d649
+      expected-commit: c70d230fa632028885a5af86096f27c6085f1a84
       repository: https://github.com/StuffAnThings/qbit_manage
-      tag: v${{package.version}}  
-  
+      tag: v${{package.version}}
   - name: Prepare package
     working-directory: /home/build/app
-    runs: |     
-      export LANG=C.UTF-8
-      export PYTHONHASHSEED=0
-      export PYTHONDONTWRITEBYTECODE=1
-      export PYTHONUNBUFFERED=1
-
-      cp /home/build/pyproject.toml /home/build/VERSION /home/build/setup.py /home/build/app/
-      
-      APPDIR="${{targets.destdir}}/usr/lib/qbitmanage/app"
-            
-      mkdir -p "${APPDIR}" 
-      virtualenv --copies "${APPDIR}/venv"
-      sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir ."
-
-      cp -af /home/build/modules /home/build/qbit_manage.py /home/build/VERSION /home/build/LICENSE /home/build/scripts ${APPDIR}/   
-
+    runs: "export LANG=C.UTF-8\nexport PYTHONHASHSEED=0\nexport PYTHONDONTWRITEBYTECODE=1\nexport PYTHONUNBUFFERED=1\n\ncp /home/build/pyproject.toml /home/build/VERSION /home/build/setup.py /home/build/app/\n\nAPPDIR=\"${{targets.destdir}}/usr/lib/qbitmanage/app\"\n      \nmkdir -p \"${APPDIR}\" \nvirtualenv --copies \"${APPDIR}/venv\"\nsh -c \"source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir .\"\n\ncp -af /home/build/modules /home/build/qbit_manage.py /home/build/VERSION /home/build/LICENSE /home/build/scripts ${APPDIR}/   \n"
 test:
   pipeline:
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
-
 update:
   enabled: true
   github:
