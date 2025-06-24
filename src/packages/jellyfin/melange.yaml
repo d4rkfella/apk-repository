@@ -29,8 +29,8 @@ pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/jellyfin/jellyfin
-      tag: v${{package.version}}-rc1
-      expected-commit: "c2cc27a8a9dc1555b6ccc5d24671ef3792a05589"
+      tag: v${{package.version}}-rc2
+      expected-commit: "f60281d8fd36af6cdb3357a1bbd3317e2724afe9"
   
   - uses: patch
     with:
