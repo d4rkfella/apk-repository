@@ -22,8 +22,8 @@ pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/jellyfin/jellyfin-web
-      tag: v${{package.version}}-rc1
-      expected-commit: "bd985dc4952fa4e563b757c65deb54e57fd0283d"
+      tag: v${{package.version}}-rc2
+      expected-commit: "65e70e21dca4dbf6ccaffb62aaef76dd5a46bf60"
   
   - runs: |
       npm ci --no-audit --unsafe-perm
