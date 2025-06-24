@@ -1,6 +1,6 @@
 package:
   name: qbittorrent
-  version: "5.1.0_p2011"
+  version: "5.1.1_p2011"
   epoch: 0
   description: The qbittorrent-nox-static project is a bash build script that compiles a static qbittorrent-nox binary using the latest available dependencies from their source.
   copyright:
@@ -8,7 +8,6 @@ package:
   dependencies:
     runtime:
       - qbittorrent-init
-
 environment:
   contents:
     repositories:
@@ -19,20 +18,17 @@ environment:
       - ca-certificates-bundle
       - apk-tools
       - bash
-
 var-transforms:
   - from: ${{package.version}}
     match: _p(\d)(\d)(\d{2})$
     replace: _v$1.$2.$3
     to: qbittorrent-package-version
-
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/userdocs/qbittorrent-nox-static
       tag: release-${{vars.qbittorrent-package-version}}
-      expected-commit: 9f1c3ced34ed26093b024b68c9e7f84fdcee1858
-
+      expected-commit: f9290ca77aa2e21287e76d2d2b74301de0e478c1
   - if: ${{build.arch}} == 'aarch64'
     runs: |
       printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
@@ -54,7 +50,6 @@ pipeline:
       printf '%s\n' "qbt_standard=20" >> env.custom
       printf '%s\n' "qbt_static_ish=no" >> env.custom
       printf '%s\n' "qbt_optimise=no" >> env.custom
-
   - if: ${{build.arch}} == 'x86_64'
     runs: |
       printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
@@ -76,7 +71,6 @@ pipeline:
       printf '%s\n' "qbt_standard=20" >> env.custom
       printf '%s\n' "qbt_static_ish=no" >> env.custom
       printf '%s\n' "qbt_optimise=no" >> env.custom
-  
   - runs: |
       export $(cat env.custom)
       /usr/bin/env bash ./qbt-nox-static.bash
@@ -93,12 +87,10 @@ pipeline:
       /usr/bin/env bash ./qbt-nox-static.bash qtbase
       /usr/bin/env bash ./qbt-nox-static.bash qttools
       /usr/bin/env bash ./qbt-nox-static.bash qbittorrent
-  
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       mv qbt-build/bin/qbittorrent-nox ${{targets.destdir}}/usr/bin/qbittorrent-nox
       chmod 755 ${{targets.destdir}}/usr/bin/qbittorrent-nox
-
 update:
   enabled: true
   version-transform:
