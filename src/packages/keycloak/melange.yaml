@@ -11,16 +11,13 @@ package:
       - merged-usrsbin
       - openjdk-${{vars.java-version}}-default-jvm
       - wolfi-baselayout
-
 var-transforms:
   - from: ${{package.version}}
     match: ^(\d+).*
     replace: $1
     to: major-version
-
 vars:
   java-version: 21
-
 environment:
   contents:
     packages:
@@ -32,12 +29,10 @@ environment:
       - openjdk-${{vars.java-version}}-default-jdk
       - wolfi-base
       - wolfi-baselayout
-  
   environment:
     LANG: en_US.UTF-8
     JAVA_HOME: /usr/lib/jvm/java-${{vars.java-version}}-openjdk
     REPRODUCIBLE: false
-
 pipeline:
   - uses: git-checkout
     with:
