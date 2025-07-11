@@ -29,7 +29,7 @@ environment:
       - busybox
       - ca-certificates-bundle
       - gcc-13-default
-      - openjdk-21-default-jdk
+      - openjdk-${{vars.java-version}}-default-jdk
       - wolfi-base
       - wolfi-baselayout
   
