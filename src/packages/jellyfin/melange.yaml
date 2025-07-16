@@ -29,8 +29,8 @@ pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/jellyfin/jellyfin
-      tag: v${{package.version}}-rc2
-      expected-commit: "f60281d8fd36af6cdb3357a1bbd3317e2724afe9"
+      tag: v${{package.version}}-rc3
+      expected-commit: "982e0c9370da3d940799c9292423edeca71b7b71"
   
   - uses: patch
     with:
@@ -65,7 +65,7 @@ pipeline:
         runtime_arch="64"
       fi
 
-      curl -L https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v7.1.1-5/jellyfin-ffmpeg_7.1.1-5_portable_linux${runtime_arch}-gpl.tar.xz | tar -xJ -C "${{targets.destdir}}"/usr/lib/jellyfin-ffmpeg
+      curl -L https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v7.1.1-5/jellyfin-ffmpeg_7.1.1-7_portable_linux${runtime_arch}-gpl.tar.xz | tar -xJ -C "${{targets.destdir}}"/usr/lib/jellyfin-ffmpeg
       ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg "${{targets.destdir}}"/usr/bin/ffmpeg
       ln -s /usr/lib/jellyfin-ffmpeg/ffprobe "${{targets.destdir}}"/usr/bin/ffprobe
   
