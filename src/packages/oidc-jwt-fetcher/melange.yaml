@@ -1,22 +1,19 @@
 package:
   name: oidc-jwt-fetcher
-  version: "1.0.0"
+  version: "1.0.1"
   epoch: 0
   copyright:
     - license: MIT
-
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/d4rkfella/oidc-jwt-fetcher
       tag: v${{package.version}}
-      expected-commit: b0daad3b3afde6090c068a0a06fd9bac662a7ca2
-  
+      expected-commit: ee8fbdee26439e866e96b29bc2e477d5a3c9fe93
   - uses: go/build
     with:
       packages: main.go
       output: oidc-jwt-fetcher
-
 update:
   enabled: true
   github:
