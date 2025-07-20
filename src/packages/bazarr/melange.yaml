@@ -1,7 +1,7 @@
 package:
   name: bazarr
   version: "1.5.2"
-  epoch: 0
+  epoch: 1
   description: Bazarr is a companion application to Sonarr and Radarr. It manages and downloads subtitles based on your requirements. You define your preferences by TV show or movie and Bazarr takes care of everything for you.
   copyright:
     - license: GPL-3.0-only
@@ -43,48 +43,63 @@ pipeline:
       
       DEST_DIR="/tmp"
       LIBS_DIR="libs"
-      
-      pip download --no-deps --dest="$DEST_DIR" waitress==3.0.1
-      pip download --no-deps --dest="$DEST_DIR" jinja2==3.1.6
-      pip download --no-deps --dest="$DEST_DIR" h11==0.16.0
-      
+
       if [ -d "$LIBS_DIR/waitress-3.0.0.dist-info" ]; then
           rm -rf "$LIBS_DIR/waitress-3.0.0.dist-info"
+          pip download --no-deps --dest="$DEST_DIR" waitress==3.0.1
+          python3 -m zipfile -e "$DEST_DIR/waitress-3.0.1-py3-none-any.whl" "$LIBS_DIR/"
       else
           echo "Warning: $LIBS_DIR/waitress-3.0.0.dist-info not found, skipping"
       fi
       
       if [ -d "$LIBS_DIR/jinja2-3.1.5.dist-info" ]; then
           rm -rf "$LIBS_DIR/jinja2-3.1.5.dist-info"
+          pip download --no-deps --dest="$DEST_DIR" jinja2==3.1.6
+          python3 -m zipfile -e "$DEST_DIR/jinja2-3.1.6-py3-none-any.whl" "$LIBS_DIR/"
       else
           echo "Warning: $LIBS_DIR/jinja2-3.1.5.dist-info not found, skipping"
       fi
 
       if [ -d "$LIBS_DIR/h11-0.14.0.dist-info" ]; then
           rm -rf "$LIBS_DIR/h11-0.14.0.dist-info"
+          pip download --no-deps --dest="$DEST_DIR" h11==0.16.0
+          python3 -m zipfile -e "$DEST_DIR/h11-0.16.0-py3-none-any.whl" "$LIBS_DIR/"
       else
           echo "Warning: $LIBS_DIR/h11-0.14.0.dist-info not found, skipping"
       fi
-      
-      if [ ! -f "$DEST_DIR/waitress-3.0.1-py3-none-any.whl" ]; then
-          echo "Error: Wheel file for waitress not found!"
-          exit 1
-      fi
-      
-      if [ ! -f "$DEST_DIR/jinja2-3.1.6-py3-none-any.whl" ]; then
-          echo "Error: Wheel file for jinja2 not found!"
-          exit 1
+
+      if [ -d "$LIBS_DIR/pillow-11.2.1.dist-info" ]; then
+          rm -rf "$LIBS_DIR/pillow-11.2.1.dist-info"
+          pip download --no-deps --dest="$DEST_DIR" pillow==11.3.0
+          python3 -m zipfile -e "$DEST_DIR/pillow-11.3.0-py3-none-any.whl" "$LIBS_DIR/"
+      else
+          echo "Warning: $LIBS_DIR/pillow-11.2.1.dist-info not found, skipping"
       fi
 
-      if [ ! -f "$DEST_DIR/h11-0.16.0-py3-none-any.whl" ]; then
-          echo "Error: Wheel file for h11 not found!"
-          exit 1
+      if [ -d "$LIBS_DIR/urllib3-2.2.3.dist-info" ]; then
+          rm -rf "$LIBS_DIR/urllib3-2.2.3.dist-info"
+          pip download --no-deps --dest="$DEST_DIR" urllib3==2.5.0
+          python3 -m zipfile -e "$DEST_DIR/urllib3-2.5.0-py3-none-any.whl" "$LIBS_DIR/"
+      else
+          echo "Warning: $LIBS_DIR/urllib3-2.2.3.dist-info not found, skipping"
       fi
-      
-      python3 -m zipfile -e "$DEST_DIR/waitress-3.0.1-py3-none-any.whl" "$LIBS_DIR/"
-      python3 -m zipfile -e "$DEST_DIR/jinja2-3.1.6-py3-none-any.whl" "$LIBS_DIR/"
-      python3 -m zipfile -e "$DEST_DIR/h11-0.16.0-py3-none-any.whl" "$LIBS_DIR/"
-      
+
+      if [ -d "$LIBS_DIR/flask-cors-5.0.0.dist-info" ]; then
+          rm -rf "$LIBS_DIR/flask-cors-5.0.0.dist-info"
+          pip download --no-deps --dest="$DEST_DIR" flask-cors==6.0.0
+          python3 -m zipfile -e "$DEST_DIR/flask-cors-6.0.0-py3-none-any.whl" "$LIBS_DIR/"
+      else
+          echo "Warning: $LIBS_DIR/flask-cors-5.0.0.dist-info not found, skipping"
+      fi
+
+      if [ -d "$LIBS_DIR/requests-2.32.3.dist-info" ]; then
+          rm -rf "$LIBS_DIR/requests-2.32.3.dist-info"
+          pip download --no-deps --dest="$DEST_DIR" requests==2.32.4
+          python3 -m zipfile -e "$DEST_DIR/requests-2.32.4-py3-none-any.whl" "$LIBS_DIR/"
+      else
+          echo "Warning: $LIBS_DIR/requests-2.32.3.dist-info not found, skipping"
+      fi
+     
       echo "✅ All tasks completed successfully!"
   
   - name: Enable SSL verification
@@ -123,9 +138,7 @@ pipeline:
       do
           echo "**** copying $f to release ****"
           cp -r --parents "$f" "$APPDIR"
-      done < .github/files_to_copy
-      
-      find "${APPDIR}"/venv -name "*.pc" -delete
+      done < .github/files_to_copy      
       
       cp VERSION "${APPDIR}"
       
