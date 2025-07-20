@@ -84,8 +84,8 @@ pipeline:
           echo "Warning: $LIBS_DIR/urllib3-2.2.3.dist-info not found, skipping"
       fi
 
-      if [ -d "$LIBS_DIR/flask-cors-5.0.0.dist-info" ]; then
-          rm -rf "$LIBS_DIR/flask-cors-5.0.0.dist-info"
+      if [ -d "$LIBS_DIR/Flask_Cors-5.0.0.dist-info" ]; then
+          rm -rf "$LIBS_DIR/Flask_Cors-5.0.0.dist-info"
           pip download --no-deps --dest="$DEST_DIR" flask-cors==6.0.0
           python3 -m zipfile -e "$DEST_DIR/flask-cors-6.0.0-py3-none-any.whl" "$LIBS_DIR/"
       else
