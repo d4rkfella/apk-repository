@@ -16,3 +16,9 @@ pipeline:
     with:
       packages: main.go
       output: oidc-jwt-fetcher
+
+update:
+  enabled: true
+  github:
+    identifier: d4rkfella/oidc-jwt-fetcher
+    strip-prefix: v
