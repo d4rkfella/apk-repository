@@ -16,3 +16,9 @@ pipeline:
     with:
       packages: main.go
       output: postgres-init
+
+update:
+  enabled: true
+  github:
+    identifier: d4rkfella/postgres-init
+    strip-prefix: v
