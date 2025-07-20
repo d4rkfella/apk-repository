@@ -68,14 +68,6 @@ pipeline:
           echo "Warning: $LIBS_DIR/h11-0.14.0.dist-info not found, skipping"
       fi
 
-      if [ -d "$LIBS_DIR/pillow-11.2.1.dist-info" ]; then
-          rm -rf "$LIBS_DIR/pillow-11.2.1.dist-info"
-          pip download --no-deps --dest="$DEST_DIR" pillow==11.3.0
-          python3 -m zipfile -e "$DEST_DIR/pillow-11.3.0-py3-none-any.whl" "$LIBS_DIR/"
-      else
-          echo "Warning: $LIBS_DIR/pillow-11.2.1.dist-info not found, skipping"
-      fi
-
       if [ -d "$LIBS_DIR/urllib3-2.2.3.dist-info" ]; then
           rm -rf "$LIBS_DIR/urllib3-2.2.3.dist-info"
           pip download --no-deps --dest="$DEST_DIR" urllib3==2.5.0
