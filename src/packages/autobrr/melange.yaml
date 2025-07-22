@@ -1,6 +1,6 @@
 package:
   name: autobrr
-  version: "1.63.1"
+  version: "1.64.0"
   epoch: 0
   description: "Autobrr download automation tool"
   copyright:
@@ -17,7 +17,7 @@ pipeline:
     with:
       repository: https://github.com/autobrr/autobrr
       tag: v${{package.version}}
-      expected-commit: "82331c3d3480df69fc19ae2c0b9dddee43c71586"
+      expected-commit: "8ef43f437cf7c31b64b74e092b3a7d8cec6efe96"
   - name: Install dependancies
     runs: |
       PATH="$HOME/.volta/bin:$PATH"
