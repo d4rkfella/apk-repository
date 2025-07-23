@@ -1,6 +1,6 @@
 package:
   name: actions-runner
-  version: "2.326.0"
+  version: "2.327.0"
   epoch: 0
   copyright:
     - license: MIT
@@ -32,7 +32,7 @@ pipeline:
     with:
       repository: https://github.com/actions/runner
       tag: v${{package.version}}
-      expected-commit: "de0233c4d64676d8ebd16074221ae1e0e0bf2a13"
+      expected-commit: "f54fe816886b2891c9f6363367a6cef4ee72808f"
   - runs: "if [[ \"${{build.arch}}\" == \"aarch64\" ]]; then\n  runtime_arch=\"arm64\"\nelif [[ \"${{build.arch}}\" == \"x86_64\" ]]; then\n  runtime_arch=\"x64\"\nfi\n\ncd ./src\n./dev.sh layout Release linux-$runtime_arch\nmkdir -p \"${{targets.destdir}}\"/home/runner \"${{targets.destdir}}\"/etc/sudoers.d\ncp -a /home/build/_layout/. \"${{targets.destdir}}\"/home/runner/\nrm -rf \"${{targets.destdir}}\"/home/runner/externals/node20_alpine\nrm \"${{targets.destdir}}\"/home/runner/externals/node20/bin/node \nln -s /usr/bin/node \"${{targets.destdir}}\"/home/runner/externals/node20/bin/node\necho \"runner ALL=(ALL) NOPASSWD:ALL\" > \"${{targets.destdir}}\"/etc/sudoers.d/runner\nchmod 0440 \"${{targets.destdir}}\"/etc/sudoers.d/runner        \n"
   - uses: strip
 test:
