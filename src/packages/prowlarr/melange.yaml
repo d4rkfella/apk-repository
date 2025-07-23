@@ -1,26 +1,26 @@
 package:
   name: prowlarr
-  version: "1.37.0.5076"
+  version: "2.0.1.5101"
   epoch: 0
   description: Prowlarr is an indexer manager/proxy built on the popular *arr .net/reactjs base stack to integrate with your various PVR apps. Prowlarr supports management of both Torrent Trackers and Usenet Indexers. It integrates seamlessly with Lidarr, Mylar3, Radarr, Readarr, and Sonarr offering complete management of your indexers with no per app Indexer setup required (we do it all).
   copyright:
     - license: GPL-3.0-only
   dependencies:
     runtime:
-      - aspnet-6-runtime
+      - aspnet-8-runtime
       - sqlite-libs
 environment:
   contents:
     packages:
       - wolfi-baselayout
       - busybox
-      - dotnet-6-sdk
+      - dotnet-8-sdk
       - nodejs
       - yarn
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: c87995250a5d7968215e658d87e17ef00f6f73f1
+      expected-commit: 86b81948af8003b56be48b1ff3cb22b018f4d337
       repository: https://github.com/Prowlarr/Prowlarr
       tag: v${{package.version}}
   - name: Build
@@ -37,7 +37,7 @@ pipeline:
 
       _dotnet_arch="$runtime_arch"
       _runtime="linux-$_dotnet_arch"
-      _framework="net6.0"
+      _framework="net8.0"
       _output="_output"
       _destdir="${{targets.destdir}}/usr/lib/prowlarr"
       _artifacts="$_output/$_framework/$_runtime/publish"
@@ -58,7 +58,7 @@ pipeline:
         -p:EmbedAllSources=false \
         -f "$_framework"
 
-      yarn build --env production --no-stats
+      yarn run build --env production
 
       find "$_artifacts" \( \
         -name "ServiceUninstall.*" -o \
