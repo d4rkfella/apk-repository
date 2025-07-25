@@ -17,11 +17,6 @@ pipeline:
       repository: https://github.com/k8snetworkplumbingwg/multus-cni
       tag: v${{package.version}}
       expected-commit: 00adf22482945de41ff702258593aaf867a48e2d
-  - uses: go/bump
-    with:
-      deps: |-
-        golang.org/x/oauth2@v0.27.0
-        golang.org/x/net@v0.38.0
   - uses: go/build
     with:
       packages: ./cmd/multus
