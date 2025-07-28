@@ -112,3 +112,23 @@ jobs:
         env:
           MELANGE_PRIVATE_KEY: ${{ secrets.MELANGE_PRIVATE_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure JFrog CLI
+        run: |
+          jf config add artifactory \
+            --url=https://packages.darkfellanetwork.com \
+            --access-token=${{ secrets.ARTIFACTORY_ACCESS_TOKEN }} \
+            --interactive=false
+
+      - name: Collect Build Info
+        run: |
+          build_name="melange-${{ matrix.packages }}-${{ matrix.arch }}"
+          build_number="${{ github.run_id }}"
+          jf rt build-add-env "$build_name" "$build_number"
+          jf rt build-collect-env "$build_name" "$build_number"
+
+      - name: Publish Build Info
+        run: |
+          build_name="melange-${{ matrix.packages }}-${{ matrix.arch }}"
+          build_number="${{ github.run_id }}"
+          jf rt build-publish "$build_name" "$build_number"
