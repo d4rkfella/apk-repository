@@ -4,7 +4,12 @@ on:
   push:
     branches: ["main"]
     paths: ["src/packages/**/melange.yaml"]
-  workflow_dispatch: {}  # Manual trigger with no inputs
+  workflow_dispatch:
+    inputs:
+      apps:
+        description: "Comma-separated list of app folders (e.g. radarr,sonarr)"
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -22,16 +27,32 @@ jobs:
         id: set-packages
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "Manual trigger: discovering all melange.yaml files..."
-            pkgs=$(find src/packages -name 'melange.yaml' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            apps="${{ github.event.inputs.apps }}"
+            if [[ -z "$apps" ]]; then
+              echo "No apps provided. Discovering all melange.yaml files..."
+              pkgs=$(find src/packages -name 'melange.yaml' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            else
+              echo "Apps provided: $apps"
+              IFS=',' read -ra APP_ARRAY <<< "$apps"
+              files=()
+              for app in "${APP_ARRAY[@]}"; do
+                file="src/packages/$app/melange.yaml"
+                if [[ -f "$file" ]]; then
+                  files+=("$file")
+                else
+                  echo "::warning::File not found: $file"
+                fi
+              done
+              pkgs=$(printf "%s\n" "${files[@]}" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            fi
           else
             echo "Push trigger: using changed files..."
             pkgs=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'src/packages/.*/melange.yaml' | jq -R -s -c 'split("\n") | map(select(length > 0))')
           fi
-
+      
           echo "Detected packages: $pkgs"
           echo "packages=$pkgs" >> "$GITHUB_OUTPUT"
-
+  
   setup:
     needs: discover-packages
     if: ${{ needs.discover-packages.outputs.packages != '[]' }}
