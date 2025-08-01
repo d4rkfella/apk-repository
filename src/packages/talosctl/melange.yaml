@@ -19,6 +19,7 @@ pipeline:
       output: talosctl
       tags: grpcnotrace
   - uses: strip
+
 update:
   enabled: true
   github:
