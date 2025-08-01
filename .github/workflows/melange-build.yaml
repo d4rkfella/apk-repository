@@ -20,38 +20,61 @@ jobs:
     outputs:
       packages: ${{ steps.set-packages.outputs.packages }}
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@v2.12.2
+        with:
+          egress-policy: audit
+
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get list of packages
+      # Step for push events: use tj-actions/changed-files to get changed packages
+      - name: Get Changed Files (push only)
+        id: changed-files
+        if: github.event_name == 'push'
+        uses: tj-actions/changed-files@v46.0.5
+        with:
+          files: src/packages/**/melange.yaml
+          matrix: true
+
+      # Step for manual dispatch: parse apps input or find all packages
+      - name: Get Packages from Manual Input (workflow_dispatch only)
+        id: manual-packages
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          apps="${{ github.event.inputs.apps }}"
+          if [[ -z "$apps" ]]; then
+            echo "No apps specified, discovering all packages..."
+            pkgs=$(find src/packages -name 'melange.yaml' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          else
+            echo "Apps specified: $apps"
+            IFS=',' read -ra APP_ARRAY <<< "$apps"
+            files=()
+            for app in "${APP_ARRAY[@]}"; do
+              file="src/packages/$app/melange.yaml"
+              if [[ -f "$file" ]]; then
+                files+=("$file")
+              else
+                echo "::warning::File not found: $file"
+              fi
+            done
+            pkgs=$(printf "%s\n" "${files[@]}" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          fi
+          echo "packages=$pkgs" >> $GITHUB_OUTPUT
+
+      # Set output 'packages' from either source
+      - name: Set packages output
         id: set-packages
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            apps="${{ github.event.inputs.apps }}"
-            if [[ -z "$apps" ]]; then
-              echo "No apps provided. Discovering all melange.yaml files..."
-              pkgs=$(find src/packages -name 'melange.yaml' | jq -R -s -c 'split("\n") | map(select(length > 0))')
-            else
-              echo "Apps provided: $apps"
-              IFS=',' read -ra APP_ARRAY <<< "$apps"
-              files=()
-              for app in "${APP_ARRAY[@]}"; do
-                file="src/packages/$app/melange.yaml"
-                if [[ -f "$file" ]]; then
-                  files+=("$file")
-                else
-                  echo "::warning::File not found: $file"
-                fi
-              done
-              pkgs=$(printf "%s\n" "${files[@]}" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-            fi
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "Using changed files from tj-actions/changed-files"
+            echo "packages=${{ steps.changed-files.outputs.all_changed_files }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "Using packages from manual input step"
+            echo "packages=${{ steps.manual-packages.outputs.packages }}" >> $GITHUB_OUTPUT
           else
-            echo "Push trigger: using changed files..."
-            pkgs=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'src/packages/.*/melange.yaml' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            echo "packages=[]" >> $GITHUB_OUTPUT
           fi
-      
-          echo "Detected packages: $pkgs"
-          echo "packages=$pkgs" >> "$GITHUB_OUTPUT"
   
   setup:
     needs: discover-packages
