@@ -20,30 +20,25 @@ jobs:
     outputs:
       packages: ${{ steps.set-packages.outputs.packages }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Get changed files (push only)
-        id: changed-files
+      - id: changed-files
         if: github.event_name == 'push'
         uses: tj-actions/changed-files@v46
         with:
           files: src/packages/**/melange.yaml
           matrix: true
 
-      - name: Set packages output from changed files (push)
-        id: set-packages-push
+      - id: set-packages-push
         if: github.event_name == 'push'
         run: |
-          echo "packages=${{ steps.changed-files.outputs.all_changed_files }}" >> $GITHUB_OUTPUT
+          echo "::set-output name=packages::${{ steps.changed-files.outputs.all_changed_files }}"
 
-      - name: Set packages output from manual input (workflow_dispatch)
-        id: set-packages-dispatch
+      - id: set-packages-dispatch
         if: github.event_name == 'workflow_dispatch'
         run: |
           apps="${{ github.event.inputs.apps }}"
           if [ -z "$apps" ]; then
-            # no apps input, find all melange.yaml files
             pkgs=$(find src/packages -name 'melange.yaml' | jq -R -s -c 'split("\n") | map(select(length > 0))')
           else
             IFS=',' read -ra app_array <<< "$apps"
@@ -58,18 +53,16 @@ jobs:
             done
             pkgs=$(printf "%s\n" "${files[@]}" | jq -R -s -c 'split("\n") | map(select(length > 0))')
           fi
-          echo "packages=$pkgs" >> $GITHUB_OUTPUT
+          echo "::set-output name=packages::$pkgs"
 
-      - name: Set combined packages output
-        id: set-packages
+      - id: set-packages
         run: |
-          # pick which output to use
           if [[ "${{ github.event_name }}" == "push" ]]; then
-            echo "packages=${{ steps.set-packages-push.outputs.packages }}" >> $GITHUB_OUTPUT
+            echo "::set-output name=packages::${{ steps.set-packages-push.outputs.packages }}"
           elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "packages=${{ steps.set-packages-dispatch.outputs.packages }}" >> $GITHUB_OUTPUT
+            echo "::set-output name=packages::${{ steps.set-packages-dispatch.outputs.packages }}"
           else
-            echo "packages=[]" >> $GITHUB_OUTPUT
+            echo "::set-output name=packages::[]"
           fi
 
   setup:
@@ -109,8 +102,7 @@ jobs:
             /usr/local/bin/melange
             /usr/local/bin/yq
 
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Build Packages
         uses: d4rkfella/actions/melange-build@main
