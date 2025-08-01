@@ -15,44 +15,42 @@ permissions:
   contents: read
 
 jobs:
-  discover-packages:
+  detect-packages:
     runs-on: ubuntu-24.04
     outputs:
       packages: ${{ steps.set-packages.outputs.packages }}
     steps:
-      - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@v2.12.2
-        with:
-          egress-policy: audit
-
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step for push events: use tj-actions/changed-files to get changed packages
-      - name: Get Changed Files (push only)
+      - name: Get changed files (push only)
         id: changed-files
         if: github.event_name == 'push'
-        uses: tj-actions/changed-files@v46.0.5
+        uses: tj-actions/changed-files@v46
         with:
           files: src/packages/**/melange.yaml
           matrix: true
 
-      # Step for manual dispatch: parse apps input or find all packages
-      - name: Get Packages from Manual Input (workflow_dispatch only)
-        id: manual-packages
+      - name: Set packages output from changed files (push)
+        id: set-packages-push
+        if: github.event_name == 'push'
+        run: |
+          echo "packages=${{ steps.changed-files.outputs.all_changed_files }}" >> $GITHUB_OUTPUT
+
+      - name: Set packages output from manual input (workflow_dispatch)
+        id: set-packages-dispatch
         if: github.event_name == 'workflow_dispatch'
         run: |
           apps="${{ github.event.inputs.apps }}"
-          if [[ -z "$apps" ]]; then
-            echo "No apps specified, discovering all packages..."
+          if [ -z "$apps" ]; then
+            # no apps input, find all melange.yaml files
             pkgs=$(find src/packages -name 'melange.yaml' | jq -R -s -c 'split("\n") | map(select(length > 0))')
           else
-            echo "Apps specified: $apps"
-            IFS=',' read -ra APP_ARRAY <<< "$apps"
+            IFS=',' read -ra app_array <<< "$apps"
             files=()
-            for app in "${APP_ARRAY[@]}"; do
+            for app in "${app_array[@]}"; do
               file="src/packages/$app/melange.yaml"
-              if [[ -f "$file" ]]; then
+              if [ -f "$file" ]; then
                 files+=("$file")
               else
                 echo "::warning::File not found: $file"
@@ -62,23 +60,21 @@ jobs:
           fi
           echo "packages=$pkgs" >> $GITHUB_OUTPUT
 
-      # Set output 'packages' from either source
-      - name: Set packages output
+      - name: Set combined packages output
         id: set-packages
         run: |
+          # pick which output to use
           if [[ "${{ github.event_name }}" == "push" ]]; then
-            echo "Using changed files from tj-actions/changed-files"
-            echo "packages=${{ steps.changed-files.outputs.all_changed_files }}" >> $GITHUB_OUTPUT
+            echo "packages=${{ steps.set-packages-push.outputs.packages }}" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "Using packages from manual input step"
-            echo "packages=${{ steps.manual-packages.outputs.packages }}" >> $GITHUB_OUTPUT
+            echo "packages=${{ steps.set-packages-dispatch.outputs.packages }}" >> $GITHUB_OUTPUT
           else
             echo "packages=[]" >> $GITHUB_OUTPUT
           fi
-  
+
   setup:
-    needs: discover-packages
-    if: ${{ needs.discover-packages.outputs.packages != '[]' }}
+    needs: detect-packages
+    if: ${{ needs.detect-packages.outputs.packages != '[]' }}
     strategy:
       matrix:
         arch: [x86_64, aarch64]
@@ -88,11 +84,11 @@ jobs:
       arch: ${{ matrix.arch }}
 
   build:
-    needs: [discover-packages, setup]
-    if: ${{ needs.discover-packages.outputs.packages != '[]' }}
+    needs: [detect-packages, setup]
+    if: ${{ needs.detect-packages.outputs.packages != '[]' }}
     strategy:
       matrix:
-        packages: ${{ fromJSON(needs.discover-packages.outputs.packages) }}
+        packages: ${{ fromJSON(needs.detect-packages.outputs.packages) }}
         arch: [x86_64, aarch64]
       max-parallel: 4
       fail-fast: false
