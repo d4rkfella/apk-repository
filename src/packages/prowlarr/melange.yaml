@@ -36,7 +36,7 @@ pipeline:
 
       yarn install --frozen-lockfile --network-timeout 120000
 
-      jq -i '.sdk.version="8.0.119"' /home/build/global.json
+      jq '.sdk.version = "8.0.119"' /home/build/global.json > /home/build/global.json.tmp && mv /home/build/global.json.tmp /home/build/global.json
       
       _dotnet_arch="$runtime_arch"
       _runtime="linux-$_dotnet_arch"
