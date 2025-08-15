@@ -17,6 +17,7 @@ environment:
       - dotnet-8-sdk
       - nodejs
       - yarn
+      - jq
 pipeline:
   - uses: git-checkout
     with:
@@ -74,7 +75,7 @@ pipeline:
 
       mkdir -p "$_destdir" "${{targets.destdir}}/usr/bin"
 
-      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "master" "${{package.version}}" > "$_destdir/package_info"
+      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "develop" "${{package.version}}" > "$_destdir/package_info"
 
       cp -af "$_artifacts" "$_destdir/bin"
 
