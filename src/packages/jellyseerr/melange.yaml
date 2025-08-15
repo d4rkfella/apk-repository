@@ -1,6 +1,6 @@
 package:
   name: jellyseerr
-  version: "2.7.2"
+  version: "2.7.3"
   epoch: 0
   description: Open-source media request and discovery manager for Jellyfin, Plex, and Emby.
   copyright:
@@ -21,7 +21,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 697a08167f9db021b562c8b3b1c9e98021021390
+      expected-commit: e842036fafc9818ea38d2e19d4adb66e17e2aebf
       repository: https://github.com/fallenbagel/jellyseerr
       tag: v${{package.version}}
       destination: jellyseerr
