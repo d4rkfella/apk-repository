@@ -100,3 +100,4 @@ update:
   github:
     identifier: Prowlarr/Prowlarr
     strip-prefix: v
+    skip-prerelease: false
