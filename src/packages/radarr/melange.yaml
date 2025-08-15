@@ -1,6 +1,6 @@
 package:
   name: radarr
-  version: "5.26.2.10099"
+  version: "5.27.3.10153"
   epoch: 0
   description: Movie download automation for usenet and torrents.
   copyright:
@@ -20,11 +20,11 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: "2dac2dd35bed9ae6ff56689fff64f5ff07a95dd5"
+      expected-commit: 6851c2632863d58390b789610a167c40b77c6b84
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
   - name: Build
-    runs: "if [[ \"${{build.arch}}\" == \"aarch64\" ]]; then\n  runtime_arch=\"arm64\"\nelif [[ \"${{build.arch}}\" == \"x86_64\" ]]; then\n  runtime_arch=\"x64\"\nfi\n\nexport BROWSERSLIST_IGNORE_OLD_DATA=true\nyarn install --frozen-lockfile --network-timeout 120000\n\n_dotnet_arch=\"$runtime_arch\"\n_runtime=\"linux-$_dotnet_arch\"\n_framework=\"net6.0\"\n_output=\"_output\"\n_destdir=\"${{targets.destdir}}/usr/lib/radarr\"\n_artifacts=\"$_output/$_framework/$_runtime/publish\"\n \nulimit -n 4096\n\ndotnet publish src \\\n  -p:AssemblyConfiguration=\"master\" \\\n  -p:AssemblyVersion=\"${{package.version}}\" \\\n  -p:RuntimeIdentifier=\"$_runtime\" \\\n  -p:Configuration=Release \\\n  -p:DebugSymbols=false \\\n  -p:DebugType=none \\\n  -p:SelfContained=false \\\n  -p:SentryCliExecutable= \\\n  -p:SentryUploadSymbols=false \\\n  -p:SentryIncludeSources=false \\\n  -p:EmbedAllSources=false \\\n  -f \"$_framework\"\n\nyarn build --env production --no-stats\n\nchmod +x \"$_artifacts/ffprobe\"\n\nfind \"$_artifacts\" \\( \\\n  -name \"ServiceUninstall.*\" -o \\\n  -name \"ServiceInstall.*\" -o \\\n  -name \"Radarr.Windows.*\" \\\n\\) -delete\n\nmv \"$_output/UI\" \"$_artifacts\"\n\necho \"Preparing package\"\n\nmkdir -p \"$_destdir\" \"${{targets.destdir}}/usr/bin\"\n\nprintf \"UpdateMethod=docker\\nBranch=%s\\nPackageVersion=%s\\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\\n\" \"master\" \"${{package.version}}\" > \"$_destdir/package_info\"\n\ncp -af \"$_artifacts\" \"$_destdir/bin\"\n\nln -s /usr/lib/radarr/bin/Radarr \"${{targets.destdir}}/usr/bin/Radarr\"\n"
+    runs: "if [[ \"${{build.arch}}\" == \"aarch64\" ]]; then\n  runtime_arch=\"arm64\"\nelif [[ \"${{build.arch}}\" == \"x86_64\" ]]; then\n  runtime_arch=\"x64\"\nfi\n\nexport BROWSERSLIST_IGNORE_OLD_DATA=true\nyarn install --frozen-lockfile --network-timeout 120000\n\n_dotnet_arch=\"$runtime_arch\"\n_runtime=\"linux-$_dotnet_arch\"\n_framework=\"net6.0\"\n_output=\"_output\"\n_destdir=\"${{targets.destdir}}/usr/lib/radarr\"\n_artifacts=\"$_output/$_framework/$_runtime/publish\"\n \nulimit -n 4096\n\ndotnet publish src \\\n  -p:AssemblyConfiguration=\"master\" \\\n  -p:AssemblyVersion=\"${{package.version}}\" \\\n  -p:RuntimeIdentifier=\"$_runtime\" \\\n  -p:Configuration=Release \\\n  -p:DebugSymbols=false \\\n  -p:DebugType=none \\\n  -p:SelfContained=false \\\n  -p:SentryCliExecutable= \\\n  -p:SentryUploadSymbols=false \\\n  -p:SentryIncludeSources=false \\\n  -p:EmbedAllSources=false \\\n  -f \"$_framework\"\n\nyarn build --env production --no-stats\n\nchmod +x \"$_artifacts/ffprobe\"\n\nfind \"$_artifacts\" \\( \\\n  -name \"ServiceUninstall.*\" -o \\\n  -name \"ServiceInstall.*\" -o \\\n  -name \"Radarr.Windows.*\" \\\n\\) -delete\n\nmv \"$_output/UI\" \"$_artifacts\"\n\necho \"Preparing package\"\n\nmkdir -p \"$_destdir\" \"${{targets.destdir}}/usr/bin\"\n\nprintf \"UpdateMethod=docker\\nBranch=%s\\nPackageVersion=%s\\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\\n\" \"develop\" \"${{package.version}}\" > \"$_destdir/package_info\"\n\ncp -af \"$_artifacts\" \"$_destdir/bin\"\n\nln -s /usr/lib/radarr/bin/Radarr \"${{targets.destdir}}/usr/bin/Radarr\"\n"
   - uses: strip
 test:
   environment:
