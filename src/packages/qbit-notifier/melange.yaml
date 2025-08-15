@@ -1,0 +1,26 @@
+package:
+  name: qbit-notifier
+  version: "0.1.0"
+  epoch: 0
+  copyright:
+    - license: MIT
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/d4rkfella/qbit-notifier
+      tag: v${{package.version}}
+      expected-commit: 678c441e987f81d142e5c3d01a3f71006d711265
+
+  - uses: go/build
+    with:
+      packages: main.go
+      output: qbit-notifier
+      strip: "-s -w"
+      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
+
+update:
+  enabled: true
+  github:
+    identifier: d4rkfella/qbit-notifier
+    strip-prefix: v
