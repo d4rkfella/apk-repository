@@ -39,22 +39,22 @@ jobs:
         id: check-cache
         uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         with:
-          key: autoupdate-${{ steps.cache.outputs.key }}
-          path: autoupdate.tar
+          key: melange-autoupdate-${{ steps.cache.outputs.key }}
+          path: melange-autoupdate.tar
           lookup-only: true
 
       - name: Preload Image
         if: ${{ always() && steps.check-cache.outputs.cache-hit != 'true' }}
         run: |
           docker pull ghcr.io/d4rkfella/melange-autoupdate:rolling
-          docker save ghcr.io/d4rkfella/melange-autoupdate:rolling > autoupdate.tar
+          docker save ghcr.io/d4rkfella/melange-autoupdate:rolling > melange-autoupdate.tar
 
       - name: Cache Image
         if: ${{ always() && steps.check-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         with:
-          key: autoupdate-${{ steps.cache.outputs.key }}
-          path: autoupdate.tar
+          key: melange-autoupdate-${{ steps.cache.outputs.key }}
+          path: melange-autoupdate.tar
   
   update-packages:
     needs: [prepare-matrix, setup]
@@ -79,12 +79,12 @@ jobs:
       - name: Restore Image
         uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         with:
-          key: autoupdate-${{ steps.cache.outputs.key }}
-          path: autoupdate.tar
+          key: melange-autoupdate-${{ steps.cache.outputs.key }}
+          path: melange-autoupdate.tar
 
       - name: Load Image
         run: |
-          docker load < autoupdate.tar
+          docker load < melange-autoupdate.tar
       
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
