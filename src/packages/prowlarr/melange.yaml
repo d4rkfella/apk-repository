@@ -35,6 +35,8 @@ pipeline:
 
       yarn install --frozen-lockfile --network-timeout 120000
 
+      dotnet new globaljson --sdk-version 8.0.119 --force
+      
       _dotnet_arch="$runtime_arch"
       _runtime="linux-$_dotnet_arch"
       _framework="net8.0"
