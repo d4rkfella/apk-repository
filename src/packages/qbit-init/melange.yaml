@@ -16,6 +16,7 @@ pipeline:
     with:
       packages: main.go
       output: qbit-init
+      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
 
 update:
   enabled: true
