@@ -1,6 +1,6 @@
 package:
   name: qbit_manage
-  version: "4.5.3"
+  version: "4.5.4"
   epoch: 0
   description: This tool will help manage tedious tasks in qBittorrent and automate them. Tag, categorize, remove Orphaned data, remove unregistered torrents and much much more.
   copyright:
@@ -15,7 +15,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 9ee3527853faf308750cdbcb0b61ddd913481ec7
+      expected-commit: 1e12a1610fe05a2848ea1fa5bd987292c62d85cd
       repository: https://github.com/StuffAnThings/qbit_manage
       tag: v${{package.version}}
   - name: Prepare package
