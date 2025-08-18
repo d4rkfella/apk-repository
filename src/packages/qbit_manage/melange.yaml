@@ -21,6 +21,7 @@ pipeline:
   
   - name: Prepare package
     runs: |
+      export PYTHONHASHSEED=4294967292
       APPDIR="${{targets.destdir}}/usr/lib/qbitmanage/app"
       mkdir -p "${APPDIR}"
       cp /home/build/pyproject.toml /home/build/VERSION /home/build/setup.py "${APPDIR}/"
