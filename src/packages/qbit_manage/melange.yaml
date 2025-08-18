@@ -25,9 +25,10 @@ pipeline:
       mkdir -p "${APPDIR}"
       cp /home/build/pyproject.toml /home/build/VERSION /home/build/setup.py "${APPDIR}/"
       virtualenv --copies "${APPDIR}/venv"
-      sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir .
+      sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir ."
       cp -af /home/build/modules \
              /home/build/qbit_manage.py \
+             /home/build/VERSION \
              /home/build/LICENSE \
              /home/build/scripts \
              /home/build/icons \
