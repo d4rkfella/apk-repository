@@ -20,12 +20,10 @@ pipeline:
       tag: v${{package.version}}
   
   - name: Prepare package
-    working-directory: /home/build/app
     runs: |
       APPDIR="${targets.destdir}/usr/lib/qbitmanage/app"
-      
-      cp /home/build/pyproject.toml /home/build/VERSION /home/build/setup.py "${APPDIR}/"
       mkdir -p "${APPDIR}"
+      cp /home/build/pyproject.toml /home/build/VERSION /home/build/setup.py "${APPDIR}/"
       virtualenv --copies "${APPDIR}/venv"
       sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir .
       cp -af /home/build/modules \
