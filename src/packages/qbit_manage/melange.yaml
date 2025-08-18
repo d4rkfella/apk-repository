@@ -21,7 +21,7 @@ pipeline:
   
   - name: Prepare package
     runs: |
-      APPDIR="${targets.destdir}/usr/lib/qbitmanage/app"
+      APPDIR="${{targets.destdir}}/usr/lib/qbitmanage/app"
       mkdir -p "${APPDIR}"
       cp /home/build/pyproject.toml /home/build/VERSION /home/build/setup.py "${APPDIR}/"
       virtualenv --copies "${APPDIR}/venv"
