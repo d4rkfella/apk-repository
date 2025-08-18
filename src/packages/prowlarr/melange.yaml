@@ -1,6 +1,6 @@
 package:
   name: prowlarr
-  version: "2.0.3.5130"
+  version: "2.0.4.5138"
   epoch: 0
   description: Prowlarr is an indexer manager/proxy built on the popular *arr .net/reactjs base stack to integrate with your various PVR apps. Prowlarr supports management of both Torrent Trackers and Usenet Indexers. It integrates seamlessly with Lidarr, Mylar3, Radarr, Readarr, and Sonarr offering complete management of your indexers with no per app Indexer setup required (we do it all).
   copyright:
@@ -21,7 +21,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: c417c41133e39df909a2554aa3b10e2941980022
+      expected-commit: 8664fc095dd79e420f9dfe4237bb268f9fb1df2e
       repository: https://github.com/Prowlarr/Prowlarr
       tag: v${{package.version}}
   - name: Build
