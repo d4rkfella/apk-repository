@@ -18,9 +18,24 @@ pipeline:
       expected-commit: 1e12a1610fe05a2848ea1fa5bd987292c62d85cd
       repository: https://github.com/StuffAnThings/qbit_manage
       tag: v${{package.version}}
+  
   - name: Prepare package
     working-directory: /home/build/app
-    runs: "export LANG=C.UTF-8\nexport PYTHONHASHSEED=0\nexport PYTHONDONTWRITEBYTECODE=1\nexport PYTHONUNBUFFERED=1\n\ncp /home/build/pyproject.toml /home/build/VERSION /home/build/setup.py /home/build/app/\n\nAPPDIR=\"${{targets.destdir}}/usr/lib/qbitmanage/app\"\n      \nmkdir -p \"${APPDIR}\" \nvirtualenv --copies \"${APPDIR}/venv\"\nsh -c \"source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir .\"\n\ncp -af /home/build/modules /home/build/qbit_manage.py /home/build/VERSION /home/build/LICENSE /home/build/scripts ${APPDIR}/   \n"
+    runs: |
+      APPDIR="${targets.destdir}/usr/lib/qbitmanage/app"
+      
+      cp /home/build/pyproject.toml /home/build/VERSION /home/build/setup.py "${APPDIR}/"
+      mkdir -p "${APPDIR}"
+      virtualenv --copies "${APPDIR}/venv"
+      sh -c "source '${APPDIR}/venv/bin/activate' && pip install --upgrade --no-cache-dir .
+      cp -af /home/build/modules \
+             /home/build/qbit_manage.py \
+             /home/build/LICENSE \
+             /home/build/scripts \
+             /home/build/icons \
+             /home/build/web-ui \
+             "${APPDIR}/"
+
 test:
   pipeline:
     - name: Check for missing dependancies
