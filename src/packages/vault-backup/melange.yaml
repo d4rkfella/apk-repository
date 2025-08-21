@@ -1,7 +1,7 @@
 package:
   name: vault-backup
-  version: "1.0.5"
-  epoch: 1
+  version: "1.0.6"
+  epoch: 0
   copyright:
     - license: MIT
 pipeline:
@@ -9,7 +9,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/vault-backup
       tag: v${{package.version}}
-      expected-commit: "bea4cbc8ddb7b97eac36acc9b5f3ff249e639dd4"
+      expected-commit: "f3c57e07a4ad6d5f1d67675ca036d9ff9ae99838"
   - uses: go/build
     with:
       packages: main.go
