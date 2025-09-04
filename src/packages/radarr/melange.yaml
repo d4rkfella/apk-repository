@@ -1,6 +1,6 @@
 package:
   name: radarr
-  version: "5.27.4.10176"
+  version: "5.27.5.10198"
   epoch: 0
   description: Movie download automation for usenet and torrents.
   copyright:
@@ -20,10 +20,9 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: f36845c251883b7035d20b349189501ca4f094c4
+      expected-commit: 089e0fa4e67cdcc796a8086923ca0224b85d4705
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
-  
   - name: Build
     runs: |
       if [[ "${{build.arch}}" == "aarch64" ]]; then
@@ -31,20 +30,20 @@ pipeline:
       elif [[ "${{build.arch}}" == "x86_64" ]]; then
         runtime_arch="x64"
       fi
-  
+
       export BROWSERSLIST_IGNORE_OLD_DATA=true
-  
+
       yarn install --frozen-lockfile --network-timeout 120000
-  
+
       _dotnet_arch="$runtime_arch"
       _runtime="linux-$_dotnet_arch"
       _framework="net6.0"
       _output="_output"
       _destdir="${{targets.destdir}}/usr/lib/radarr"
       _artifacts="$_output/$_framework/$_runtime/publish"
-  
+
       ulimit -n 4096
-  
+
       dotnet publish src \
         -p:AssemblyConfiguration="master" \
         -p:AssemblyVersion="${{package.version}}" \
@@ -58,31 +57,29 @@ pipeline:
         -p:SentryIncludeSources=false \
         -p:EmbedAllSources=false \
         -f "$_framework"
-  
+
       yarn build --env production --no-stats
-  
+
       chmod +x "$_artifacts/ffprobe"
-  
+
       find "$_artifacts" \( \
         -name "ServiceUninstall.*" -o \
         -name "ServiceInstall.*" -o \
         -name "Radarr.Windows.*" \
       \) -delete
-  
-      mv "$_output/UI" "$_artifacts"
-  
-      echo "Preparing package"
-  
-      mkdir -p "$_destdir" "${{targets.destdir}}/usr/bin"
-  
-      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "develop" "${{package.version}}" > "$_destdir/package_info"
-  
-      cp -af "$_artifacts" "$_destdir/bin"
-  
-      ln -s /usr/lib/radarr/bin/Radarr "${{targets.destdir}}/usr/bin/Radarr"
-  
-  - uses: strip
 
+      mv "$_output/UI" "$_artifacts"
+
+      echo "Preparing package"
+
+      mkdir -p "$_destdir" "${{targets.destdir}}/usr/bin"
+
+      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "develop" "${{package.version}}" > "$_destdir/package_info"
+
+      cp -af "$_artifacts" "$_destdir/bin"
+
+      ln -s /usr/lib/radarr/bin/Radarr "${{targets.destdir}}/usr/bin/Radarr"
+  - uses: strip
 test:
   environment:
     contents:
@@ -101,7 +98,6 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
-
 update:
   enabled: true
   github:
