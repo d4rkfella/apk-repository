@@ -1,6 +1,6 @@
 package:
   name: cross-seed
-  version: "6.13.3"
+  version: "6.13.4"
   epoch: 0
   description: "Fully-automatic cross-seeding with Torznab"
   copyright:
@@ -20,7 +20,7 @@ pipeline:
     with:
       repository: https://github.com/cross-seed/cross-seed
       tag: v${{package.version}}
-      expected-commit: 0a5f50b043d3a516f029daa292edbca2120b5b74
+      expected-commit: 6fabf996d369cbddf57b584049867b88711ea57e
   - name: Build
     runs: |
       npm ci --no-fund
