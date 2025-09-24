@@ -1,26 +1,27 @@
 package:
   name: radarr
-  version: "5.27.5.10198"
+  version: "6.0.0.10217"
   epoch: 0
   description: Movie download automation for usenet and torrents.
   copyright:
     - license: GPL-3.0-only
   dependencies:
     runtime:
-      - aspnet-6-runtime
+      - aspnet-8-runtime
       - sqlite-libs
 environment:
   contents:
     packages:
       - wolfi-baselayout
       - busybox
-      - dotnet-6-sdk
+      - dotnet-8-sdk
       - nodejs
       - yarn
+      - jq
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 089e0fa4e67cdcc796a8086923ca0224b85d4705
+      expected-commit: 3429fe069647fec154a586f08354e03248d87913
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
   - name: Build
@@ -35,9 +36,11 @@ pipeline:
 
       yarn install --frozen-lockfile --network-timeout 120000
 
+      jq '.sdk.version = "8.0.120"' /home/build/global.json > /home/build/global.json.tmp && mv /home/build/global.json.tmp /home/build/global.json
+
       _dotnet_arch="$runtime_arch"
       _runtime="linux-$_dotnet_arch"
-      _framework="net6.0"
+      _framework="net8.0"
       _output="_output"
       _destdir="${{targets.destdir}}/usr/lib/radarr"
       _artifacts="$_output/$_framework/$_runtime/publish"
@@ -58,7 +61,7 @@ pipeline:
         -p:EmbedAllSources=false \
         -f "$_framework"
 
-      yarn build --env production --no-stats
+      yarn run build --env production
 
       chmod +x "$_artifacts/ffprobe"
 
