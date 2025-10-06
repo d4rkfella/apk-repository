@@ -1,6 +1,6 @@
 package:
   name: qbit-notifier
-  version: "0.1.0"
+  version: "0.2.0"
   epoch: 1
   copyright:
     - license: MIT
@@ -10,7 +10,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/qbit-notifier
       tag: v${{package.version}}
-      expected-commit: 678c441e987f81d142e5c3d01a3f71006d711265
+      expected-commit: ed50bcc9a54755018b7b5a1e12512fce02d12ccf
 
   - uses: go/build
     with:
