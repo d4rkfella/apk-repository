@@ -22,7 +22,7 @@ pipeline:
   - uses: git-checkout
     with:
       expected-commit: e842036fafc9818ea38d2e19d4adb66e17e2aebf
-      repository: https://github.com/fallenbagel/jellyseerr
+      repository: https://github.com/seerr-team/seerr
       tag: v${{package.version}}
       destination: jellyseerr
   - name: Build
