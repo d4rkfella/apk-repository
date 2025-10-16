@@ -1,7 +1,7 @@
 package:
   name: keycloak-custom
-  version: "26.4.0"
-  epoch: 1
+  version: "26.4.1"
+  epoch: 0
   description: Open Source Identity and Access Management For Modern Applications and Services
   copyright:
     - license: Apache-2.0
@@ -38,7 +38,7 @@ pipeline:
     with:
       repository: https://github.com/keycloak/keycloak
       tag: ${{package.version}}
-      expected-commit: 4e25e47b3c3619b3a0593448e1dfc0dd786cfbe1
+      expected-commit: 802e43c58ee8989a1beb8e5d905aa73c1ca21e4b
   - uses: maven/pombump
   - runs: |
       gcc napi-static-assert.c -o /tmp/preload.so -fPIC -shared -ldl
