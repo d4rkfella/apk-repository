@@ -1,6 +1,6 @@
 package:
   name: talosctl
-  version: "1.11.2"
+  version: "1.11.3"
   epoch: 0
   copyright:
     - license: MPL-2.0
@@ -12,7 +12,7 @@ pipeline:
     with:
       repository: https://github.com/siderolabs/talos
       tag: v${{package.version}}
-      expected-commit: 511b4d2e89320f79f66cd3f0f18db1a01e3f4aef
+      expected-commit: a0243ef77e6532ed2919689d305eeaf97458c0a1
   - uses: go/build
     with:
       packages: cmd/talosctl/main.go
