@@ -152,4 +152,4 @@ test:
     
     - name: Run test script
       runs: |
-        EXPECTED_VERSION="${{package.version}}" test/test.sh
+        EXPECTED_VERSION="${{package.version}}-beta.9" test/test.sh
