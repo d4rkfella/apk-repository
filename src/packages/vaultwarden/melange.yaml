@@ -52,9 +52,9 @@ pipeline:
       export VW_VERSION="${{package.version}}"
 
       if [[ "${{build.arch}}" == "aarch64" ]]; then
-        export CARGO_BUILD_TARGET="arm64"
+        CARGO_BUILD_TARGET="aarch64-unknown-linux-gnu"
       elif [[ "${{build.arch}}" == "x86_64" ]]; then
-        export CARGO_BUILD_TARGET="x64"
+        CARGO_BUILD_TARGET="x86_64-unknown-linux-gnu"
       fi
 
       rustup target add $CARGO_BUILD_TARGET
