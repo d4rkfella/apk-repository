@@ -54,7 +54,7 @@ pipeline:
       
       echo "Building Vaultwarden version: ${VW_VERSION} for target: $CARGO_BUILD_TARGET"
 
-      cargo build \
+      cargo auditable build \
         --features ${FEATURES} \
         --release \
         --target $CARGO_BUILD_TARGET \
