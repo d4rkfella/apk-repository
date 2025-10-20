@@ -8,11 +8,10 @@ package:
 
   dependencies:
     runtime:
-      - wolfi-baselayout
+      - wolfi-base
       - ca-certificates
       - openssl
-      - postgresql-client
-      - mariadb-connector-c
+      - libpq-18
       - zlib
 
 environment:
@@ -23,7 +22,7 @@ environment:
       - busybox
       - build-base
       - rust
-      - cargo
+      - cargo-auditable
       - git
       - pkgconf
       - clang
@@ -31,7 +30,6 @@ environment:
       - unzip
       - openssl-dev
       - postgresql-dev 
-      - mariadb-connector-c-dev 
       - zlib-dev 
 
 pipeline:
@@ -49,7 +47,7 @@ pipeline:
   - name: build-vaultwarden
     working-directory: /home/builder/vaultwarden
     runs: |
-      export FEATURES="sqlite,mysql,postgresql"
+      export FEATURES="postgresql"
       export VW_VERSION="${{package.version}}"
 
       rustup target add $CARGO_BUILD_TARGET
