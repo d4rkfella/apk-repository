@@ -24,7 +24,6 @@ environment:
       - rust
       - curl
       - openssl-dev
-      - libpq-18
       - postgresql-dev
       - zlib-dev
 
@@ -39,7 +38,6 @@ pipeline:
   - name: build-vaultwarden
     working-directory: /home/build/vaultwarden
     runs: |
-      export PATH="$HOME/.cargo/bin:$PATH"
       export FEATURES="postgresql"
 
       if [[ "${{build.arch}}" == "aarch64" ]]; then
@@ -57,6 +55,12 @@ pipeline:
   - name: package-installation
     working-directory: /home/build/vaultwarden
     runs: |
+      if [[ "${{build.arch}}" == "aarch64" ]]; then
+        export CARGO_BUILD_TARGET="aarch64-unknown-linux-gnu"
+      elif [[ "${{build.arch}}" == "x86_64" ]]; then
+        export CARGO_BUILD_TARGET="x86_64-unknown-linux-gnu"
+      fi
+
       mkdir -p ${{targets.destdir}}/usr/bin
       cp target/$CARGO_BUILD_TARGET/release/vaultwarden ${{targets.destdir}}/usr/bin/vaultwarden
       cp -r ./docker/healthcheck.sh ./docker/start.sh ${{targets.destdir}}/usr/bin/
