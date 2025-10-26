@@ -35,11 +35,6 @@ pipeline:
       expected-commit: 5d84f17600e179280e44c391b92ee9eecc2b7cdc
       destination: vaultwarden
   
-  - name: fetch-sources
-    runs: |
-      mkdir -p /home/builder/vaultwarden
-      cp -r ./* /home/builder/vaultwarden/
-      
   - name: build-vaultwarden
     working-directory: /home/build/vaultwarden
     runs: |
