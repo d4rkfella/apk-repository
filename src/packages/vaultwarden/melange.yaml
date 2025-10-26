@@ -18,10 +18,11 @@ environment:
   contents:
     packages:
       - wolfi-base
-      - rustup
       - cargo-auditable
       - pkgconf
       - clang
+      - cargo
+      - rust
       - curl
       - openssl-dev
       - libpq-18
@@ -46,8 +47,6 @@ pipeline:
       elif [[ "${{build.arch}}" == "x86_64" ]]; then
         export CARGO_BUILD_TARGET="x86_64-unknown-linux-gnu"
       fi
-
-      rustup target add $CARGO_BUILD_TARGET
 
       cargo auditable build \
         --features ${FEATURES} \
