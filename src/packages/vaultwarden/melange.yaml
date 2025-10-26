@@ -25,6 +25,7 @@ environment:
       - curl
       - openssl-dev
       - libpq-18
+      - postgresql-dev
       - zlib-dev
 
 pipeline:
