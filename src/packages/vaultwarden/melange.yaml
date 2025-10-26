@@ -18,18 +18,13 @@ environment:
   contents:
     packages:
       - wolfi-base
-      - wolfi-baselayout
-      - busybox
-      - build-base
-      - rust
       - rustup
       - cargo-auditable
-      - git
       - pkgconf
       - clang
       - curl
-      - unzip
       - openssl-dev
+      - libpq-18
       - zlib-dev
 
 pipeline:
@@ -38,6 +33,7 @@ pipeline:
       repository: https://github.com/dani-garcia/vaultwarden
       tag: ${{package.version}}
       expected-commit: 5d84f17600e179280e44c391b92ee9eecc2b7cdc
+      destination: vaultwarden
   
   - name: fetch-sources
     runs: |
@@ -45,10 +41,9 @@ pipeline:
       cp -r ./* /home/builder/vaultwarden/
       
   - name: build-vaultwarden
-    working-directory: /home/builder/vaultwarden
+    working-directory: /home/build/vaultwarden
     runs: |
       export FEATURES="postgresql"
-      export VW_VERSION="${{package.version}}"
 
       if [[ "${{build.arch}}" == "aarch64" ]]; then
         export CARGO_BUILD_TARGET="aarch64-unknown-linux-gnu"
@@ -66,30 +61,9 @@ pipeline:
         --target $CARGO_BUILD_TARGET \
         --bin vaultwarden
 
-  - name: fetch-web-vault
-    working-directory: /home/builder
-    runs: |
-      WEB_VAULT_VERSION="2025.9.1" 
-      WEB_VAULT_URL="https://github.com/dani-garcia/bw_web_builds/releases/download/v${WEB_VAULT_VERSION}/bw_web_v${WEB_VAULT_VERSION}.tar.gz"
-      
-      echo "Fetching Web Vault from ${WEB_VAULT_URL}"
-      mkdir -p /home/builder/web-vault
-      # Use curl and tar to download and extract the web-vault contents
-      curl -L "${WEB_VAULT_URL}" | tar -xz -C /home/builder/web-vault --strip-components=1
-
   - name: package-installation
-    working-directory: /home/builder/vaultwarden
+    working-directory: /home/build/vaultwarden
     runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       cp target/$CARGO_BUILD_TARGET/release/vaultwarden ${{targets.destdir}}/usr/bin/vaultwarden
-      
-      mkdir -p ${{targets.destdir}}/usr/share/vaultwarden/web-vault
-      cp -r /home/builder/web-vault/* ${{targets.destdir}}/usr/share/vaultwarden/web-vault/
-      
-      mkdir -p ${{targets.destdir}}/usr/share/vaultwarden/
-      cp -r ./docker/healthcheck.sh ./docker/start.sh ${{targets.destdir}}/usr/share/vaultwarden/
-      
-      mkdir -p ${{targets.destdir}}/var/lib/vaultwarden
-      
-      ln -sf /usr/share/vaultwarden/start.sh ${{targets.destdir}}/usr/bin/vaultwarden-start
-      ln -sf /usr/share/vaultwarden/healthcheck.sh ${{targets.destdir}}/usr/bin/vaultwarden-healthcheck
+      cp -r ./docker/healthcheck.sh ./docker/start.sh ${{targets.destdir}}/usr/bin/
