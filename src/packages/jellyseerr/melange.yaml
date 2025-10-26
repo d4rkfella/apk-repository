@@ -74,5 +74,5 @@ test:
 update:
   enabled: true
   github:
-    identifier: fallenbagel/jellyseerr
+    identifier: seerr-team/seerr
     strip-prefix: v
