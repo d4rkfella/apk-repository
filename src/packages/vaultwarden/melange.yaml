@@ -12,7 +12,7 @@ package:
       - ca-certificates
       - openssl
       - libpq-18
-      - zlib
+      - curl
 
 environment:
   contents:
@@ -30,8 +30,8 @@ environment:
       - curl
       - unzip
       - openssl-dev
-      - postgresql-dev 
-      - zlib-dev 
+      - libpq-18-dev
+      - zlib-dev
 
 pipeline:
   - uses: git-checkout
