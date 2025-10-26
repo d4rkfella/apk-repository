@@ -21,7 +21,6 @@ environment:
       - cargo-auditable
       - pkgconf
       - clang
-      - cargo
       - rust
       - curl
       - openssl-dev
