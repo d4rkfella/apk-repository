@@ -30,7 +30,6 @@ environment:
       - curl
       - unzip
       - openssl-dev
-      - libpq-dev
       - zlib-dev
 
 pipeline:
