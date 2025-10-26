@@ -38,6 +38,7 @@ pipeline:
   - name: build-vaultwarden
     working-directory: /home/build/vaultwarden
     runs: |
+      source $HOME/.cargo/env
       export FEATURES="postgresql"
 
       if [[ "${{build.arch}}" == "aarch64" ]]; then
