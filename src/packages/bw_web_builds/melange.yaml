@@ -24,7 +24,7 @@ pipeline:
     with:
       repository: https://github.com/dani-garcia/bw_web_builds
       tag: v${{package.version}}
-      expected-commit: 52d68ba5da72bdb8f2104b4d1f9bc4a38745fd74
+      expected-commit: 824b793b415897b79ff8d46fa561eff7b57f76d0
       destination: bw_web_builds
   
   - name: build-web-vault
