@@ -1,0 +1,30 @@
+package:
+  name: bw_web_vault
+  version: "2025.9.1"
+  epoch: 0
+  description: "Web vault for vaultwarden"
+  copyright:
+    - license: GPL-3.0-only
+
+environment:
+  contents:
+    packages:
+      - wolfi-base
+      - build-base
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/dani-garcia/bw_web_builds
+      tag: v${{package.version}}
+      expected-commit: 52d68ba5da72bdb8f2104b4d1f9bc4a38745fd74
+      destination: bw_web_vault
+  
+  - name: build-web-vault
+    working-directory: /home/build/bw_web_vault
+    runs: make full
+
+  - name: package-installation
+    working-directory: /home/build/bw_web_vault
+    runs: |
+      mkdir -p ${{targets.destdir}}/usr/lib/web-vault
