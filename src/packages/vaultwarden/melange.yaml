@@ -17,7 +17,7 @@ package:
 
 environment:
   environment:
-    CARGO_BUILD_TARGET: ${{build.arch}}
+    CARGO_BUILD_TARGET: "${HOSTARCH}-unknown-linux-gnu"
     FEATURES: "postgresql"
   contents:
     packages:
