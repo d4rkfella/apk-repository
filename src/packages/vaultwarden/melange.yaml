@@ -12,6 +12,7 @@ package:
       - ca-certificates
       - openssl
       - libpq-18
+      - vw_web_vault
       - curl
 
 environment:
@@ -51,7 +52,9 @@ pipeline:
         --release \
         --target $CARGO_BUILD_TARGET \
         --bin vaultwarden
-
+  
+  - uses: strip
+  
   - name: package-installation
     working-directory: /home/build/vaultwarden
     runs: |
