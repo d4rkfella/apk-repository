@@ -17,7 +17,7 @@ package:
 
 environment:
   environment:
-    CARGO_BUILD_TARGET: ${{build.arch}}-unknown-linux-gnu
+    CARGO_BUILD_TARGET: ${{build.arch}}
     FEATURES: "postgresql"
   contents:
     packages:
