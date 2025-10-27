@@ -15,6 +15,7 @@ environment:
       - nodejs-22
       - npm
       - python-3.14
+      - coreutils
 
 pipeline:
   - uses: git-checkout
