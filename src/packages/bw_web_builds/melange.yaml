@@ -39,3 +39,4 @@ pipeline:
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/vw_web_vault
       cp -r ./* ${{targets.destdir}}/usr/lib/vw_web_vault
+      sed -i "s|\"version\":\"[^\"]*\"|\"version\":\"${VAULT_VERSION}\"|" "/usr/lib/vw_web_vault/vw-version.json"
