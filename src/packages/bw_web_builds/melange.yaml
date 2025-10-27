@@ -1,6 +1,6 @@
 package:
   name: vw_web_vault
-  version: "2025.9.1"
+  version: "2025.7.0"
   epoch: 0
   description: "Web vault for vaultwarden"
   copyright:
@@ -9,6 +9,7 @@ package:
 environment:
   environment:
       REPRODUCIBLE: false
+      VAULT_VERSION: v${{package.version}}
   contents:
     packages:
       - wolfi-base
@@ -29,7 +30,6 @@ pipeline:
   - name: build-web-vault
     working-directory: /home/build/bw_web_builds
     runs: |
-      export VAULT_VERSION=19dcdf9ba962ea93ada7d69c8a9cd1c0b4c519fa
       export CHECKOUT_TAGS=false
       make checkout
       make build
