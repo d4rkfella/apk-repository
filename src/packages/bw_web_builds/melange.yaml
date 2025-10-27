@@ -25,7 +25,11 @@ pipeline:
   
   - name: build-web-vault
     working-directory: /home/build/bw_web_vault
-    runs: make full
+    runs: |
+      npm ci
+      pushd apps/web
+      npm run dist:oss:selfhost
+      find build -name "*.map" -delete
 
   - name: package-installation
     working-directory: /home/build/bw_web_vault
