@@ -1,5 +1,5 @@
 package:
-  name: bw_web_vault
+  name: vw_web_vault
   version: "2025.9.1"
   epoch: 0
   description: "Web vault for vaultwarden"
@@ -15,7 +15,6 @@ environment:
       - nodejs-22
       - npm
       - python-3.14
-      - coreutils
 
 pipeline:
   - uses: git-checkout
@@ -23,10 +22,10 @@ pipeline:
       repository: https://github.com/dani-garcia/bw_web_builds
       tag: v${{package.version}}
       expected-commit: 52d68ba5da72bdb8f2104b4d1f9bc4a38745fd74
-      destination: bw_web_vault
+      destination: bw_web_builds
   
   - name: build-web-vault
-    working-directory: /home/build/bw_web_vault
+    working-directory: /home/build/bw_web_builds
     runs: |
       export VAULT_VERSION=19dcdf9ba962ea93ada7d69c8a9cd1c0b4c519fa
       export CHECKOUT_TAGS=false
@@ -34,6 +33,8 @@ pipeline:
       make build
 
   - name: package-installation
-    working-directory: /home/build/bw_web_vault
+    working-directory: /home/build/bw_web_builds
     runs: |
-      mkdir -p ${{targets.destdir}}/usr/lib/web-vault
+      mkdir -p ${{targets.destdir}}/usr/lib/vw_web_vault
+      cp -r ./web-vault ${{targets.destdir}}/usr/lib/vw_web_vault
+      
