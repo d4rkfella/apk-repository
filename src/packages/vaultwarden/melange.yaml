@@ -66,4 +66,4 @@ pipeline:
 
       mkdir -p ${{targets.destdir}}/usr/bin
       cp target/$CARGO_BUILD_TARGET/release/vaultwarden ${{targets.destdir}}/usr/bin/vaultwarden
-      cp -r ./docker/healthcheck.sh ./docker/start.sh ${{targets.destdir}}/usr/bin/
+      install -m555 -D start.sh ${{targets.subpkgdir}}/usr/bin/start.sh
