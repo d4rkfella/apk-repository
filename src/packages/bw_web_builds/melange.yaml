@@ -26,8 +26,8 @@ pipeline:
   - name: build-web-vault
     working-directory: /home/build/bw_web_vault
     runs: |
-      VAULT_VERSION=19dcdf9ba962ea93ada7d69c8a9cd1c0b4c519fa
-      CHECKOUT_TAGS=false
+      export VAULT_VERSION=19dcdf9ba962ea93ada7d69c8a9cd1c0b4c519fa
+      export CHECKOUT_TAGS=false
       make full
 
   - name: package-installation
