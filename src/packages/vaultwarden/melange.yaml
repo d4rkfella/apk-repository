@@ -16,7 +16,7 @@ package:
       - curl
 
 environment:
-  enviroment:
+  environment:
     CARGO_BUILD_TARGET: ${{build.arch}}-unknown-linux-gnu
     FEATURES: "postgresql"
   contents:
