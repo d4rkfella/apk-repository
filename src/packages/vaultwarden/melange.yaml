@@ -16,6 +16,9 @@ package:
       - curl
 
 environment:
+  enviroment:
+    CARGO_BUILD_TARGET: ${{build.arch}}-unknown-linux-gnu
+    FEATURES: "postgresql"
   contents:
     packages:
       - wolfi-base
@@ -36,22 +39,9 @@ pipeline:
       expected-commit: 5d84f17600e179280e44c391b92ee9eecc2b7cdc
       destination: vaultwarden
 
-  - name: test
-    runs: |
-      mkdir -p ${{targets.destdir}}/usr/bin
-      install -m555 -D start.sh ${{targets.destdir}}/usr/bin/start.sh
-  
   - name: build-vaultwarden
     working-directory: /home/build/vaultwarden
     runs: |
-      export FEATURES="postgresql"
-      install -m555 -D start.sh ${{targets.destdir}}/usr/bin/start.sh
-      if [[ "${{build.arch}}" == "aarch64" ]]; then
-        export CARGO_BUILD_TARGET="aarch64-unknown-linux-gnu"
-      elif [[ "${{build.arch}}" == "x86_64" ]]; then
-        export CARGO_BUILD_TARGET="x86_64-unknown-linux-gnu"
-      fi
-
       cargo auditable build \
         --features ${FEATURES} \
         --release \
@@ -60,15 +50,8 @@ pipeline:
   
   - uses: strip
   
-  - name: package-installation
-    working-directory: /home/build/vaultwarden
+  - name: prepare-package
     runs: |
-      if [[ "${{build.arch}}" == "aarch64" ]]; then
-        export CARGO_BUILD_TARGET="aarch64-unknown-linux-gnu"
-      elif [[ "${{build.arch}}" == "x86_64" ]]; then
-        export CARGO_BUILD_TARGET="x86_64-unknown-linux-gnu"
-      fi
-
       mkdir -p ${{targets.destdir}}/usr/bin
-      cp target/$CARGO_BUILD_TARGET/release/vaultwarden ${{targets.destdir}}/usr/bin/vaultwarden
+      cp /home/build/vaultwarden/target/$CARGO_BUILD_TARGET/release/vaultwarden ${{targets.destdir}}/usr/bin/vaultwarden
       install -m555 -D start.sh ${{targets.destdir}}/usr/bin/start.sh
