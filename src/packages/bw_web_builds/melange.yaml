@@ -11,6 +11,7 @@ environment:
     packages:
       - wolfi-base
       - build-base
+      - nodejs-22
 
 pipeline:
   - uses: git-checkout
