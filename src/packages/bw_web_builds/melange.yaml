@@ -10,8 +10,10 @@ environment:
   contents:
     packages:
       - wolfi-base
+      - bash
       - build-base
       - nodejs-22
+      - npm
 
 pipeline:
   - uses: git-checkout
