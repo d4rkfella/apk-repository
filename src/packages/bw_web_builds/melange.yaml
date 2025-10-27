@@ -35,7 +35,7 @@ pipeline:
       make build
 
   - name: package-installation
-    working-directory: /home/build/bw_web_builds
+    working-directory: /home/build/bw_web_builds/web-vault/apps/web/build
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/vw_web_vault
-      cp -r ./web-vault/* ${{targets.destdir}}/usr/lib/vw_web_vault
+      cp -r ./* ${{targets.destdir}}/usr/lib/vw_web_vault
