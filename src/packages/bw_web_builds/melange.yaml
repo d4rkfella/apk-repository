@@ -28,7 +28,7 @@ pipeline:
     runs: |
       VAULT_VERSION=19dcdf9ba962ea93ada7d69c8a9cd1c0b4c519fa
       CHECKOUT_TAGS=false
-      npm ci
+      npm help ci
       pushd apps/web
       npm run dist:oss:selfhost
       find build -name "*.map" -delete
