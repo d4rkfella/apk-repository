@@ -7,6 +7,8 @@ package:
     - license: GPL-3.0-only
 
 environment:
+  environment:
+      REPRODUCIBLE: false
   contents:
     packages:
       - wolfi-base
@@ -36,5 +38,4 @@ pipeline:
     working-directory: /home/build/bw_web_builds
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/vw_web_vault
-      cp -r ./web-vault ${{targets.destdir}}/usr/lib/vw_web_vault
-      
+      cp -r ./web-vault/* ${{targets.destdir}}/usr/lib/vw_web_vault
