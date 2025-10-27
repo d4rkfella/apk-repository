@@ -35,6 +35,11 @@ pipeline:
       tag: ${{package.version}}
       expected-commit: 5d84f17600e179280e44c391b92ee9eecc2b7cdc
       destination: vaultwarden
+
+  - name: test
+    runs: |
+      mkdir -p ${{targets.destdir}}/usr/bin
+      install -m555 -D start.sh ${{targets.destdir}}/usr/bin/start.sh
   
   - name: build-vaultwarden
     working-directory: /home/build/vaultwarden
