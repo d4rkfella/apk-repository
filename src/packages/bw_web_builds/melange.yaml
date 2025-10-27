@@ -14,6 +14,7 @@ environment:
       - build-base
       - nodejs-22
       - npm
+      - python
 
 pipeline:
   - uses: git-checkout
