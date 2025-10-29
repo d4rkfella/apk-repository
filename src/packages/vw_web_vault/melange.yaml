@@ -9,7 +9,6 @@ package:
 environment:
   environment:
       REPRODUCIBLE: false
-      VAULT_VERSION: v${{package.version}}
   contents:
     packages:
       - wolfi-base
