@@ -9,6 +9,7 @@ package:
 environment:
   environment:
       REPRODUCIBLE: false
+      VAULT_VERSION: v${{package.version}}
   contents:
     packages:
       - wolfi-base
@@ -30,6 +31,7 @@ pipeline:
     working-directory: /home/build/bw_web_builds
     runs: |
       export CHECKOUT_TAGS=false
+      echo $VAULT_VERSION
       make checkout
       make build
 
