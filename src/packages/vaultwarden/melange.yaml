@@ -44,6 +44,7 @@ pipeline:
     working-directory: /home/build/vaultwarden
     runs: |
       echo $TEST
+      echo $TEST2
       if [[ "${{build.arch}}" == "aarch64" ]]; then
         export CARGO_BUILD_TARGET="aarch64-unknown-linux-gnu"
       elif [[ "${{build.arch}}" == "x86_64" ]]; then
