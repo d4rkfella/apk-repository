@@ -10,6 +10,7 @@ environment:
   environment:
       REPRODUCIBLE: false
       VAULT_VERSION: v${{package.version}}
+      CHECKOUT_TAGS: false
   contents:
     packages:
       - wolfi-base
@@ -30,8 +31,6 @@ pipeline:
   - name: build-web-vault
     working-directory: /home/build/bw_web_builds
     runs: |
-      export CHECKOUT_TAGS=false
-      echo $VAULT_VERSION
       make checkout
       make build
 
@@ -41,3 +40,4 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/lib/vw_web_vault
       cp -r ./* ${{targets.destdir}}/usr/lib/vw_web_vault
       sed -i "s|\"version\":\"[^\"]*\"|\"version\":\"${VAULT_VERSION}\"|" "${{targets.destdir}}/usr/lib/vw_web_vault/vw-version.json"
+      
