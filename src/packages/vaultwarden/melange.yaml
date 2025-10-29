@@ -19,6 +19,7 @@ environment:
   environment:
     FEATURES: "postgresql"
     TEST: ${{build.arch}}
+    TEST2: ${{package.version}}
   contents:
     packages:
       - wolfi-base
