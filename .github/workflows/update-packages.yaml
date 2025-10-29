@@ -112,11 +112,11 @@ jobs:
         if: steps.read-output.outputs.bumped == 'true'
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
-          title: 'Update "${{ steps.read-output.outputs.package_name }}" version to "${{ steps.read-output.outputs.new_version }}"'
+          title: '"${{ steps.read-output.outputs.package_name }}"/"${{ steps.read-output.outputs.new_version }}" package update'
           add-paths: "${{ matrix.path }}"
           branch: 'update-${{ steps.read-output.outputs.package_name }}'
           body-path: "${{ github.workspace }}/pr_body.md"
-          commit-message: 'Update ${{ steps.read-output.outputs.package_name }} version to ${{ steps.read-output.outputs.new_version }}'
+          commit-message: '"${{ steps.read-output.outputs.package_name }}"/"${{ steps.read-output.outputs.new_version }}" package update'
           sign-commits: true
           labels: |
             automated-pr
