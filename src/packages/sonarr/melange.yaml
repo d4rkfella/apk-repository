@@ -1,7 +1,7 @@
 package:
   name: sonarr
-  version: "4.0.15.2941"
-  epoch: 1
+  version: "4.0.16.2942"
+  epoch: 0
   description: Sonarr is a PVR for Usenet and BitTorrent users. It can monitor multiple RSS feeds for new episodes of your favorite shows and will grab, sort and rename them. It can also be configured to automatically upgrade the quality of files already downloaded when a better quality format becomes available.
   copyright:
     - license: GPL-3.0-only
@@ -23,10 +23,9 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 7db7567c8e410f571bd1c75c5a2b79f28d33f699
+      expected-commit: 8c5091949933daaad15f9b7660ce81b9f9fee25d
       repository: https://github.com/Sonarr/Sonarr
       tag: v${{package.version}}
-  
   - name: Build
     runs: |
       if [[ "${{build.arch}}" == "aarch64" ]]; then
@@ -34,22 +33,22 @@ pipeline:
       elif [[ "${{build.arch}}" == "x86_64" ]]; then
         runtime_arch="x64"
       fi
-  
+
       export BROWSERSLIST_IGNORE_OLD_DATA=true
-  
+
       yarn install --frozen-lockfile --network-timeout 120000
-  
+
       echo '{"sdk":{"version":"6.0.136"}}' > global.json
-  
+
       _dotnet_arch="$runtime_arch"
       _runtime="linux-$_dotnet_arch"
       _framework="net6.0"
       _output="_output"
       _destdir="${{targets.destdir}}/usr/lib/sonarr"
       _artifacts="$_output/$_framework/$_runtime/publish"
-  
+
       ulimit -n 4096
-  
+
       dotnet publish src \
         -p:AssemblyConfiguration="main" \
         -p:AssemblyVersion="${{package.version}}" \
@@ -63,30 +62,28 @@ pipeline:
         -p:SentryIncludeSources=false \
         -p:EmbedAllSources=false \
         -f "$_framework"
-  
+
       yarn build --env production --no-stats
-  
+
       chmod +x "$_artifacts"/ffprobe
-  
+
       find "$_artifacts" \( \
         -name "ServiceUninstall.*" -o \
         -name "ServiceInstall.*" -o \
         -name "Sonarr.Windows.*" \
       \) -delete
-  
+
       mv "$_output"/UI "$_artifacts"
-  
+
       echo "Preparing package"
-  
+
       mkdir -p "$_destdir" "${{targets.destdir}}/usr/bin"
       printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "develop" "${{package.version}}" > "$_destdir"/package_info
-  
-      cp -af "$_artifacts" "$_destdir"/bin
-  
-      ln -s /usr/lib/sonarr/bin/Sonarr "${{targets.destdir}}"/usr/bin/Sonarr
-  
-  - uses: strip
 
+      cp -af "$_artifacts" "$_destdir"/bin
+
+      ln -s /usr/lib/sonarr/bin/Sonarr "${{targets.destdir}}"/usr/bin/Sonarr
+  - uses: strip
 test:
   environment:
     contents:
@@ -105,7 +102,6 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
-
 update:
   enabled: true
   github:
