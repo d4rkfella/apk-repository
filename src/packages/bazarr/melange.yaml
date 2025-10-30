@@ -23,9 +23,9 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 2af1f0cda2d5b8e28e698eb1ae3edc9b93a8eff1
+      expected-commit: c078b6c453e4891fbbe8bd2c3c2ff4938305a914
       repository: https://github.com/morpheus65535/bazarr
-      tag: v${{package.version}}-beta.10
+      tag: v${{package.version}}-beta.13
   
   - uses: patch
     with:
@@ -152,4 +152,4 @@ test:
     
     - name: Run test script
       runs: |
-        EXPECTED_VERSION="${{package.version}}-beta.10" test/test.sh
+        EXPECTED_VERSION="${{package.version}}-beta.13" test/test.sh
