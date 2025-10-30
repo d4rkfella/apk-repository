@@ -12,6 +12,7 @@ package:
 environment:
   environment:
     PACKAGE_UPDATE_USE_PRERELEASE: true
+    BROWSERSLIST_IGNORE_OLD_DATA: true
   contents:
     packages:
       - wolfi-baselayout
@@ -33,8 +34,6 @@ pipeline:
       elif [[ "${{build.arch}}" == "x86_64" ]]; then
         runtime_arch="x64"
       fi
-
-      export BROWSERSLIST_IGNORE_OLD_DATA=true
 
       yarn install --frozen-lockfile --network-timeout 120000
 
