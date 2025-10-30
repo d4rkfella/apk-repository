@@ -10,6 +10,8 @@ package:
       - aspnet-8-runtime
       - sqlite-libs
 environment:
+  environment:
+    PACKAGE_UPDATE_USE_PRERELEASE: true
   contents:
     packages:
       - wolfi-baselayout
