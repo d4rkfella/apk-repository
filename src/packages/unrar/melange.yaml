@@ -1,6 +1,6 @@
 package:
   name: unrar
-  version: "7.1.6"
+  version: "7.2.1"
   epoch: 0
   description: UnRAR - free utility for RAR archives
 environment:
@@ -9,27 +9,21 @@ environment:
       - wolfi-baselayout
       - build-base
       - busybox
-
 pipeline:
   - uses: fetch
     with:
       uri: https://www.rarlab.com/rar/unrarsrc-${{package.version}}.tar.gz
-      expected-sha256: ca5e1da37dd6fa1b78bb5ed675486413f79e4a917709744aa04b6f93dfd914f0
-  
+      expected-sha256: 3fe3b4d710da45521625353dc2e023dad48c010f02a93302756e1061a8f3ae8e
   - uses: autoconf/make
-  
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       install -v -m755 unrar ${{targets.destdir}}/usr/bin
-
   - uses: strip
-
 test:
   pipeline:
     - uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
-
 update:
   enabled: true
   release-monitor:
