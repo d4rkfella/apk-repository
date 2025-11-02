@@ -1,7 +1,7 @@
 package:
   name: bazarr
   version: "1.5.4"
-  epoch: 0
+  epoch: 1
   description: Bazarr is a companion application to Sonarr and Radarr. It manages and downloads subtitles based on your requirements. You define your preferences by TV show or movie and Bazarr takes care of everything for you.
   copyright:
     - license: GPL-3.0-only
@@ -11,6 +11,9 @@ package:
       - ffmpeg
 
 environment:
+  environment:
+    PYTHONHASHSEED: 0
+    PYTHONDONTWRITEBYTECODE: 1
   contents:
     packages:
       - python-3.13
@@ -38,71 +41,44 @@ pipeline:
       npm install
       npm run build
   
+  - name: Update vendored dependancies
   - runs: |
-      set -euo pipefail     
-      
-      DEST_DIR="/tmp"
-      LIBS_DIR="libs"
+      set -euo pipefail
+      echo "Updating vendored dependancies...."
+      PACKAGES=(
+        "waitress-3.0.0.dist-info waitress==3.0.2"
+        "jinja2-3.1.5.dist-info jinja2==3.1.6"
+        "h11-0.14.0.dist-info h11==0.16.0"
+        "urllib3-2.2.3.dist-info urllib3==2.5.0"
+        "Flask_Cors-5.0.0.dist-info flask_cors==6.0.1"
+        "requests-2.32.3.dist-info requests==2.32.5"
+      )
 
-      if [ -d "$LIBS_DIR/waitress-3.0.0.dist-info" ]; then
-          rm -rf "$LIBS_DIR/waitress-3.0.0.dist-info"
-          pip download --no-deps --dest="$DEST_DIR" waitress==3.0.2
-          python3 -m zipfile -e "$DEST_DIR/waitress-3.0.2-py3-none-any.whl" "$LIBS_DIR/"
-      else
-          echo "Warning: $LIBS_DIR/waitress-3.0.0.dist-info not found, skipping"
-      fi
-      
-      if [ -d "$LIBS_DIR/jinja2-3.1.5.dist-info" ]; then
-          rm -rf "$LIBS_DIR/jinja2-3.1.5.dist-info"
-          pip download --no-deps --dest="$DEST_DIR" jinja2==3.1.6
-          python3 -m zipfile -e "$DEST_DIR/jinja2-3.1.6-py3-none-any.whl" "$LIBS_DIR/"
-      else
-          echo "Warning: $LIBS_DIR/jinja2-3.1.5.dist-info not found, skipping"
-      fi
+      for entry in "${PACKAGES[@]}"; do
+        read -r OLD_DIST NEW_SPEC <<<"$entry"
+        PACKAGE_NAME=$(echo "$NEW_SPEC" | cut -d= -f1)
+        VERSION=$(echo "$NEW_SPEC" | cut -d= -f3)
+        WHL_FILE="$DEST_DIR/${PACKAGE_NAME}-${VERSION}-py3-none-any.whl"
 
-      if [ -d "$LIBS_DIR/h11-0.14.0.dist-info" ]; then
-          rm -rf "$LIBS_DIR/h11-0.14.0.dist-info"
-          pip download --no-deps --dest="$DEST_DIR" h11==0.16.0
-          python3 -m zipfile -e "$DEST_DIR/h11-0.16.0-py3-none-any.whl" "$LIBS_DIR/"
-      else
-          echo "Warning: $LIBS_DIR/h11-0.14.0.dist-info not found, skipping"
-      fi
-
-      if [ -d "$LIBS_DIR/urllib3-2.2.3.dist-info" ]; then
-          rm -rf "$LIBS_DIR/urllib3-2.2.3.dist-info"
-          pip download --no-deps --dest="$DEST_DIR" urllib3==2.5.0
-          python3 -m zipfile -e "$DEST_DIR/urllib3-2.5.0-py3-none-any.whl" "$LIBS_DIR/"
-      else
-          echo "Warning: $LIBS_DIR/urllib3-2.2.3.dist-info not found, skipping"
-      fi
-
-      if [ -d "$LIBS_DIR/Flask_Cors-5.0.0.dist-info" ]; then
-          rm -rf "$LIBS_DIR/Flask_Cors-5.0.0.dist-info"
-          pip download --no-deps --dest="$DEST_DIR" flask_cors==6.0.1
-          python3 -m zipfile -e "$DEST_DIR/flask_cors-6.0.1-py3-none-any.whl" "$LIBS_DIR/"
-      else
-          echo "Warning: $LIBS_DIR/flask_cors-5.0.0.dist-info not found, skipping"
-      fi
-
-      if [ -d "$LIBS_DIR/requests-2.32.3.dist-info" ]; then
-          rm -rf "$LIBS_DIR/requests-2.32.3.dist-info"
-          pip download --no-deps --dest="$DEST_DIR" requests==2.32.5
-          python3 -m zipfile -e "$DEST_DIR/requests-2.32.5-py3-none-any.whl" "$LIBS_DIR/"
-      else
-          echo "Warning: $LIBS_DIR/requests-2.32.3.dist-info not found, skipping"
-      fi
-     
-      echo "✅ All tasks completed successfully!"
+        if [ -d "$LIBS_DIR/$OLD_DIST" ]; then
+          echo "Updated $PACKAGE_NAME to version $VERSION..."
+          rm -rf "$LIBS_DIR/$OLD_DIST"
+          pip download --no-deps --dest="$DEST_DIR" "$NEW_SPEC"
+          python3 -m zipfile -e "$WHL_FILE" "$LIBS_DIR/"
+        else
+          echo "Warning: $LIBS_DIR/$OLD_DIST not found, skipping"
+        fi
+      done
   
-  - name: Enable SSL verification
+  - name: Fix SSL verification
     runs: |
       set -euo pipefail
       
       if ! head -n 15 "libs/urllib3/connectionpool.py" | grep -q "import ssl"; then
         sed -i '/from __future__ import annotations/a import ssl' "libs/urllib3/connectionpool.py"
-        echo "'import ssl' has been added to the top of the file."
+        echo "'ssl package import' has been added to the top of the file."
       else
-        echo "'import ssl' is already present in the file."
+        echo "'ssl package is already imported."
       fi
       
       sed -i 's/cert_reqs=self\.cert_reqs/cert_reqs=ssl.CERT_REQUIRED/' "libs/urllib3/connectionpool.py"  
@@ -110,12 +86,7 @@ pipeline:
   - name: Prepare package
     runs: |
       set -euo pipefail
-      
-      export LANG=C.UTF-8
-      export PYTHONHASHSEED=0
-      export PYTHONDONTWRITEBYTECODE=1
-      export PYTHONUNBUFFERED=1
-      
+
       APPDIR="${{targets.destdir}}/usr/lib/bazarr/app"
       FILE_LIST="$(cat .github/files_to_copy)"
       
@@ -153,3 +124,9 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}-beta.13" test/test.sh
+
+update:
+  enabled: false
+  github:
+    identifier: morpheus65535/bazarr
+    strip-prefix: v

@@ -1,7 +1,7 @@
 package:
   name: autobrr
   version: "1.68.0"
-  epoch: 0
+  epoch: 1
   description: "Autobrr download automation tool"
   copyright:
     - license: GPL-2.0-or-later
