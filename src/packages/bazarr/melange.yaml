@@ -50,7 +50,7 @@ pipeline:
 
       echo "Updating vendored dependencies..."
 
-      for OLD_DIST NEW_SPEC in \
+      for entry in \
         "waitress-3.0.0.dist-info waitress==3.0.2" \
         "jinja2-3.1.5.dist-info jinja2==3.1.6" \
         "h11-0.14.0.dist-info h11==0.16.0" \
@@ -58,8 +58,11 @@ pipeline:
         "Flask_Cors-5.0.0.dist-info flask_cors==6.0.1" \
         "requests-2.32.3.dist-info requests==2.32.5"
       do
-          PACKAGE_NAME=$(echo "$NEW_SPEC" | cut -d= -f1)
-          VERSION=$(echo "$NEW_SPEC" | cut -d= -f3)
+          OLD_DIST=$(printf '%s' "$entry" | cut -d' ' -f1)
+          NEW_SPEC=$(printf '%s' "$entry" | cut -d' ' -f2)
+
+          PACKAGE_NAME=$(printf '%s' "$NEW_SPEC" | cut -d= -f1)
+          VERSION=$(printf '%s' "$NEW_SPEC" | cut -d= -f3)
 
           if [ -d "$LIBS_DIR/$OLD_DIST" ]; then
               echo "Updating $PACKAGE_NAME to version $VERSION..."
