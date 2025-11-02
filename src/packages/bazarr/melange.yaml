@@ -44,9 +44,13 @@ pipeline:
   - name: Update vendored dependencies
     runs: |
       set -euo pipefail
-      echo "Updating vendored dependencies...."
 
-      for entry in \
+      DEST_DIR="/tmp"
+      LIBS_DIR="libs"
+
+      echo "Updating vendored dependencies..."
+
+      for OLD_DIST NEW_SPEC in \
         "waitress-3.0.0.dist-info waitress==3.0.2" \
         "jinja2-3.1.5.dist-info jinja2==3.1.6" \
         "h11-0.14.0.dist-info h11==0.16.0" \
@@ -54,20 +58,17 @@ pipeline:
         "Flask_Cors-5.0.0.dist-info flask_cors==6.0.1" \
         "requests-2.32.3.dist-info requests==2.32.5"
       do
-        OLD_DIST=$(echo "$entry" | awk '{print $1}')
-        NEW_SPEC=$(echo "$entry" | awk '{print $2}')
-        PACKAGE_NAME=$(echo "$NEW_SPEC" | cut -d= -f1)
-        VERSION=$(echo "$NEW_SPEC" | cut -d= -f3)
-        WHL_FILE="$DEST_DIR/${PACKAGE_NAME}-${VERSION}-py3-none-any.whl"
+          PACKAGE_NAME=$(echo "$NEW_SPEC" | cut -d= -f1)
+          VERSION=$(echo "$NEW_SPEC" | cut -d= -f3)
 
-        if [ -d "$LIBS_DIR/$OLD_DIST" ]; then
-          echo "Updating $PACKAGE_NAME to version $VERSION..."
-          rm -rf "$LIBS_DIR/$OLD_DIST"
-          pip download --no-deps --dest="$DEST_DIR" "$NEW_SPEC"
-          python3 -m zipfile -e "$WHL_FILE" "$LIBS_DIR/"
-        else
-          echo "Warning: $LIBS_DIR/$OLD_DIST not found, skipping"
-        fi
+          if [ -d "$LIBS_DIR/$OLD_DIST" ]; then
+              echo "Updating $PACKAGE_NAME to version $VERSION..."
+              rm -rf "$LIBS_DIR/$OLD_DIST"
+              pip download --no-deps --dest="$DEST_DIR" "$NEW_SPEC"
+              python3 -m zipfile -e "$DEST_DIR/${PACKAGE_NAME}-${VERSION}-py3-none-any.whl" "$LIBS_DIR/"
+          else
+              echo "Warning: $LIBS_DIR/$OLD_DIST not found, skipping"
+          fi
       done
   
   - name: Fix SSL verification
