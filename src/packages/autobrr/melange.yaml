@@ -1,7 +1,7 @@
 package:
   name: autobrr
   version: "1.68.0"
-  epoch: 1
+  epoch: 2
   description: "Autobrr download automation tool"
   copyright:
     - license: GPL-2.0-or-later
@@ -9,25 +9,17 @@ environment:
   contents:
     packages:
       - busybox
-      - bash
-      - jq
-      - curl
+      - nodejs-22
+      - pnpm
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/autobrr/autobrr
       tag: v${{package.version}}
       expected-commit: "18d452cda028847eaf66ee5e49cc30a246707150"
-  - name: Install dependancies
-    runs: |
-      PATH="$HOME/.volta/bin:$PATH"
-      curl -sSL https://get.volta.sh | bash
-      volta install "node@$(sed -n 's/.*node:\([0-9]\+\)\..*/\1/p' Dockerfile)"
-      volta install "$(jq -r '.packageManager' web/package.json)"
   - name: Build frontend
     working-directory: /home/build/web
     runs: |
-      PATH="$HOME/.volta/bin:$PATH"
       pnpm install --frozen-lockfile
       pnpm run build
   - uses: go/build
