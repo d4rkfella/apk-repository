@@ -1,0 +1,89 @@
+package:
+  name: envoy-gateway-custom
+  version: "1.5.4"
+  epoch: 0
+  description: Manages Envoy Proxy as a Standalone or Kubernetes-based Application Gateway
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    packages:
+      - btrfs-progs-dev
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: dddfdf65a89a6029299087c0cee17d40f4e4fbcd
+      repository: https://github.com/envoyproxy/gateway
+      tag: v${{package.version}}
+
+  - uses: go/bump
+    with:
+      deps: |-
+        helm.sh/helm/v3@v3.18.5
+
+  - uses: go/build
+    with:
+      packages: ./cmd/envoy-gateway
+      ldflags: |
+        -X github.com/envoyproxy/gateway/internal/cmd/version.envoyGatewayVersion=${{package.version}}
+        -X github.com/envoyproxy/gateway/internal/cmd/version.gitCommitID=$(git rev-parse HEAD)
+      output: envoy-gateway
+
+subpackages:
+  - name: ${{package.name}}-compat
+    description: Compat package for envoy-gateway
+    pipeline:
+      - runs: |
+          mkdir -p "${{targets.contextdir}}"/usr/local/bin
+          ln -sf /usr/bin/envoy-gateway "${{targets.contextdir}}"/usr/local/bin/envoy-gateway
+    test:
+      pipeline:
+        - runs: |
+            readlink -v /usr/local/bin/envoy-gateway
+
+  - name: ${{package.name}}-egctl
+    pipeline:
+      - uses: go/build
+        with:
+          packages: ./cmd/egctl
+          output: egctl
+          ldflags: |
+            -X github.com/envoyproxy/gateway/internal/cmd/version.envoyGatewayVersion=${{package.version}}
+            -X github.com/envoyproxy/gateway/internal/cmd/version.gitCommitID=$(git rev-parse HEAD)
+    test:
+      pipeline:
+        - runs: egctl version --remote=false | grep ${{package.version}}
+
+test:
+  environment:
+    contents:
+      packages:
+        - kubectl
+        - git
+        - curl
+        - mkcert
+  pipeline:
+    - uses: test/kwok/cluster
+    - runs: |
+        git clone --depth=1 -b v${{package.version}} https://github.com/envoyproxy/gateway
+        kubectl apply -f gateway/charts/gateway-helm/crds/gatewayapi-crds.yaml
+        kubectl apply --server-side=true -f gateway/charts/gateway-helm/crds/generated
+    - runs: |
+        mkdir -p /certs
+        mkcert -key-file /certs/tls.key -cert-file /certs/tls.crt localhost
+        # Copy the CA cert and key to /certs
+        cp $(mkcert -CAROOT)/rootCA.pem /certs/ca.crt
+        cp $(mkcert -CAROOT)/rootCA-key.pem /certs/ca.key
+        envoy-gateway serve > /dev/null 2>&1 &
+        sleep 3
+        curl -s localhost:8081/healthz | grep "ok"
+        curl -s localhost:19001/metrics | grep certwatcher_read_certificate_total
+
+update:
+  enabled: true
+  github:
+    identifier: envoyproxy/gateway
+    strip-prefix: v
+    tag-filter: v
