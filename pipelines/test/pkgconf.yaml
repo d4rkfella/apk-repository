@@ -3,7 +3,6 @@ name: pkgconf
 needs:
   packages:
     - pkgconf
-    - busybox
 
 pipeline:
   - name: pkgconf build dependency check
