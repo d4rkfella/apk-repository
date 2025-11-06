@@ -9,7 +9,6 @@ package:
 environment:
   contents:
     packages:
-      - busybox
       - nodejs-22
       - pnpm
 
