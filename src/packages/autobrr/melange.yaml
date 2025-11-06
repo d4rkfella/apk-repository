@@ -5,6 +5,7 @@ package:
   description: "Autobrr download automation tool"
   copyright:
     - license: GPL-2.0-or-later
+
 environment:
   contents:
     packages:
@@ -17,22 +18,27 @@ pipeline:
       repository: https://github.com/autobrr/autobrr
       tag: v${{package.version}}
       expected-commit: "18d452cda028847eaf66ee5e49cc30a246707150"
+  
   - name: Build frontend
     working-directory: /home/build/web
     runs: |
       pnpm install --frozen-lockfile
       pnpm run build
+  
   - uses: go/build
     with:
       packages: cmd/autobrr/main.go
       output: autobrr
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
+  
   - uses: go/build
     with:
       packages: cmd/autobrrctl/main.go
       output: autobrrctl
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
+  
   - uses: strip
+
 update:
   enabled: true
   github:
