@@ -21,7 +21,6 @@ jobs:
         with:
           key: build-dependencies-${{ inputs.arch }}-${{ steps.cache.outputs.key }}
           path: |
-            /usr/local/bin/jf
             /usr/local/bin/bwrap
             /usr/local/bin/melange
             /usr/local/bin/yq
