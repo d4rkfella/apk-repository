@@ -76,15 +76,15 @@ jobs:
           archs: ${{ matrix.arch }}
           artifactory-access-token: ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}
           artifactory-url: https://packages.darkfellanetwork.com
-          artifactory-repository-path: wolfi-apk
+          artifactory-repository-path: wolfi-os/latest/main
           config: ${{ matrix.packages }}
           sign-with-key: true
           signing-key-path: ${{ github.workspace }}/melange.rsa
           namespace: wolfi
           pipeline-dir: ${{ github.workspace }}/pipelines
-          repository-append: https://packages.darkfellanetwork.com/artifactory/wolfi-os,https://packages.wolfi.dev/os
+          repository-append: https://packages.darkfellanetwork.com/artifactory/wolfi-os/latest/main,https://packages.wolfi.dev/os
           keyring-append: https://packages.darkfellanetwork.com/artifactory/wolfi-os/melange.rsa.pub,https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
-          tests-repository-append: https://packages.darkfellanetwork.com/artifactory/wolfi-os,https://packages.wolfi.dev/os
+          tests-repository-append: https://packages.darkfellanetwork.com/artifactory/wolfi-os/latest/main,https://packages.wolfi.dev/os
           tests-keyring-append: https://packages.darkfellanetwork.com/artifactory/wolfi-os/melange.rsa.pub,https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
         env:
           MELANGE_PRIVATE_KEY: ${{ secrets.MELANGE_PRIVATE_KEY }}
