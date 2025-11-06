@@ -14,6 +14,7 @@ pipeline:
       repository: https://github.com/d4rkfella/melange-autoupdate
       tag: v${{package.version}}
       expected-commit: f6ace638d4d528489508b9c5ab258006f9b6c1b4
+  
   - uses: go/build
     with:
       packages: main.go
