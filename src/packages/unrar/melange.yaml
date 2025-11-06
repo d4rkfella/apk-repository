@@ -1,6 +1,6 @@
 package:
   name: unrar
-  version: 7.2.1
+  version: "7.2.1"
   epoch: 0
   description: UnRAR - free utility for RAR archives
 
