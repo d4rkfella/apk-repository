@@ -12,6 +12,7 @@ environment:
       - busybox
       - nodejs-22
       - pnpm
+
 pipeline:
   - uses: git-checkout
     with:
