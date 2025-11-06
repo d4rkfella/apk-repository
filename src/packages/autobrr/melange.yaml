@@ -19,8 +19,7 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 18d452cda028847eaf66ee5e49cc30a246707150
   
-  - name: Build frontend
-    working-directory: /home/build/web
+  - working-directory: /home/build/web
     runs: |
       pnpm install --frozen-lockfile
       pnpm run build
