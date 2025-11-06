@@ -62,7 +62,6 @@ jobs:
           key: build-dependencies-${{ matrix.arch }}-${{ steps.cache.outputs.key }}
           fail-on-cache-miss: true
           path: |
-            /usr/local/bin/jf
             /usr/local/bin/bwrap
             /usr/local/bin/melange
             /usr/local/bin/yq
