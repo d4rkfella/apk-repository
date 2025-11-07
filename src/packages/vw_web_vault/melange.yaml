@@ -1,6 +1,6 @@
 package:
   name: vw_web_vault
-  version: "2025.7.0"
+  version: 2025.7.0
   epoch: 0
   description: "Web vault for vaultwarden"
   copyright:
@@ -40,4 +40,3 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/lib/vw_web_vault
       cp -r ./* ${{targets.destdir}}/usr/lib/vw_web_vault
       sed -i "s|\"version\":\"[^\"]*\"|\"version\":\"${VAULT_VERSION}\"|" "${{targets.destdir}}/usr/lib/vw_web_vault/vw-version.json"
-      
