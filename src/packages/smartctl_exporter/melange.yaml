@@ -1,13 +1,14 @@
 package:
   name: smartctl_exporter
   description: Export smartctl statistics to prometheus
-  version: "0.14.0"
-  epoch: 5
+  version: 0.14.0
+  epoch: 0
   copyright:
     - license: Apache-2.0
   dependencies:
     runtime:
       - smartmontools
+
 pipeline:
   - uses: git-checkout
     with:
