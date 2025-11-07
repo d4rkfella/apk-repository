@@ -1,6 +1,6 @@
 package:
   name: oauth2-proxy-custom
-  version: "7.12.0"
+  version: 7.12.0
   epoch: 0
   description: Reverse proxy and static file server that provides authentication using various providers to validate accounts by email, domain or group.
   copyright:
@@ -10,7 +10,6 @@ environment:
   contents:
     packages:
       - build-base
-      - busybox
       - ca-certificates-bundle
       - go
       - openssl
