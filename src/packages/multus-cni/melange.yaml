@@ -88,7 +88,6 @@ test:
     contents:
       packages:
         - ${{package.name}}-compat
-  
   pipeline:
     - runs: |
         multus -version
