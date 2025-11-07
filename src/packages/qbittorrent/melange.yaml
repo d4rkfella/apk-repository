@@ -9,10 +9,10 @@ package:
 environment:
   contents:
     repositories:
-      - https://dl-cdn.alpinelinux.org/alpine/edge/main
-      - https://dl-cdn.alpinelinux.org/alpine/edge/community
+      - https://dl-cdn.alpinelinux.org/alpine/v3.23/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.23/community
     packages:
-      - alpine-baselayout
+      - alpine-base
       - bash
 
 var-transforms:
