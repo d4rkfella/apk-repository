@@ -87,7 +87,7 @@ test:
   environment:
     contents:
       packages:
-        - multus-cni-custom-compat
+        - ${{package.name}}-compat
   
   pipeline:
     - runs: |
