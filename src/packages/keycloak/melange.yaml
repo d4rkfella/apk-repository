@@ -11,7 +11,6 @@ package:
       - merged-usrsbin
       - openjdk-${{vars.java-version}}-default-jvm
       - wolfi-baselayout
-
 vars:
   java-version: 21
 
