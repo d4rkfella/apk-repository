@@ -1,13 +1,14 @@
 package:
   name: jellyseerr
-  version: "2.7.3"
-  epoch: 1
+  version: 2.7.3
+  epoch: 0
   description: Open-source media request and discovery manager for Jellyfin, Plex, and Emby.
   copyright:
     - license: MIT
   dependencies:
     runtime:
       - nodejs-23
+
 environment:
   environment:
     REPRODUCIBLE: false
@@ -15,9 +16,9 @@ environment:
     packages:
       - wolfi-baselayout
       - nodejs-23
-      - busybox
       - pnpm
       - patch
+
 pipeline:
   - uses: git-checkout
     with:
@@ -25,6 +26,7 @@ pipeline:
       repository: https://github.com/seerr-team/seerr
       tag: v${{package.version}}
       destination: jellyseerr
+  
   - name: Build
     working-directory: /home/build/jellyseerr
     runs: |
@@ -37,6 +39,7 @@ pipeline:
       pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
+  
   - name: Delete linux-musl node-modules
     working-directory: /home/build/jellyseerr
     runs: |
@@ -45,17 +48,21 @@ pipeline:
         -print \
         -exec rm -rf {} + \
         -prune
+  
   - name: Prepare package
     working-directory: /home/build/jellyseerr
     runs: |
       mkdir -p "${{targets.destdir}}/usr/lib/jellyseerr"
       cp -af package.json jellyseerr-api.yml committag.json next.config.js .next dist public node_modules "${{targets.destdir}}/usr/lib/jellyseerr"
       rm -rf "${{targets.destdir}}"/usr/lib/jellyseerr/.next/cache
+  
   - name: Delete incompatible hermesc binary on arm64
     if: ${{build.arch}} == 'aarch64'
     runs: |
       find "${{targets.destdir}}"/usr/lib/jellyseerr/node_modules -path "*linux64-bin/hermesc" -exec rm -f {} +
+  
   - uses: strip
+
 test:
   environment:
     contents:
@@ -63,6 +70,7 @@ test:
         - curl
         - bash
         - jq
+  
   pipeline:
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
@@ -71,6 +79,7 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
+
 update:
   enabled: true
   github:
