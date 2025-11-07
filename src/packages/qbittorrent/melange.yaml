@@ -12,6 +12,8 @@ environment:
       - https://dl-cdn.alpinelinux.org/alpine/v3.23/main
     packages:
       - alpine-base
+      - ca-certificates-bundle
+      - apk-tools
       - bash
 
 var-transforms:
