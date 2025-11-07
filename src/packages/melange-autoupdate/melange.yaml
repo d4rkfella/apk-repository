@@ -1,7 +1,7 @@
 package:
   name: melange-autoupdate
   version: 1.1.1
-  epoch: 1
+  epoch: 2
   copyright:
     - license: MIT
   dependencies:
