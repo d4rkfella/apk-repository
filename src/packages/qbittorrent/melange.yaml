@@ -10,6 +10,7 @@ environment:
   contents:
     repositories:
       - https://dl-cdn.alpinelinux.org/alpine/edge/main
+      - https://dl-cdn.alpinelinux.org/alpine/edge/community
     packages:
       - alpine-baselayout-data
       - alpine-release
