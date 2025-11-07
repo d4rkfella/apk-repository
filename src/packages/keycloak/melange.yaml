@@ -11,6 +11,7 @@ package:
       - merged-usrsbin
       - openjdk-${{vars.java-version}}-default-jvm
       - wolfi-baselayout
+
 vars:
   java-version: 21
 
@@ -59,7 +60,6 @@ pipeline:
       unzip -d ${{targets.destdir}}/usr/share/java quarkus/dist/target/keycloak-*.zip
       mv ${{targets.destdir}}/usr/share/java/keycloak-* ${{targets.destdir}}/usr/share/java/keycloak
 
-      # Create an empty data directory for keycloak. Required by the UI to store some data.
       mkdir -p ${{targets.destdir}}/usr/share/java/keycloak/data
 
       mkdir -p ${{targets.destdir}}/usr/bin
