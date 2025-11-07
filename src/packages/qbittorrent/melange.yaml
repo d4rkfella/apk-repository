@@ -12,8 +12,7 @@ environment:
       - https://dl-cdn.alpinelinux.org/alpine/edge/main
       - https://dl-cdn.alpinelinux.org/alpine/edge/community
     packages:
-      - ca-certificates-bundle
-      - apk-tools
+      - alpine-base
       - bash
 
 var-transforms:
