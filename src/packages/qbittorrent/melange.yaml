@@ -1,10 +1,11 @@
 package:
   name: qbittorrent
-  version: "5.1.2_p2011"
+  version: 5.1.2_p2011
   epoch: 0
   description: The qbittorrent-nox-static project is a bash build script that compiles a static qbittorrent-nox binary using the latest available dependencies from their source.
   copyright:
     - license: Apache-2.0
+
 environment:
   contents:
     repositories:
@@ -15,24 +16,26 @@ environment:
       - ca-certificates-bundle
       - apk-tools
       - bash
+
 var-transforms:
   - from: ${{package.version}}
     match: _p(\d)(\d)(\d{2})$
     replace: _v$1.$2.$3
     to: qbittorrent-package-version
+
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/userdocs/qbittorrent-nox-static
       tag: release-${{vars.qbittorrent-package-version}}
       expected-commit: 06b24581841dd44464b0f77c57d971421e4a7146
-  - if: ${{build.arch}} == 'aarch64'
-    runs: |
+  
+  - runs: |
       printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
       printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
       printf '%s\n' "qbt_qt_version=6" >> env.custom
       printf '%s\n' "qbt_build_tool=" >> env.custom
-      printf '%s\n' "qbt_cross_name=aarch64" >> env.custom
+      printf '%s\n' "qbt_cross_name=${{build.arch}}" >> env.custom
       printf '%s\n' "qbt_patches_url=userdocs/qbittorrent-nox-static" >> env.custom
       printf '%s\n' "qbt_skip_icu=yes" >> env.custom
       printf '%s\n' "qbt_boost_tag=" >> env.custom
@@ -47,27 +50,7 @@ pipeline:
       printf '%s\n' "qbt_standard=20" >> env.custom
       printf '%s\n' "qbt_static_ish=no" >> env.custom
       printf '%s\n' "qbt_optimise=no" >> env.custom
-  - if: ${{build.arch}} == 'x86_64'
-    runs: |
-      printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
-      printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
-      printf '%s\n' "qbt_qt_version=6" >> env.custom
-      printf '%s\n' "qbt_build_tool=" >> env.custom
-      printf '%s\n' "qbt_cross_name=x86_64" >> env.custom
-      printf '%s\n' "qbt_patches_url=userdocs/qbittorrent-nox-static" >> env.custom
-      printf '%s\n' "qbt_skip_icu=yes" >> env.custom
-      printf '%s\n' "qbt_boost_tag=" >> env.custom
-      printf '%s\n' "qbt_libtorrent_tag=" >> env.custom
-      printf '%s\n' "qbt_qt_tag=" >> env.custom
-      printf '%s\n' "qbt_qbittorrent_tag=" >> env.custom
-      printf '%s\n' "qbt_libtorrent_master_jamfile=" >> env.custom
-      printf '%s\n' "qbt_workflow_files=" >> env.custom
-      printf '%s\n' "qbt_workflow_artifacts=" >> env.custom
-      printf '%s\n' "qbt_optimise_strip=yes" >> env.custom
-      printf '%s\n' "qbt_build_debug=no" >> env.custom
-      printf '%s\n' "qbt_standard=20" >> env.custom
-      printf '%s\n' "qbt_static_ish=no" >> env.custom
-      printf '%s\n' "qbt_optimise=no" >> env.custom
+  
   - runs: |
       export $(cat env.custom)
       /usr/bin/env bash ./qbt-nox-static.bash
@@ -84,10 +67,12 @@ pipeline:
       /usr/bin/env bash ./qbt-nox-static.bash qtbase
       /usr/bin/env bash ./qbt-nox-static.bash qttools
       /usr/bin/env bash ./qbt-nox-static.bash qbittorrent
+  
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       mv qbt-build/bin/qbittorrent-nox ${{targets.destdir}}/usr/bin/qbittorrent-nox
       chmod 755 ${{targets.destdir}}/usr/bin/qbittorrent-nox
+
 update:
   enabled: true
   version-transform:
