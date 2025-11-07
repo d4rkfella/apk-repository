@@ -1,6 +1,6 @@
 package:
   name: cross-seed
-  version: "6.13.6"
+  version: 6.13.6
   epoch: 0
   description: "Fully-automatic cross-seeding with Torznab"
   copyright:
@@ -8,29 +8,34 @@ package:
   dependencies:
     runtime:
       - nodejs-20
+
 environment:
   contents:
     packages:
       - wolfi-baselayout
-      - busybox
       - nodejs-20
       - npm
+
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/cross-seed/cross-seed
       tag: v${{package.version}}
       expected-commit: 0d35dd80bcd49fb030bbc7af57f215bebf9f0875
+  
   - name: Build
     runs: |
       npm ci --no-fund
       npm run build
       npm prune --omit=dev
+  
   - name: Prepare package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/cross-seed
       cp -R node_modules dist package-lock.json package.json ${{targets.destdir}}/usr/lib/cross-seed
+  
   - uses: strip
+
 update:
   enabled: true
   github:
