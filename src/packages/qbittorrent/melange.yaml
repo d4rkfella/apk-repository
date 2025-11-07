@@ -11,7 +11,7 @@ environment:
     repositories:
       - https://dl-cdn.alpinelinux.org/alpine/edge/main
     packages:
-      - alpine-base
+      - alpine-baselayout-data
       - ca-certificates-bundle
       - apk-tools
       - bash
