@@ -9,9 +9,7 @@ package:
 environment:
   contents:
     repositories:
-      - https://dl-cdn.alpinelinux.org/alpine/latest-stable/main
-    keyring:
-      - https://dl-cdn.alpinelinux.org/alpine/latest-stable/main/alpine-keys-2.5-r0.apk
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
     packages:
       - alpine-base
       - ca-certificates-bundle
