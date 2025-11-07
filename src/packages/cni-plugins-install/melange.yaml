@@ -1,21 +1,25 @@
 package:
   name: cni-plugins-install
   version: "1.0.3"
-  epoch: 3
+  epoch: 0
   copyright:
     - license: MIT
+
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/d4rkfella/cni-plugins-install
       tag: v${{package.version}}
       expected-commit: "eefdd6897b62b0ca0ab3cc219d08559f038a86b8"
+  
   - uses: go/build
     with:
       packages: main.go
       output: cni-plugins-install
       ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
+  
   - uses: strip
+
 update:
   enabled: true
   github:
