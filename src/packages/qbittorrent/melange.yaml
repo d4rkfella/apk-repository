@@ -21,7 +21,7 @@ pipeline:
     with:
       destination: /home/build/qbittorrent
       repository: https://github.com/qbittorrent/qBittorrent
-      tag: release-${{vars.qbittorrent-package-version}}
+      tag: release-${{package.version}}
       expected-commit: 202ff8a099cfc1ca9421e7d30944b3c58a4a47cd
   
   - uses: git-checkout
