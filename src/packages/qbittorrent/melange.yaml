@@ -31,7 +31,13 @@ pipeline:
       repository: https://github.com/arvidn/libtorrent
       tag: v2.0.11
       expected-commit: 9d7443f467147d1784fb7516d2a882db1abb5a8b
-      
+  
+  - runs: |
+      mkdir -p /usr/share/b2
+      wget -qO- https://archives.boost.io/release/1.89.0/source/boost_1_89_0.tar.gz \
+        | tar -xz --strip-components=3 -C /usr/share/b2 \
+          boost_1_89_0/tools/build/src
+  
   - working-directory: /home/build/libtorrent
     runs: |
       echo "using gcc ;" >>~/user-config.jam
