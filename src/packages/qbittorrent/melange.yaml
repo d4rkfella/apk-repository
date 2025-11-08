@@ -1,6 +1,6 @@
 package:
   name: qbittorrent
-  version: 5.1.2_p2011
+  version: 5.1.2
   epoch: 0
   description: The qbittorrent-nox-static project is a bash build script that compiles a static qbittorrent-nox binary using the latest available dependencies from their source.
   copyright:
@@ -8,77 +8,37 @@ package:
 
 environment:
   contents:
-    repositories:
-      - https://dl-cdn.alpinelinux.org/alpine/edge/main
-      - https://dl-cdn.alpinelinux.org/alpine/edge/community
     packages:
-      - alpine-baselayout-data
-      - alpine-release
-      - ca-certificates-bundle
-      - apk-tools
-      - bash
-
-var-transforms:
-  - from: ${{package.version}}
-    match: _p(\d)(\d)(\d{2})$
-    replace: _v$1.$2.$3
-    to: qbittorrent-package-version
+      - wolfi-baselayout
+      - build-base
+      - qt6-qtbase-dev
+      - openssl-dev
+      - zlib-dev
+      - boost-dev
 
 pipeline:
   - uses: git-checkout
     with:
-      repository: https://github.com/userdocs/qbittorrent-nox-static
+      destination: /home/build/qbittorrent
+      repository: https://github.com/qbittorrent/qBittorrent
       tag: release-${{vars.qbittorrent-package-version}}
-      expected-commit: 06b24581841dd44464b0f77c57d971421e4a7146
+      expected-commit: 202ff8a099cfc1ca9421e7d30944b3c58a4a47cd
   
-  - runs: |
-      printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
-      printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
-      printf '%s\n' "qbt_qt_version=6" >> env.custom
-      printf '%s\n' "qbt_build_tool=" >> env.custom
-      printf '%s\n' "qbt_cross_name=${{build.arch}}" >> env.custom
-      printf '%s\n' "qbt_patches_url=userdocs/qbittorrent-nox-static" >> env.custom
-      printf '%s\n' "qbt_skip_icu=yes" >> env.custom
-      printf '%s\n' "qbt_boost_tag=" >> env.custom
-      printf '%s\n' "qbt_libtorrent_tag=" >> env.custom
-      printf '%s\n' "qbt_qt_tag=" >> env.custom
-      printf '%s\n' "qbt_qbittorrent_tag=" >> env.custom
-      printf '%s\n' "qbt_libtorrent_master_jamfile=" >> env.custom
-      printf '%s\n' "qbt_workflow_files=" >> env.custom
-      printf '%s\n' "qbt_workflow_artifacts=" >> env.custom
-      printf '%s\n' "qbt_optimise_strip=yes" >> env.custom
-      printf '%s\n' "qbt_build_debug=no" >> env.custom
-      printf '%s\n' "qbt_standard=20" >> env.custom
-      printf '%s\n' "qbt_static_ish=no" >> env.custom
-      printf '%s\n' "qbt_optimise=no" >> env.custom
-  
-  - runs: |
-      export $(cat env.custom)
-      /usr/bin/env bash ./qbt-nox-static.bash
-      /usr/bin/env bash ./qbt-nox-static.bash update install_test
-      /usr/bin/env bash ./qbt-nox-static.bash update install_core
-      /usr/bin/env bash ./qbt-nox-static.bash -bs-a
-      /usr/bin/env bash ./qbt-nox-static.bash zlib
-      /usr/bin/env bash ./qbt-nox-static.bash iconv
-      /usr/bin/env bash ./qbt-nox-static.bash icu
-      /usr/bin/env bash ./qbt-nox-static.bash openssl
-      /usr/bin/env bash ./qbt-nox-static.bash boost
-      /usr/bin/env bash ./qbt-nox-static.bash libtorrent
-      /usr/bin/env bash ./qbt-nox-static.bash double_conversion
-      /usr/bin/env bash ./qbt-nox-static.bash qtbase
-      /usr/bin/env bash ./qbt-nox-static.bash qttools
-      /usr/bin/env bash ./qbt-nox-static.bash qbittorrent
-  
-  - runs: |
-      mkdir -p ${{targets.destdir}}/usr/bin
-      mv qbt-build/bin/qbittorrent-nox ${{targets.destdir}}/usr/bin/qbittorrent-nox
-      chmod 755 ${{targets.destdir}}/usr/bin/qbittorrent-nox
+  - uses: git-checkout
+    with:
+      destination: /home/build/libtorrent
+      repository: https://github.com/arvidn/libtorrent
+      tag: v2.0.11
+      expected-commit: 9d7443f467147d1784fb7516d2a882db1abb5a8b
+      
+  - working-directory: /home/build/libtorrent
+    runs: |
+      echo "using gcc ;" >>~/user-config.jam
+      b2 crypto=openssl cxxstd=14 release
+
 
 update:
   enabled: true
-  version-transform:
-    - match: _v(\d+)\.(\d+)\.(\d+)$
-      replace: _p$1$2$3
   github:
-    identifier: userdocs/qbittorrent-nox-static
+    identifier: qbittorrent/qBittorrent
     strip-prefix: "release-"
