@@ -15,6 +15,7 @@ environment:
       - openssl-dev
       - zlib-dev
       - boost-dev
+      - boost-tools
 
 pipeline:
   - uses: git-checkout
