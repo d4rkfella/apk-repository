@@ -16,6 +16,7 @@ environment:
       - zlib-dev
       - boost-dev
       - boost-tools
+      - wget
 
 pipeline:
   - uses: git-checkout
