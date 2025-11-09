@@ -1,10 +1,11 @@
 package:
   name: oauth2-proxy-darkfellanet
-  version: "7.13.0"
+  version: 7.13.0
   epoch: 0
   description: Reverse proxy and static file server that provides authentication using various providers to validate accounts by email, domain or group.
   copyright:
     - license: MIT
+
 environment:
   contents:
     packages:
@@ -13,25 +14,24 @@ environment:
       - go
       - openssl
       - wolfi-baselayout
+
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/oauth2-proxy/oauth2-proxy
       tag: v${{package.version}}
       expected-commit: 082b49aaeb656fea23ad9accdc5a4be9218bb0d4
+  
   - uses: go/build
     with:
       packages: .
       output: oauth2-proxy
       ldflags: -X github.com/oauth2-proxy/oauth2-proxy/v7/pkg/version.Version=${{package.version}}
+  
   - runs: |
       mkdir -p "${{targets.destdir}}/etc/ssl/private/"
       touch "${{targets.destdir}}/etc/ssl/private/jwt_signing_key.pem"
-update:
-  enabled: true
-  github:
-    identifier: oauth2-proxy/oauth2-proxy
-    strip-prefix: v
+
 test:
   environment:
     contents:
@@ -83,3 +83,9 @@ test:
         expected_output: "Performing OIDC Discovery..."
         post: |
           curl http://127.0.0.1:4180/static | grep -i "Authenticate using kilgore.trout"
+
+update:
+  enabled: true
+  github:
+    identifier: oauth2-proxy/oauth2-proxy
+    strip-prefix: v
