@@ -1,6 +1,6 @@
 package:
   name: opnsense-exporter
-  version: "0.0.10"
+  version: "0.0.11"
   epoch: 0
   description: OPNsense Exporter for Prometheus
   copyright:
