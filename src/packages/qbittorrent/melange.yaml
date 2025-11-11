@@ -18,12 +18,6 @@ environment:
       - apk-tools
       - bash
 
-var-transforms:
-  - from: ${{package.version}}
-    match: _p(\d)(\d)(\d{2})$
-    replace: _v$1.$2.$3
-    to: qbittorrent-package-version
-
 pipeline:
   - uses: git-checkout
     with:
@@ -76,9 +70,6 @@ pipeline:
 
 update:
   enabled: true
-  version-transform:
-    - match: _v(\d+)\.(\d+)\.(\d+)$
-      replace: _p$1$2$3
   github:
     identifier: userdocs/qbittorrent-nox-static
     strip-prefix: "release-"
