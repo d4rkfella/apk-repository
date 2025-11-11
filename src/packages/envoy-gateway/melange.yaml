@@ -15,10 +15,6 @@ pipeline:
       expected-commit: 26ebf49e9d21ddb25521b55181b20f24b4cf102a
       repository: https://github.com/envoyproxy/gateway
       tag: v${{package.version}}
-  - uses: go/bump
-    with:
-      deps: |-
-        helm.sh/helm/v3@v3.18.5
   - uses: go/build
     with:
       packages: ./cmd/envoy-gateway
