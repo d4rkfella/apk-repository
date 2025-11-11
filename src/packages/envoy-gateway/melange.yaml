@@ -1,28 +1,24 @@
 package:
   name: envoy-gateway-custom
-  version: 1.5.4
+  version: "1.6.0"
   epoch: 0
   description: Manages Envoy Proxy as a Standalone or Kubernetes-based Application Gateway
   copyright:
     - license: Apache-2.0
-
 environment:
   contents:
     packages:
       - btrfs-progs-dev
-
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: dddfdf65a89a6029299087c0cee17d40f4e4fbcd
+      expected-commit: 26ebf49e9d21ddb25521b55181b20f24b4cf102a
       repository: https://github.com/envoyproxy/gateway
       tag: v${{package.version}}
-  
   - uses: go/bump
     with:
       deps: |-
         helm.sh/helm/v3@v3.18.5
-  
   - uses: go/build
     with:
       packages: ./cmd/envoy-gateway
@@ -30,7 +26,6 @@ pipeline:
         -X github.com/envoyproxy/gateway/internal/cmd/version.envoyGatewayVersion=${{package.version}}
         -X github.com/envoyproxy/gateway/internal/cmd/version.gitCommitID=$(git rev-parse HEAD)
       output: envoy-gateway
-
 subpackages:
   - name: ${{package.name}}-compat
     description: Compat package for envoy-gateway
@@ -42,7 +37,6 @@ subpackages:
       pipeline:
         - runs: |
             readlink -v /usr/local/bin/envoy-gateway
-  
   - name: ${{package.name}}-egctl
     pipeline:
       - uses: go/build
@@ -52,11 +46,9 @@ subpackages:
           ldflags: |
             -X github.com/envoyproxy/gateway/internal/cmd/version.envoyGatewayVersion=${{package.version}}
             -X github.com/envoyproxy/gateway/internal/cmd/version.gitCommitID=$(git rev-parse HEAD)
-    
     test:
       pipeline:
         - runs: egctl version --remote=false | grep ${{package.version}}
-
 test:
   environment:
     contents:
@@ -65,15 +57,12 @@ test:
         - git
         - curl
         - mkcert
-  
   pipeline:
     - uses: test/kwok/cluster
-    
     - runs: |
         git clone --depth=1 -b v${{package.version}} https://github.com/envoyproxy/gateway
         kubectl apply -f gateway/charts/gateway-helm/crds/gatewayapi-crds.yaml
         kubectl apply --server-side=true -f gateway/charts/gateway-helm/crds/generated
-    
     - runs: |
         mkdir -p /certs
         mkcert -key-file /certs/tls.key -cert-file /certs/tls.crt localhost
@@ -84,7 +73,6 @@ test:
         sleep 3
         curl -s localhost:8081/healthz | grep "ok"
         curl -s localhost:19001/metrics | grep certwatcher_read_certificate_total
-
 update:
   enabled: true
   github:
