@@ -1,11 +1,10 @@
 package:
   name: qbittorrent
-  version: 5.1.2_v2.0.11
+  version: "5.1.3_v2.0.11"
   epoch: 0
   description: The qbittorrent-nox-static project is a bash build script that compiles a static qbittorrent-nox binary using the latest available dependencies from their source.
   copyright:
     - license: Apache-2.0
-
 environment:
   contents:
     repositories:
@@ -17,14 +16,12 @@ environment:
       - ca-certificates-bundle
       - apk-tools
       - bash
-
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/userdocs/qbittorrent-nox-static
       tag: release-${{package.version}}
-      expected-commit: 06b24581841dd44464b0f77c57d971421e4a7146
-  
+      expected-commit: c4654689a817783390e0cd607541fe7bf1d8ce7b
   - runs: |
       printf '%s\n' "qbt_build_dir=qbt-build" > env.custom
       printf '%s\n' "qbt_libtorrent_version=2.0" >> env.custom
@@ -45,7 +42,6 @@ pipeline:
       printf '%s\n' "qbt_standard=20" >> env.custom
       printf '%s\n' "qbt_static_ish=no" >> env.custom
       printf '%s\n' "qbt_optimise=no" >> env.custom
-  
   - runs: |
       export $(cat env.custom)
       /usr/bin/env bash ./qbt-nox-static.bash
@@ -62,12 +58,10 @@ pipeline:
       /usr/bin/env bash ./qbt-nox-static.bash qtbase
       /usr/bin/env bash ./qbt-nox-static.bash qttools
       /usr/bin/env bash ./qbt-nox-static.bash qbittorrent
-  
   - runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
       mv qbt-build/bin/qbittorrent-nox ${{targets.destdir}}/usr/bin/qbittorrent-nox
       chmod 755 ${{targets.destdir}}/usr/bin/qbittorrent-nox
-
 update:
   enabled: true
   github:
