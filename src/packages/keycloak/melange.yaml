@@ -57,10 +57,11 @@ pipeline:
       for i in kc.sh kcadm.sh kcreg.sh; do
         ln -sf /usr/share/java/keycloak/bin/$i ${{targets.destdir}}/usr/bin/$i
       done
+      
       export KC_HEALTH_ENABLED=true
       export KC_METRICS_ENABLED=true
       export KC_DB=postgres
-      cd "${{targets.destdir}}"/usr/share/java/keycloak && "${{targets.destdir}}"/usr/share/java/keycloak/bin/kc.sh build
+      pushd "${{targets.destdir}}"/usr/share/java/keycloak && "${{targets.destdir}}"/usr/share/java/keycloak/bin/kc.sh build
 subpackages:
   - name: ${{package.name}}-operator
     dependencies:
