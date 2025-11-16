@@ -1,11 +1,10 @@
 package:
   name: qbit_manage
-  version: 4.6.3
+  version: "4.6.4"
   epoch: 0
   description: This tool will help manage tedious tasks in qBittorrent and automate them. Tag, categorize, remove Orphaned data, remove unregistered torrents and much much more.
   copyright:
     - license: MIT
-
 environment:
   environment:
     REPRODUCIBLE: false
@@ -14,14 +13,12 @@ environment:
       - python-3.13
       - py3.13-pip
       - py3.13-virtualenv-bin
-
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 21812368bc5366f3388dfb21769fee1da48083c5
+      expected-commit: b1e91d7259bcc35b0829c5dc52ea87deedaef6b5
       repository: https://github.com/StuffAnThings/qbit_manage
       tag: v${{package.version}}
-  
   - name: Prepare package
     runs: |
       APPDIR="${{targets.destdir}}/usr/lib/qbitmanage/app"
@@ -37,14 +34,12 @@ pipeline:
              /home/build/icons \
              /home/build/web-ui \
              "${APPDIR}/"
-
 test:
   pipeline:
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
-
 update:
   enabled: true
   github:
