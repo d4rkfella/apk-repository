@@ -45,7 +45,7 @@ pipeline:
         -X github.com/moby/buildkit/version.Revision=r${{package.epoch}}
         -X github.com/moby/buildkit/version.Package=github.com/moby/buildkit
   - runs: |
-      install -Dm755 ./examples/buildctl-daemonless/buildctl-daemonless.sh ${{targets.destdir}}/usr/bin/ # https://github.com/moby/buildkit/blob/4c93208b9db9f8936b17c33bc93d19fc1bbf5266/Dockerfile#L152
+      install -Dm755 ./examples/buildctl-daemonless/buildctl-daemonless.sh ${{targets.destdir}}/usr/bin/
 subpackages:
   - name: buildctl-darkfellanet
     description: "buildkit client"
