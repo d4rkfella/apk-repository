@@ -1,7 +1,7 @@
 package:
   name: radarr
   version: "6.1.0.10293"
-  epoch: 0
+  epoch: 1
   description: Movie download automation for usenet and torrents.
   copyright:
     - license: GPL-3.0-only
@@ -39,14 +39,15 @@ pipeline:
       yarn install --frozen-lockfile --network-timeout 120000
 
       jq '.sdk.version = "8.0.120"' /home/build/global.json > /home/build/global.json.tmp && mv /home/build/global.json.tmp /home/build/global.json
-
+      
       _dotnet_arch="$runtime_arch"
       _runtime="linux-$_dotnet_arch"
       _framework="net8.0"
       _output="_output"
       _destdir="${{targets.destdir}}/usr/lib/radarr"
       _artifacts="$_output/$_framework/$_runtime/publish"
-
+      
+      ulimit -n 4096
       dotnet publish src \
         -p:AssemblyConfiguration="master" \
         -p:AssemblyVersion="${{package.version}}" \
@@ -73,6 +74,9 @@ pipeline:
       
       cp -r "$_output/UI" "$_artifacts"
       cp -r $_output/Radarr.Update/$_framework/$_runtime/publish $_artifacts/Radarr.Update
+      
+      echo "Adding Radarr.Mono to UpdatePackage"
+      cp $_artifacts/Radarr.Mono.* $_artifacts/Radarr.Update
       cp $_artifacts/Mono.Posix.NETStandard.* $_artifacts/Radarr.Update
       cp $_artifacts/libMonoPosixHelper.* $_artifacts/Radarr.Update
 
