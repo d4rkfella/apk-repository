@@ -33,6 +33,7 @@ pipeline:
         runtime_arch="x64"
       fi
 
+      export NODE_OPTIONS="--localstorage-file=/tmp/.localstorage"
       export BROWSERSLIST_IGNORE_OLD_DATA=true
 
       yarn install --frozen-lockfile --network-timeout 120000
