@@ -1,6 +1,6 @@
 package:
   name: radarr
-  version: 6.0.3.10276
+  version: "6.1.0.10293"
   epoch: 0
   description: Movie download automation for usenet and torrents.
   copyright:
@@ -9,7 +9,6 @@ package:
     runtime:
       - aspnet-8-runtime
       - sqlite-libs
-
 environment:
   environment:
     PACKAGE_UPDATE_USE_PRERELEASE: true
@@ -20,14 +19,12 @@ environment:
       - nodejs
       - yarn
       - jq
-
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: ef9836d71d79cdefe949c276af4a7604b7e69278
+      expected-commit: 1b9662d58823ff02b7162282e84e4aed95db0126
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
-  
   - name: Build
     runs: |
       if [[ "${{build.arch}}" == "aarch64" ]]; then
@@ -86,9 +83,7 @@ pipeline:
       cp -af "$_artifacts" "$_destdir/bin"
 
       ln -s /usr/lib/radarr/bin/Radarr "${{targets.destdir}}/usr/bin/Radarr"
-  
   - uses: strip
-
 test:
   environment:
     contents:
@@ -107,7 +102,6 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
-
 update:
   enabled: true
   github:
