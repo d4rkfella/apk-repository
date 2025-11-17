@@ -1,6 +1,6 @@
 package:
   name: buildkitd-darkfellanet
-  version: "0.26.0"
+  version: 0.26.0
   description: "concurrent, cache-efficient, and Dockerfile-agnostic builder toolkit"
   epoch: 0
   copyright:
