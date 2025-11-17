@@ -67,10 +67,10 @@ pipeline:
 
       echo "Preparing package"
 
+      mkdir -p "$_destdir" "${{targets.destdir}}/usr/bin"
+      
       printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "develop" "${{package.version}}" > "$_destdir/package_info"
       
-      mkdir -p "$_destdir" "${{targets.destdir}}/usr/bin"
-
       cp -r "$_output/UI" "$_artifacts"
       cp -r $_output/Radarr.Update/$_framework/$_runtime/publish $_artifacts/Radarr.Update
       cp $_artifacts/Mono.Posix.NETStandard.* $_artifacts/Radarr.Update
