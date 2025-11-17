@@ -46,8 +46,6 @@ pipeline:
       _destdir="${{targets.destdir}}/usr/lib/radarr"
       _artifacts="$_output/$_framework/$_runtime/publish"
 
-      ulimit -n 4096
-
       dotnet publish src \
         -p:AssemblyConfiguration="master" \
         -p:AssemblyVersion="${{package.version}}" \
@@ -66,19 +64,23 @@ pipeline:
 
       chmod +x "$_artifacts/ffprobe"
 
-      find "$_artifacts" \( \
-        -name "ServiceUninstall.*" -o \
-        -name "ServiceInstall.*" -o \
-        -name "Radarr.Windows.*" \
-      \) -delete
-
-      mv "$_output/UI" "$_artifacts"
-
       echo "Preparing package"
 
+      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "develop" "${{package.version}}" > "$_destdir/package_info"
+      
       mkdir -p "$_destdir" "${{targets.destdir}}/usr/bin"
 
-      printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "develop" "${{package.version}}" > "$_destdir/package_info"
+      cp -r "$_output/UI" "$_artifacts"
+      cp -r $_output/Radarr.Update/$_framework/$_runtime/publish $_artifacts/Radarr.Update
+      cp $_artifacts/Mono.Posix.NETStandard.* $_artifacts/Radarr.Update
+      cp $_artifacts/libMonoPosixHelper.* $_artifacts/Radarr.Update
+
+      echo "Removing Service helpers"
+      rm -f $_artifacts/ServiceUninstall.*
+      rm -f $_artifacts/ServiceInstall.*
+  
+      echo "Removing Radarr.Windows"
+      rm $_artifacts/Radarr.Windows.*
 
       cp -af "$_artifacts" "$_destdir/bin"
 
