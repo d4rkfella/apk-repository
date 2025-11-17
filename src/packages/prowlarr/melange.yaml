@@ -1,6 +1,6 @@
 package:
   name: prowlarr
-  version: 2.1.5.5216
+  version: "2.3.1.5238"
   epoch: 0
   description: Prowlarr is an indexer manager/proxy built on the popular *arr .net/reactjs base stack to integrate with your various PVR apps. Prowlarr supports management of both Torrent Trackers and Usenet Indexers. It integrates seamlessly with Lidarr, Mylar3, Radarr, Readarr, and Sonarr offering complete management of your indexers with no per app Indexer setup required (we do it all).
   copyright:
@@ -9,7 +9,6 @@ package:
     runtime:
       - aspnet-8-runtime
       - sqlite-libs
-
 environment:
   environment:
     PACKAGE_UPDATE_USE_PRERELEASE: true
@@ -21,14 +20,12 @@ environment:
       - nodejs
       - yarn
       - jq
-
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 775b716c0f3cc2ccdff92db26cffa6db499b84cb
+      expected-commit: ed3b25b3d6ebf843d150b941e73995ff281318df
       repository: https://github.com/Prowlarr/Prowlarr
       tag: v${{package.version}}
-  
   - name: Build
     runs: |
       if [[ "${{build.arch}}" == "aarch64" ]]; then
@@ -83,7 +80,6 @@ pipeline:
       cp -af "$_artifacts" "$_destdir/bin"
 
       ln -s /usr/lib/prowlarr/bin/Prowlarr "${{targets.destdir}}/usr/bin/Prowlarr"
-
 test:
   environment:
     contents:
@@ -93,7 +89,6 @@ test:
         - jq
         - xmlstarlet
         - lttng-ust
-  
   pipeline:
     - runs: ln -s /usr/lib/liblttng-ust.so.1 /usr/lib/liblttng-ust.so.0
     - name: Check for missing dependancies
@@ -103,7 +98,6 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
-
 update:
   enabled: true
   github:
