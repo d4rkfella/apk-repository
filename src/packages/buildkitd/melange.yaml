@@ -1,6 +1,6 @@
 package:
   name: buildkitd-darkfellanet
-  version: "0.26.0"
+  version: "0.26.1"
   description: "concurrent, cache-efficient, and Dockerfile-agnostic builder toolkit"
   epoch: 0
   copyright:
@@ -24,7 +24,7 @@ pipeline:
     with:
       repository: https://github.com/moby/buildkit
       tag: v${{package.version}}
-      expected-commit: a8e548fbbd38729bf9bf1a3722edc21fe3383f97
+      expected-commit: 29fc55f96f093a780dc0b6826719db7dce49d2b7
   - uses: go/build
     with:
       modroot: .
