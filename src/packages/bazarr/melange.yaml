@@ -12,8 +12,8 @@ package:
 
 var-transforms:
   - from: "${{ package.version }}"
-    match: "_"
-    replace: "-"
+    match: "_b"
+    replace: "-beta"
     to: package.version
 
 environment:
