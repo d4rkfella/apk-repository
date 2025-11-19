@@ -22,13 +22,13 @@ var-transforms:
   - from: ${{package.version}}
     match: _p(\d)(\d)(\d{2})$
     replace: _v$1.$2.$3
-    to: qbittorrent-package-version
+    to: mangled-package-version
 
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/userdocs/qbittorrent-nox-static
-      tag: release-${{vars.qbittorrent-package-version}}
+      tag: release-${{vars.mangled-package-version}}
       expected-commit: c4654689a817783390e0cd607541fe7bf1d8ce7b
   
   - runs: |
