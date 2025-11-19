@@ -136,6 +136,9 @@ test:
 
 update:
   enabled: true
+  version-transform:
+    - match: "-beta."
+      replace: "_beta"
   github:
     identifier: morpheus65535/bazarr
     strip-prefix: v
