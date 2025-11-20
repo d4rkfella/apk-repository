@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  prepare-matrix:
+  setup:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -26,13 +26,13 @@ jobs:
         run: |
           files=$(find . -name "melange.yaml" -print0 | xargs -0 -n1 | jq -R . | jq -cs '{path: .}')
           echo "matrix=$files" >> "$GITHUB_OUTPUT"
-  
+          
   update-packages:
-    needs: [prepare-matrix]
+    needs: [setup]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        path: ${{ fromJson(needs.prepare-matrix.outputs.matrix).path }}
+        path: ${{ fromJson(needs.setup.outputs.matrix).path }}
       fail-fast: false
     permissions:
       contents: write
@@ -45,18 +45,26 @@ jobs:
       
       - name: Checkout repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      
+      - uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
+        with:
+          go-version: '1.25.3'
 
+      - name: Install dependancies
+        run: |
+          go install github.com/d4rkfella/melange-autoupdate/v2
+          go install chainguard.dev/melange@latest
+          sudo apt install chromium
+
+      - name: Add Go bin to PATH
+        run: echo "$HOME/go/bin" >> $GITHUB_PATH
+      
       - name: Check for updates
         id: check-updates
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          docker run --rm --user "$(id -u):$(id -g)" \
-            -e GITHUB_TOKEN="$GITHUB_TOKEN" \
-            -v "${{ github.workspace }}:${{ github.workspace }}" \
-            -w "${{ github.workspace }}" \
-            ghcr.io/d4rkfella/melange-autoupdate:rolling \
-            "${{ matrix.path }}"
+          melange-autoupdate "${{ matrix.path }}"
 
       - name: Create Pull Request
         if: ${{ steps.check-updates.outputs.package_name != '' && steps.check-updates.outputs.package_version != '' }}
