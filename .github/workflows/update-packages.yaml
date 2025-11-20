@@ -58,23 +58,16 @@ jobs:
             ghcr.io/d4rkfella/melange-autoupdate:rolling \
             "${{ matrix.path }}"
 
-      - name: Read output.json
-        id: read-output
-        run: |
-          echo "bumped=$(jq -r '.bumped' "${{ github.workspace }}/output.json")" >> $GITHUB_OUTPUT
-          echo "package_name=$(jq -r '.package_name' "${{ github.workspace }}/output.json")" >> $GITHUB_OUTPUT
-          echo "new_version=$(jq -r '.new_version' "${{ github.workspace }}/output.json")" >> $GITHUB_OUTPUT
-
       - name: Create Pull Request
-        if: steps.read-output.outputs.bumped == 'true'
+        if: ${{ steps.check-updates.outputs.package_name != '' && steps.check-updates.outputs.package_version != '' }}
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
-          title: '${{ steps.read-output.outputs.package_name }}/${{ steps.read-output.outputs.new_version }} package update'
+          title: '${{ steps.check-updates.outputs.package_name }}/${{ steps.check-updates.outputs.package_version }} package update'
           add-paths: "${{ matrix.path }}"
           branch: 'update-${{ steps.read-output.outputs.package_name }}'
-          body-path: "${{ github.workspace }}/pr_body.md"
-          commit-message: '${{ steps.read-output.outputs.package_name }}/${{ steps.read-output.outputs.new_version }} package update'
+          body: "![image](https://raw.githubusercontent.com/wolfi-dev/.github/b535a42419ce0edb3c144c0edcff55a62b8ec1f8/profile/wolfi-logo-light-mode.svg)"
+          commit-message: '${{ steps.check-updates.outputs.package_name }}/${{ steps.check-updates.outputs.package_version }} package update'
           sign-commits: true
           labels: |
-            automated-pr
-            version-bump
+            automated pr
+            request-version-update
