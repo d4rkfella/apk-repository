@@ -1,6 +1,6 @@
 package:
   name: melange-autoupdate
-  version: "2.0.0"
+  version: "2.0.1"
   epoch: 0
   copyright:
     - license: MIT
@@ -13,7 +13,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/melange-autoupdate
       tag: v${{package.version}}
-      expected-commit: 2e5b7817892260af445ac0f4472cc4bd960f817d
+      expected-commit: 30c6d3be42b556a94f2691a3f2fa336e3fdea806
   - uses: go/build
     with:
       packages: main.go
