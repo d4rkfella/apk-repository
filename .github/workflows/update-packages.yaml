@@ -70,8 +70,13 @@ jobs:
         with:
           title: '${{ steps.check-updates.outputs.package_name }}/${{ steps.check-updates.outputs.package_version }} package update'
           add-paths: "${{ matrix.path }}"
-          branch: 'update-${{ steps.read-output.outputs.package_name }}'
-          body: "![image](https://raw.githubusercontent.com/wolfi-dev/.github/b535a42419ce0edb3c144c0edcff55a62b8ec1f8/profile/wolfi-logo-light-mode.svg)"
+          branch: 'update-${{ steps.check-updates.outputs.package_name }}'
+          body: |
+            <p align="center">
+              <img
+                src="https://raw.githubusercontent.com/wolfi-dev/.github/b535a42419ce0edb3c144c0edcff55a62b8ec1f8/profile/wolfi-logo-light-mode.svg"
+              />
+            </p>
           commit-message: '${{ steps.check-updates.outputs.package_name }}/${{ steps.check-updates.outputs.package_version }} package update'
           sign-commits: true
           labels: |
