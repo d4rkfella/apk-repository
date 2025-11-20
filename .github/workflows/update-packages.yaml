@@ -52,12 +52,10 @@ jobs:
 
       - name: Install dependancies
         run: |
-          go install github.com/d4rkfella/melange-autoupdate/v2
+          go install github.com/d4rkfella/melange-autoupdate/v2@latest
           go install chainguard.dev/melange@latest
+          echo "$HOME/go/bin" >> $GITHUB_PATH
           sudo apt install chromium
-
-      - name: Add Go bin to PATH
-        run: echo "$HOME/go/bin" >> $GITHUB_PATH
       
       - name: Check for updates
         id: check-updates
