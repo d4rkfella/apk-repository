@@ -9,13 +9,14 @@ package:
     runtime:
       - aspnet-8-runtime
       - sqlite-libs
-  contents:
-    packages:
-      - wolfi-baselayout
-      - dotnet-8-sdk
-      - nodejs
-      - yarn
-      - jq
+  environment:
+    contents:
+      packages:
+        - wolfi-baselayout
+        - dotnet-8-sdk
+        - nodejs
+        - yarn
+        - jq
 pipeline:
   - uses: git-checkout
     with:
