@@ -9,9 +9,6 @@ package:
     runtime:
       - aspnet-8-runtime
       - sqlite-libs
-environment:
-  environment:
-    PACKAGE_UPDATE_USE_PRERELEASE: true
   contents:
     packages:
       - wolfi-baselayout
@@ -111,6 +108,7 @@ test:
         EXPECTED_VERSION="${{package.version}}" ./test.sh
 update:
   enabled: true
+  enable-prerelease-tags: true
   github:
     identifier: Radarr/Radarr
     strip-prefix: v
