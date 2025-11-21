@@ -75,7 +75,7 @@ pipeline:
       chmod 755 ${{targets.destdir}}/usr/bin/qbittorrent-nox
 
 update:
-  enabled: false
+  enabled: true
   version-transform:
     - match: _v(\d+)\.(\d+)\.(\d+)$
       replace: _p$1$2$3
