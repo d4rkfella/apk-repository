@@ -38,8 +38,7 @@ jobs:
       - name: Install Go binaries
         if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
         run: |
-          go install github.com/d4rkfella/melange-autoupdate/v2@latest
-          go install chainguard.dev/melange@latest
+          go install github.com/d4rkfella/melange-autoupdate/v2@latest      
       
       - name: Cache Go binaries
         uses: actions/cache/save@v4
