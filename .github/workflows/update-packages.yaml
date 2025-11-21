@@ -31,7 +31,7 @@ jobs:
         id: cache-lookup
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          key: go-cache
+          key: melange-renovator-cache
           lookup-only: true
           path: ~/go/bin
       
@@ -45,7 +45,7 @@ jobs:
         if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
         with:
           path: ~/go/bin
-          key: go-cache
+          key: melange-renovator-cache
           
   update-packages:
     needs: [setup]
@@ -70,7 +70,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ~/go/bin
-          key: go-cache
+          key: melange-renovator-cache
 
       - name: Export Go binaries to PATH
         run: echo "$HOME/go/bin" >> $GITHUB_PATH
