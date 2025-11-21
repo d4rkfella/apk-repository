@@ -1,4 +1,4 @@
-name: Update Melange Packages
+name: Check for package updates
 
 on:
   schedule:
@@ -31,11 +31,11 @@ jobs:
         id: cache-lookup
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          key: melange-renovator-cache
+          key: melange-autoupdate-cache
           lookup-only: true
           path: ~/go/bin
       
-      - name: Install Go binaries
+      - name: Install melange-autoupdate
         if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
         run: |
           go install github.com/d4rkfella/melange-autoupdate/v2@latest      
@@ -45,7 +45,7 @@ jobs:
         if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
         with:
           path: ~/go/bin
-          key: melange-renovator-cache
+          key: melange-autoupdate-cache
           
   update-packages:
     needs: [setup]
@@ -70,7 +70,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ~/go/bin
-          key: melange-renovator-cache
+          key: melange-autoupdate-cache
 
       - name: Export Go binaries to PATH
         run: echo "$HOME/go/bin" >> $GITHUB_PATH
