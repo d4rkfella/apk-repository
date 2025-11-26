@@ -1,7 +1,7 @@
 package:
   name: keycloak-darkfellanet
-  version: "26.4.5"
-  epoch: 1
+  version: "26.4.6"
+  epoch: 0
   description: Open Source Identity and Access Management For Modern Applications and Services
   copyright:
     - license: Apache-2.0
@@ -31,7 +31,7 @@ pipeline:
     with:
       repository: https://github.com/keycloak/keycloak
       tag: ${{package.version}}
-      expected-commit: f8ffb1b9a361d3ba2df48ab23145c4dc80c7839f
+      expected-commit: 73b27f59303fb3341569615521e3fba744fe740a
   - uses: maven/pombump
   - runs: |
       gcc napi-static-assert.c -o /tmp/preload.so -fPIC -shared -ldl
@@ -50,7 +50,7 @@ pipeline:
       for i in kc.sh kcadm.sh kcreg.sh; do
         ln -sf /usr/share/java/keycloak/bin/$i ${{targets.destdir}}/usr/bin/$i
       done
-      
+
       export KC_HEALTH_ENABLED=true
       export KC_METRICS_ENABLED=true
       export KC_DB=postgres
