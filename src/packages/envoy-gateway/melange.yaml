@@ -1,6 +1,6 @@
 package:
   name: envoy-gateway-custom
-  version: "1.6.0"
+  version: "1.6.1"
   epoch: 0
   description: Manages Envoy Proxy as a Standalone or Kubernetes-based Application Gateway
   copyright:
@@ -12,7 +12,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 26ebf49e9d21ddb25521b55181b20f24b4cf102a
+      expected-commit: 19b3c67defb90ddf2ba9786fc13e43130816c6ea
       repository: https://github.com/envoyproxy/gateway
       tag: v${{package.version}}
   - uses: go/build
