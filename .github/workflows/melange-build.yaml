@@ -77,7 +77,7 @@ jobs:
           arch: ${{ matrix.arch }}
           artifactory-access-token: ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}
           artifactory-url: https://packages.darkfellanetwork.com
-          artifactory-url-path: wolfi-os/latest/main
+          artifactory-repository-path: wolfi-os/latest/main
           config: ${{ matrix.packages }}
           sign-package: true
           signing-key: ${{ secrets.MELANGE_PRIVATE_KEY }}
