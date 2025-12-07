@@ -31,11 +31,11 @@ jobs:
         id: cache-lookup
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          key: melange-renovator
+          key: melange-renovator-v2
           lookup-only: true
           path: ~/go/bin
       
-      - name: Install melange-autoupdate
+      - name: Install melange-renovator
         if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
         run: |
           go install github.com/d4rkfella/melange-renovator/v2@latest      
@@ -45,7 +45,7 @@ jobs:
         if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
         with:
           path: ~/go/bin
-          key: melange-renovator
+          key: melange-renovator-v2
           
   update-packages:
     needs: [setup]
@@ -70,7 +70,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ~/go/bin
-          key: melange-renovator
+          key: melange-renovator-v2
 
       - name: Export Go binaries to PATH
         run: echo "$HOME/go/bin" >> $GITHUB_PATH
