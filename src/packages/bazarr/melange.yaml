@@ -48,7 +48,6 @@ pipeline:
       LIBS_DIR="libs"
 
       echo "Updating vendored dependencies..."
-
       for entry in \
         "waitress-3.0.0.dist-info waitress==3.0.2" \
         "jinja2-3.1.5.dist-info jinja2==3.1.6" \
