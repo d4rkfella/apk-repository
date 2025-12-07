@@ -56,6 +56,7 @@ test:
   pipeline:
     - uses: test/kwok/cluster
     - runs: |
+        sleep 10
         git clone --depth=1 -b v${{package.version}} https://github.com/envoyproxy/gateway
         kubectl apply --server-side=true -f gateway/charts/gateway-helm/crds/gatewayapi-crds.yaml
         kubectl apply --server-side=true -f gateway/charts/gateway-helm/crds/generated
