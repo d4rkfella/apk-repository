@@ -71,7 +71,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-      - name: Build Packages
+      - name: Build Package
         uses: d4rkfella/actions/melange-build@main
         with:
           arch: ${{ matrix.arch }}
@@ -79,8 +79,7 @@ jobs:
           artifactory-url: https://packages.darkfellanetwork.com
           artifactory-url-path: wolfi-os/latest/main
           config: ${{ matrix.packages }}
-          sign-with-key: true
-          signing-key-path: ${{ github.workspace }}/melange.rsa
+          sign-package: true
           maintainer: darkfella
           pipeline-dir: ${{ github.workspace }}/pipelines
           repository-append: https://packages.darkfellanetwork.com/artifactory/wolfi-os/latest/main,https://packages.wolfi.dev/os
