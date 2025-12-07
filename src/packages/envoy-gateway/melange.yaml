@@ -1,5 +1,5 @@
 package:
-  name: envoy-gateway-custom
+  name: envoy-gateway-darkfellanet
   version: "1.6.1"
   epoch: 0
   description: Manages Envoy Proxy as a Standalone or Kubernetes-based Application Gateway
@@ -57,7 +57,7 @@ test:
     - uses: test/kwok/cluster
     - runs: |
         git clone --depth=1 -b v${{package.version}} https://github.com/envoyproxy/gateway
-        kubectl apply -f gateway/charts/gateway-helm/crds/gatewayapi-crds.yaml
+        kubectl apply --server-side=true -f gateway/charts/gateway-helm/crds/gatewayapi-crds.yaml
         kubectl apply --server-side=true -f gateway/charts/gateway-helm/crds/generated
     - runs: |
         mkdir -p /certs
