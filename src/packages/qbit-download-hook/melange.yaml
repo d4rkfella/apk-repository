@@ -10,7 +10,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/qbit-download-hook
       tag: v${{package.version}}
-      expected-commit: ed50bcc9a54755018b7b5a1e12512fce02d12ccf
+      expected-commit: 7e410fd90c218ca16e26cfb8952bf69dd5a68391
 
   - uses: go/build
     with:
