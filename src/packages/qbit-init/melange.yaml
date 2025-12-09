@@ -1,7 +1,7 @@
 package:
   name: qbit-init
-  version: 0.1.0
-  epoch: 1
+  version: 0.2.0
+  epoch: 0
   copyright:
     - license: MIT
 
@@ -10,13 +10,12 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/qbit-init
       tag: v${{package.version}}
-      expected-commit: 98c566b0f6aa78780c06a269382be9468e268e10
+      expected-commit: bc3e704e563e27bcd9e37c96fc0848709893f11e
   
   - uses: go/build
     with:
       packages: main.go
       output: qbit-init
-      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
 
 update:
   enabled: true
