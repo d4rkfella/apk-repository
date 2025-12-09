@@ -8,7 +8,7 @@ package:
 pipeline:
   - uses: git-checkout
     with:
-      repository: https://github.com/d4rkfella/qbit-notifier
+      repository: https://github.com/d4rkfella/qbit-download-hook
       tag: v${{package.version}}
       expected-commit: ed50bcc9a54755018b7b5a1e12512fce02d12ccf
 
