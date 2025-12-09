@@ -1,7 +1,7 @@
 package:
-  name: qbit-notifier
-  version: 0.2.0
-  epoch: 1
+  name: qbit-download-hook
+  version: 1.0.0
+  epoch: 0
   copyright:
     - license: MIT
 
@@ -15,11 +15,11 @@ pipeline:
   - uses: go/build
     with:
       packages: main.go
-      output: qbit-notifier
-      ldflags: -X 'main.version=${{package.version}}' -X 'main.commit=$(git rev-parse HEAD)' -X 'main.date=$(git show -s --date=format:%Y-%m-%dT%H:%M:%SZ --format=%cd HEAD)'
+      output: qbit-download-hook
+      ldflags: -X 'main.version=${{package.version}}'
 
 update:
   enabled: true
   github:
-    identifier: d4rkfella/qbit-notifier
+    identifier: d4rkfella/qbit-download-hook
     strip-prefix: v
