@@ -29,7 +29,7 @@ jobs:
       
       - name: Check cache
         id: cache-lookup
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache/restore@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
         with:
           key: melange-renovator-v2
           lookup-only: true
@@ -41,7 +41,7 @@ jobs:
           go install github.com/d4rkfella/melange-renovator/v2@latest      
       
       - name: Cache melange-renovator
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
         with:
           path: ~/go/bin
@@ -67,7 +67,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
       
       - name: Restore melange-renovator
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/go/bin
           key: melange-renovator-v2
