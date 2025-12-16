@@ -1,7 +1,7 @@
 package:
   name: radarr
-  version: "6.1.0.10293"
-  epoch: 1
+  version: "6.1.0.10309"
+  epoch: 0
   description: Movie download automation for usenet and torrents.
   copyright:
     - license: GPL-3.0-only
@@ -20,7 +20,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 1b9662d58823ff02b7162282e84e4aed95db0126
+      expected-commit: 4c007291833246d3ed78e6f396fc7e60cc9ca70c
       repository: https://github.com/Radarr/Radarr
       tag: v${{package.version}}
   - name: Build
@@ -37,14 +37,14 @@ pipeline:
       yarn install --frozen-lockfile --network-timeout 120000
 
       jq '.sdk.version = "8.0.120"' /home/build/global.json > /home/build/global.json.tmp && mv /home/build/global.json.tmp /home/build/global.json
-      
+
       _dotnet_arch="$runtime_arch"
       _runtime="linux-$_dotnet_arch"
       _framework="net8.0"
       _output="_output"
       _destdir="${{targets.destdir}}/usr/lib/radarr"
       _artifacts="$_output/$_framework/$_runtime/publish"
-      
+
       ulimit -n 4096
       dotnet publish src \
         -p:AssemblyConfiguration="master" \
@@ -67,12 +67,12 @@ pipeline:
       echo "Preparing package"
 
       mkdir -p "$_destdir" "${{targets.destdir}}/usr/bin"
-      
+
       printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "develop" "${{package.version}}" > "$_destdir/package_info"
-      
+
       cp -r "$_output/UI" "$_artifacts"
       cp -r $_output/Radarr.Update/$_framework/$_runtime/publish $_artifacts/Radarr.Update
-      
+
       echo "Adding Radarr.Mono to UpdatePackage"
       cp $_artifacts/Radarr.Mono.* $_artifacts/Radarr.Update
       cp $_artifacts/Mono.Posix.NETStandard.* $_artifacts/Radarr.Update
@@ -81,7 +81,7 @@ pipeline:
       echo "Removing Service helpers"
       rm -f $_artifacts/ServiceUninstall.*
       rm -f $_artifacts/ServiceInstall.*
-  
+
       echo "Removing Radarr.Windows"
       rm $_artifacts/Radarr.Windows.*
 
