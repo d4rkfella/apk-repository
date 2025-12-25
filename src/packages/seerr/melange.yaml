@@ -48,8 +48,9 @@ pipeline:
     working-directory: /home/build/seerr
     runs: |
       mkdir -p "${{targets.destdir}}/usr/lib/seerr"
-      cp -af package.json seerr-api.yml committag.json next.config.js .next dist public node_modules "${{targets.destdir}}/usr/lib/seerr"
-      rm -rf "${{targets.destdir}}"/usr/lib/seerr/.next/cache
+      rm -rf .next/cache
+      echo "{\"commitTag\": \"${COMMIT_TAG}\"}" > committag.json
+      cp -af committag.json .next dist node_modules "${{targets.destdir}}/usr/lib/seerr"
 test:
   environment:
     contents:
