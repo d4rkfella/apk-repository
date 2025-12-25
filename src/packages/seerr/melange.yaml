@@ -59,13 +59,13 @@ test:
         - bash
         - jq
   pipeline:
+    - name: Run test script
+      runs: |
+        EXPECTED_VERSION="${{package.version}}" ./test.sh
     - name: Check for missing dependancies
       uses: test/tw/ldd-check
       with:
         packages: ${{package.name}}
-    - name: Run test script
-      runs: |
-        EXPECTED_VERSION="${{package.version}}" ./test.sh
 update:
   enabled: true
   github:
