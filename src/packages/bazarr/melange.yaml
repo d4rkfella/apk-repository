@@ -122,6 +122,7 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{vars.mangled-package-version}}" test/test.sh
+
 update:
   enabled: true
   enable-prerelease-tags: true
