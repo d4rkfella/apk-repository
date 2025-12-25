@@ -27,12 +27,10 @@ pipeline:
   - name: Build
     working-directory: /home/build/seerr
     runs: |
-      export COMMIT_TAG=$(git rev-parse HEAD)
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
       patch -Np1 -i "../seerr.patch"
       sed -i 's/husky install//' package.json
-      echo "{\"commitTag\": \"${COMMIT_TAG}\"}" > committag.json
       pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
@@ -49,7 +47,7 @@ pipeline:
     runs: |
       mkdir -p "${{targets.destdir}}/usr/lib/seerr"
       rm -rf .next/cache
-      echo "{\"commitTag\": \"${COMMIT_TAG}\"}" > committag.json
+      echo "{\"commitTag\": \"$(git rev-parse HEAD)\"}" > committag.json
       cp -af jellyseerr-api.yml package.json committag.json .next dist node_modules "${{targets.destdir}}/usr/lib/seerr"
 test:
   environment:
