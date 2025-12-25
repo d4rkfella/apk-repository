@@ -50,7 +50,7 @@ pipeline:
       mkdir -p "${{targets.destdir}}/usr/lib/seerr"
       rm -rf .next/cache
       echo "{\"commitTag\": \"${COMMIT_TAG}\"}" > committag.json
-      cp -af committag.json .next dist node_modules "${{targets.destdir}}/usr/lib/seerr"
+      cp -af package.json committag.json .next dist node_modules "${{targets.destdir}}/usr/lib/seerr"
 test:
   environment:
     contents:
