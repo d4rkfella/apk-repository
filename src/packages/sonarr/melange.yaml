@@ -1,7 +1,7 @@
 package:
   name: sonarr
   version: 4.0.16.2944
-  epoch: 0
+  epoch: 1
   description: Sonarr is a PVR for Usenet and BitTorrent users. It can monitor multiple RSS feeds for new episodes of your favorite shows and will grab, sort and rename them. It can also be configured to automatically upgrade the quality of files already downloaded when a better quality format becomes available.
   copyright:
     - license: GPL-3.0-only
@@ -9,7 +9,6 @@ package:
     runtime:
       - aspnet-6-runtime
       - sqlite-libs
-
 environment:
   environment:
     PACKAGE_UPDATE_USE_PRERELEASE: true
@@ -20,14 +19,12 @@ environment:
       - nodejs
       - yarn
       - jq
-
 pipeline:
   - uses: git-checkout
     with:
       expected-commit: 52972e7efcce800560cbbaa64f5f76aaef6cbe77
       repository: https://github.com/Sonarr/Sonarr
       tag: v${{package.version}}
-  
   - name: Build
     runs: |
       if [[ "${{build.arch}}" == "aarch64" ]]; then
@@ -85,9 +82,7 @@ pipeline:
       cp -af "$_artifacts" "$_destdir"/bin
 
       ln -s /usr/lib/sonarr/bin/Sonarr "${{targets.destdir}}"/usr/bin/Sonarr
-  
   - uses: strip
-
 test:
   environment:
     contents:
@@ -106,7 +101,6 @@ test:
     - name: Run test script
       runs: |
         EXPECTED_VERSION="${{package.version}}" ./test.sh
-
 update:
   enabled: true
   github:

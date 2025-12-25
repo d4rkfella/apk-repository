@@ -1,37 +1,29 @@
 package:
   name: catatonit
   version: "0.2.1"
-  epoch: 0
+  epoch: 1
   description: minimal init system for Linux containers
   copyright:
     - license: GPL-2.0-or-later
-
 environment:
   contents:
     packages:
       - build-base
       - libtool
-
 pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/openSUSE/catatonit
       tag: v${{package.version}}
       expected-commit: bb3b96b99668e544618c5aec427c1f4b6b9ee9bb
-  
   - uses: autoconf/configure
-
   - uses: autoconf/make
-
   - uses: autoconf/make-install
-
   - uses: strip
-
 test:
   pipeline:
     - runs: |
         catatonit --version
-
 update:
   enabled: true
   github:

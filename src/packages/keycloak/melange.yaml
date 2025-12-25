@@ -1,7 +1,7 @@
 package:
   name: keycloak-darkfellanet
   version: "26.4.7"
-  epoch: 0
+  epoch: 1
   description: Open Source Identity and Access Management For Modern Applications and Services
   copyright:
     - license: Apache-2.0
@@ -66,11 +66,6 @@ subpackages:
           cd operator
           ../mvnw clean package
 
-          # NOTE: the maven build has created a .zip with the app
-          # but the zip has an embedded path component we want to get rid of, something like
-          # 'usr/share/java/keycloak-operator-26.4.0/'. We will unpack the zip then rename
-          # the 'keycloak-operator-26.4.0' directory to 'quarkus-app'
-          # this is because previous versions of the package may use this path in images or other components
           destdir="${{targets.subpkgdir}}/usr/share/java"
           mkdir -p "$destdir"
           maven_name="keycloak-operator-${{package.version}}"

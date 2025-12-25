@@ -1,11 +1,10 @@
 package:
   name: vw_web_vault
   version: 2025.7.0
-  epoch: 0
+  epoch: 1
   description: "Web vault for vaultwarden"
   copyright:
     - license: GPL-3.0-only
-
 environment:
   environment:
       REPRODUCIBLE: false
@@ -19,7 +18,6 @@ environment:
       - nodejs-22
       - npm
       - python-3.14
-
 pipeline:
   - uses: git-checkout
     with:
@@ -27,13 +25,11 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 824b793b415897b79ff8d46fa561eff7b57f76d0
       destination: bw_web_builds
-  
   - name: build-web-vault
     working-directory: /home/build/bw_web_builds
     runs: |
       make checkout
       make build
-
   - name: package-installation
     working-directory: /home/build/bw_web_builds/web-vault/apps/web/build
     runs: |

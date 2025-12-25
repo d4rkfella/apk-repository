@@ -1,7 +1,7 @@
 package:
   name: qbit_manage
   version: "4.6.5"
-  epoch: 0
+  epoch: 1
   description: This tool will help manage tedious tasks in qBittorrent and automate them. Tag, categorize, remove Orphaned data, remove unregistered torrents and much much more.
   copyright:
     - license: MIT

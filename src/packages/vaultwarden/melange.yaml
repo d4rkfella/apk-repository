@@ -1,11 +1,10 @@
 package:
   name: vaultwarden
   version: 1.34.3
-  epoch: 0
+  epoch: 1
   description: "Unofficial Bitwarden compatible server written in Rust (glibc)"
   copyright:
     - license: GPL-3.0-or-later
-
   dependencies:
     runtime:
       - wolfi-base
@@ -14,7 +13,6 @@ package:
       - libpq-18
       - vw_web_vault
       - curl
-
 environment:
   environment:
     FEATURES: "postgresql"
@@ -29,7 +27,6 @@ environment:
       - openssl-dev
       - postgresql-dev
       - zlib-dev
-
 pipeline:
   - uses: git-checkout
     with:
@@ -37,7 +34,6 @@ pipeline:
       tag: ${{package.version}}
       expected-commit: 5d84f17600e179280e44c391b92ee9eecc2b7cdc
       destination: vaultwarden
-
   - name: build-vaultwarden
     working-directory: /home/build/vaultwarden
     runs: |
@@ -46,9 +42,7 @@ pipeline:
         --release \
         --target ${{build.arch}}-unknown-linux-gnu \
         --bin vaultwarden
-  
   - uses: strip
-  
   - name: prepare-package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
