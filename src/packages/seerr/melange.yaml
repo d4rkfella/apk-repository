@@ -1,7 +1,7 @@
 package:
-  name: jellyseerr
+  name: seerr
   version: 2.7.3
-  epoch: 1
+  epoch: 0
   description: Open-source media request and discovery manager for Jellyfin, Plex, and Emby.
   copyright:
     - license: MIT
@@ -23,21 +23,21 @@ pipeline:
       expected-commit: e842036fafc9818ea38d2e19d4adb66e17e2aebf
       repository: https://github.com/seerr-team/seerr
       tag: v${{package.version}}
-      destination: jellyseerr
+      destination: seerr
   - name: Build
-    working-directory: /home/build/jellyseerr
+    working-directory: /home/build/seerr
     runs: |
       export COMMIT_TAG=$(git rev-parse HEAD)
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
-      patch -Np1 -i "../jellyseerr.patch"
+      patch -Np1 -i "../seerr.patch"
       sed -i 's/husky install//' package.json
       echo "{\"commitTag\": \"${COMMIT_TAG}\"}" > committag.json
       pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
   - name: Delete linux-musl node-modules
-    working-directory: /home/build/jellyseerr
+    working-directory: /home/build/seerr
     runs: |
       find node_modules -type d \
         -name "*musl*" \
@@ -45,16 +45,11 @@ pipeline:
         -exec rm -rf {} + \
         -prune
   - name: Prepare package
-    working-directory: /home/build/jellyseerr
+    working-directory: /home/build/seerr
     runs: |
-      mkdir -p "${{targets.destdir}}/usr/lib/jellyseerr"
-      cp -af package.json jellyseerr-api.yml committag.json next.config.js .next dist public node_modules "${{targets.destdir}}/usr/lib/jellyseerr"
-      rm -rf "${{targets.destdir}}"/usr/lib/jellyseerr/.next/cache
-  - name: Delete incompatible hermesc binary on arm64
-    if: ${{build.arch}} == 'aarch64'
-    runs: |
-      find "${{targets.destdir}}"/usr/lib/jellyseerr/node_modules -path "*linux64-bin/hermesc" -exec rm -f {} +
-  - uses: strip
+      mkdir -p "${{targets.destdir}}/usr/lib/seerr"
+      cp -af package.json seerr-api.yml committag.json next.config.js .next dist public node_modules "${{targets.destdir}}/usr/lib/seerr"
+      rm -rf "${{targets.destdir}}"/usr/lib/seerr/.next/cache
 test:
   environment:
     contents:

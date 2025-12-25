@@ -2,7 +2,7 @@
 set -eo pipefail
 
 # Configuration
-TARGET_DIR="/usr/lib/jellyseerr"
+TARGET_DIR="/usr/lib/seerr"
 EXPECTED_VERSION="${EXPECTED_VERSION}"
 SERVER_PORT=5055
 STARTUP_TIMEOUT=20
