@@ -1,7 +1,7 @@
 package:
   name: seerr
   version: 2.7.3
-  epoch: 3
+  epoch: 4
   description: Open-source media request and discovery manager for Jellyfin, Plex, and Emby.
   copyright:
     - license: MIT
@@ -29,6 +29,7 @@ pipeline:
     runs: |
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
+      export COMMIT_TAG=$(git rev-parse HEAD)
       patch -Np1 -i "../seerr.patch"
       sed -i 's/husky install//' package.json
       pnpm install --frozen-lockfile
