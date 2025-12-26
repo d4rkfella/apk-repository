@@ -1,7 +1,7 @@
 package:
   name: seerr
   version: 2.7.3
-  epoch: 2
+  epoch: 3
   description: Open-source media request and discovery manager for Jellyfin, Plex, and Emby.
   copyright:
     - license: MIT
