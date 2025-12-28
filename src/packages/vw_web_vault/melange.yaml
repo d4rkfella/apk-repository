@@ -34,7 +34,7 @@ pipeline:
       cd apps/web
       npm run dist:oss:selfhost
       printf '{"version":"%s"}\n' "${VAULT_VERSION}" > vw-version.json
-      ls -la
+      ls -la build
   - name: package-installation
     working-directory: /home/build/bw_web_builds/apps/web/build
     runs: |
