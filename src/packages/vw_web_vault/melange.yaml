@@ -1,7 +1,7 @@
 package:
   name: vw_web_vault
-  version: 2025.7.0
-  epoch: 1
+  version: 2025.12.0
+  epoch: 0
   description: "Web vault for vaultwarden"
   copyright:
     - license: GPL-3.0-only
@@ -9,7 +9,6 @@ environment:
   environment:
       REPRODUCIBLE: false
       VAULT_VERSION: v${{package.version}}
-      CHECKOUT_TAGS: false
   contents:
     packages:
       - wolfi-base
@@ -26,13 +25,20 @@ pipeline:
       expected-commit: 824b793b415897b79ff8d46fa561eff7b57f76d0
       destination: bw_web_builds
   - name: build-web-vault
-    working-directory: /home/build/bw_web_builds
+    working-directory: /home/build/bw_web_builds/web-vault
     runs: |
-      make checkout
-      make build
+      npm ci
+      pushd apps/web
+      npm run dist:oss:selfhost
+      printf '{"version":"%s"}\n' "${VAULT_VERSION}" > vw-version.json
+      popd
   - name: package-installation
     working-directory: /home/build/bw_web_builds/web-vault/apps/web/build
     runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/vw_web_vault
       cp -r ./* ${{targets.destdir}}/usr/lib/vw_web_vault
-      sed -i "s|\"version\":\"[^\"]*\"|\"version\":\"${VAULT_VERSION}\"|" "${{targets.destdir}}/usr/lib/vw_web_vault/vw-version.json"
+update:
+  enabled: true
+  github:
+    identifier: dani-garcia/bw_web_builds
+    strip-prefix: v
