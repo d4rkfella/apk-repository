@@ -28,25 +28,15 @@ pipeline:
   - name: build-and-package-web-vault
     working-directory: /home/build/bw_web_builds
     runs: |
-      #!/usr/bin/env bash
-      set -euo pipefail
-
       make checkout
-
-      pushd web-vault
+      cd web-vault
       npm ci
-
-      pushd apps/web
+      cd apps/web
       npm run dist:oss:selfhost
-
-      pushd build
+      cd build
       printf '{"version":"%s"}\n' "${VAULT_VERSION}" > vw-version.json
       mkdir -p ${{targets.destdir}}/usr/lib/vw_web_vault
       cp -r ./* ${{targets.destdir}}/usr/lib/vw_web_vault
-      popd
-
-      popd
-      popd
 update:
   enabled: true
   github:
