@@ -29,7 +29,7 @@ pipeline:
     working-directory: /home/build/bw_web_builds
     runs: |
       make checkout
-      cd web_vault
+      cd web-vault
       npm ci
       cd apps/web
       npm run dist:oss:selfhost
