@@ -9,6 +9,7 @@ environment:
   environment:
       REPRODUCIBLE: false
       VAULT_VERSION: v${{package.version}}
+      CHECKOUT_TAGS: false
   contents:
     packages:
       - wolfi-base
@@ -27,10 +28,13 @@ pipeline:
   - name: build-web-vault
     working-directory: /home/build/bw_web_builds
     runs: |
+      make checkout
+      pushd web_vault
       npm ci
       pushd apps/web
       npm run dist:oss:selfhost
       printf '{"version":"%s"}\n' "${VAULT_VERSION}" > vw-version.json
+      popd
       popd
   - name: package-installation
     working-directory: /home/build/bw_web_builds/apps/web/build
