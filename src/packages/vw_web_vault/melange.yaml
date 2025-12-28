@@ -25,21 +25,22 @@ pipeline:
       tag: v${{package.version}}
       expected-commit: 678e04b0264afdee9c5ed00ace65318225e92c4d
       destination: bw_web_builds
-  - name: build-web-vault
+  - name: build-and-package-web-vault
     working-directory: /home/build/bw_web_builds
+    shell: bash
     runs: |
       make checkout
-      cd web-vault
+      pushd web-vault
       npm ci
-      cd apps/web
+      pushd apps/web
       npm run dist:oss:selfhost
+      pushd build
       printf '{"version":"%s"}\n' "${VAULT_VERSION}" > vw-version.json
-      ls -la build
-  - name: package-installation
-    working-directory: /home/build/bw_web_builds/apps/web/build
-    runs: |
       mkdir -p ${{targets.destdir}}/usr/lib/vw_web_vault
       cp -r ./* ${{targets.destdir}}/usr/lib/vw_web_vault
+      popd
+      popd
+      popd
 update:
   enabled: true
   github:
