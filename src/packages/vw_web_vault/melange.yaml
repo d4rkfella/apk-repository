@@ -29,13 +29,11 @@ pipeline:
     working-directory: /home/build/bw_web_builds
     runs: |
       make checkout
-      pushd web_vault
+      cd web_vault
       npm ci
-      pushd apps/web
+      cd apps/web
       npm run dist:oss:selfhost
       printf '{"version":"%s"}\n' "${VAULT_VERSION}" > vw-version.json
-      popd
-      popd
   - name: package-installation
     working-directory: /home/build/bw_web_builds/apps/web/build
     runs: |
