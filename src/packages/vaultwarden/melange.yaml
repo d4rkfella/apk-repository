@@ -47,3 +47,8 @@ pipeline:
       mkdir -p ${{targets.destdir}}/usr/bin
       cp /home/build/vaultwarden/target/${{build.arch}}-unknown-linux-gnu/release/vaultwarden ${{targets.destdir}}/usr/bin/vaultwarden
       install -m555 -D start.sh ${{targets.destdir}}/usr/bin/start.sh
+update:
+  enabled: true
+  github:
+    identifier: dani-garcia/vaultwarden
+    strip-prefix: v
