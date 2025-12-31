@@ -1,6 +1,6 @@
 package:
   name: vaultwarden
-  version: 1.35.0
+  version: "1.35.1"
   epoch: 0
   description: "Unofficial Bitwarden compatible server written in Rust (glibc)"
   copyright:
@@ -32,7 +32,7 @@ pipeline:
     with:
       repository: https://github.com/dani-garcia/vaultwarden
       tag: ${{package.version}}
-      expected-commit: a4907f35390acfd8079ab798a9f6eb785eb17c35
+      expected-commit: 3e2cef7e8b27cf33cb735d428553f835bc5dd6c2
       destination: vaultwarden
   - name: build-vaultwarden
     working-directory: /home/build/vaultwarden
