@@ -1,15 +1,15 @@
 package:
   name: vw_web_vault
-  version: 2025.12.0
+  version: "2025.12.1"
   epoch: 0
   description: "Web vault for vaultwarden"
   copyright:
     - license: GPL-3.0-only
 environment:
   environment:
-      REPRODUCIBLE: false
-      VAULT_VERSION: v${{package.version}}
-      CHECKOUT_TAGS: false
+    REPRODUCIBLE: false
+    VAULT_VERSION: v${{package.version}}
+    CHECKOUT_TAGS: false
   contents:
     packages:
       - wolfi-base
@@ -23,7 +23,7 @@ pipeline:
     with:
       repository: https://github.com/dani-garcia/bw_web_builds
       tag: v${{package.version}}
-      expected-commit: 678e04b0264afdee9c5ed00ace65318225e92c4d
+      expected-commit: 6fd8353d5830f304bab0cfa517dc65bb5f08a3ef
       destination: bw_web_builds
   - name: build-and-package-web-vault
     working-directory: /home/build/bw_web_builds
