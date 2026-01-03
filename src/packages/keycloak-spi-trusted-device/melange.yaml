@@ -28,7 +28,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      repository: wouterh-dev/keycloak-spi-trusted-device
+      repository: https://github.com/wouterh-dev/keycloak-spi-trusted-device
       tag: v${{package.version}}
       expected-commit: 4bd3603aaab4e183789a02bb11e098b4dc7faa73
   - runs: |
