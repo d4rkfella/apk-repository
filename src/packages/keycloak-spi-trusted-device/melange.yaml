@@ -21,6 +21,7 @@ environment:
       - bash
       - openjdk-${{vars.java-version}}-default-jdk
       - wolfi-base
+      - maven
   environment:
     LANG: en_US.UTF-8
     JAVA_HOME: /usr/lib/jvm/java-${{vars.java-version}}-openjdk
