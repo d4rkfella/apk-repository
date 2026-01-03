@@ -11,6 +11,10 @@ package:
       - merged-usrsbin
       - openjdk-${{vars.java-version}}-default-jvm
       - wolfi-baselayout
+  scriptlets:
+    post-install: |
+      #!/bin/sh
+      cd /usr/share/java/keycloak && /usr/share/java/keycloak/bin/kc.sh build
 vars:
   java-version: 21
 environment:
@@ -53,10 +57,6 @@ pipeline:
       for i in kc.sh kcadm.sh kcreg.sh; do
         ln -sf /usr/share/java/keycloak/bin/$i ${{targets.destdir}}/usr/bin/$i
       done
-scriptlets:
-  post-install: |
-    #!/bin/sh
-    cd "${{targets.destdir}}"/usr/share/java/keycloak && "${{targets.destdir}}"/usr/share/java/keycloak/bin/kc.sh build
 subpackages:
   - name: ${{package.name}}-operator
     dependencies:
