@@ -54,9 +54,9 @@ pipeline:
         ln -sf /usr/share/java/keycloak/bin/$i ${{targets.destdir}}/usr/bin/$i
       done
 scriptlets:
-      post-install: |
-        #!/bin/sh
-        cd "${{targets.destdir}}"/usr/share/java/keycloak && "${{targets.destdir}}"/usr/share/java/keycloak/bin/kc.sh build
+  post-install: |
+    #!/bin/sh
+    cd "${{targets.destdir}}"/usr/share/java/keycloak && "${{targets.destdir}}"/usr/share/java/keycloak/bin/kc.sh build
 subpackages:
   - name: ${{package.name}}-operator
     dependencies:
