@@ -1,7 +1,7 @@
 package:
   name: keycloak-darkfellanet
   version: "26.4.7"
-  epoch: 1
+  epoch: 2
   description: Open Source Identity and Access Management For Modern Applications and Services
   copyright:
     - license: Apache-2.0
@@ -50,7 +50,7 @@ pipeline:
       for i in kc.sh kcadm.sh kcreg.sh; do
         ln -sf /usr/share/java/keycloak/bin/$i ${{targets.destdir}}/usr/bin/$i
       done
-
+      curl -fsSL -o  "${{targets.destdir}}"/usr/share/java/keycloak/providers/keycloak-spi-trusted-device-0.0.2.jar https://github.com/wouterh-dev/keycloak-spi-trusted-device/releases/download/v0.0.2/keycloak-spi-trusted-device-0.0.2.jar
       export KC_HEALTH_ENABLED=true
       export KC_METRICS_ENABLED=true
       export KC_DB=postgres
