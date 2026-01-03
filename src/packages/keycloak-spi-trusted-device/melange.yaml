@@ -1,0 +1,38 @@
+package:
+  name: keycloak-spi-trusted-device
+  version: "0.0.2"
+  epoch: 0
+  description: Keycloak plugin for 2FA trusted-device.
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    runtime:
+      - openjdk-${{vars.java-version}}-default-jvm
+      - wolfi-baselayout
+  scriptlets:
+    post-install: |
+      #!/bin/sh
+      cd /usr/share/java/keycloak && /usr/share/java/keycloak/bin/kc.sh build
+vars:
+  java-version: 21
+environment:
+  contents:
+    packages:
+      - bash
+      - openjdk-${{vars.java-version}}-default-jdk
+      - wolfi-base
+  environment:
+    LANG: en_US.UTF-8
+    JAVA_HOME: /usr/lib/jvm/java-${{vars.java-version}}-openjdk
+    REPRODUCIBLE: false
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: wouterh-dev/keycloak-spi-trusted-device
+      tag: v${{package.version}}
+      expected-commit: 4bd3603aaab4e183789a02bb11e098b4dc7faa73
+  - runs: |
+      mvn package -DskipTests
+      mkdir -p ${{targets.destdir}}/usr/share/java/keycloak/providers
+      cp target/keycloak-spi-trusted-device-${{package.version}}.jar \
+         ${{targets.destdir}}/usr/share/java/keycloak/providers/
