@@ -7,7 +7,7 @@ package:
     - license: Apache-2.0
   dependencies:
     runtime:
-      - bash
+      - bash # Keycloak helper scripts require bash, aren't compatible with busybox.
       - merged-usrsbin
       - openjdk-${{vars.java-version}}-default-jvm
       - wolfi-baselayout
@@ -18,10 +18,13 @@ environment:
     packages:
       - bash
       - build-base
+      - busybox
       - ca-certificates-bundle
       - gcc-13-default
       - openjdk-${{vars.java-version}}-default-jdk
+      - unzip
       - wolfi-base
+      - wolfi-baselayout
   environment:
     LANG: en_US.UTF-8
     JAVA_HOME: /usr/lib/jvm/java-${{vars.java-version}}-openjdk
@@ -50,11 +53,10 @@ pipeline:
       for i in kc.sh kcadm.sh kcreg.sh; do
         ln -sf /usr/share/java/keycloak/bin/$i ${{targets.destdir}}/usr/bin/$i
       done
-      curl -fsSL -o  "${{targets.destdir}}"/usr/share/java/keycloak/providers/keycloak-spi-trusted-device-0.0.2.jar https://github.com/wouterh-dev/keycloak-spi-trusted-device/releases/download/v0.0.2/keycloak-spi-trusted-device-0.0.2.jar
-      export KC_HEALTH_ENABLED=true
-      export KC_METRICS_ENABLED=true
-      export KC_DB=postgres
-      cd "${{targets.destdir}}"/usr/share/java/keycloak && "${{targets.destdir}}"/usr/share/java/keycloak/bin/kc.sh build
+scriptlets:
+      post-install: |
+        #!/bin/sh
+        cd "${{targets.destdir}}"/usr/share/java/keycloak && "${{targets.destdir}}"/usr/share/java/keycloak/bin/kc.sh build
 subpackages:
   - name: ${{package.name}}-operator
     dependencies:
