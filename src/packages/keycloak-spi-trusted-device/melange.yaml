@@ -35,4 +35,4 @@ pipeline:
   - runs: |
       mvn package -DskipTests
       mkdir -p ${{targets.destdir}}/usr/share/java/keycloak/providers
-      cp /home/build/spi/target/keycloak-spi-trusted-device-1.0-SNAPSHOT-shaded.jar ${{targets.destdir}}/usr/share/java/keycloak/providers/keycloak-spi-trusted-device-${{package.version}}.jar
+      cp spi/target/keycloak-spi-trusted-device-*-SNAPSHOT.jar ${{targets.destdir}}/usr/share/java/keycloak/providers/keycloak-spi-trusted-device.jar
