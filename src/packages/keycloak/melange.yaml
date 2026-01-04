@@ -1,7 +1,7 @@
 package:
   name: keycloak-darkfellanet
   version: "26.4.7"
-  epoch: 3
+  epoch: 4
   description: Open Source Identity and Access Management For Modern Applications and Services
   copyright:
     - license: Apache-2.0
@@ -64,6 +64,15 @@ pipeline:
       mvn package -DskipTests
       mkdir -p ${{targets.destdir}}/usr/share/java/keycloak/providers
       cp spi/target/keycloak-spi-trusted-device-*-SNAPSHOT.jar ${{targets.destdir}}/usr/share/java/keycloak/providers/keycloak-spi-trusted-device.jar
+  - uses: git-checkout
+    with:
+      repository: https://github.com/d4rkfella/keycloak-custom-theme
+      tag: v0.0.1
+      expected-commit: c6c60dd47d88f1e0d65c6e949ffbf52faa65807a
+  - runs: |
+      npm install
+      npm run build-keycloak-theme
+      cp dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar ${{targets.destdir}}/usr/share/java/keycloak/providers/keycloak-theme.jar
   - runs: |
       export KC_HEALTH_ENABLED=true
       export KC_METRICS_ENABLED=true
