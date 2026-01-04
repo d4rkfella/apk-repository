@@ -36,3 +36,11 @@ pipeline:
       mvn package -DskipTests
       mkdir -p ${{targets.destdir}}/usr/share/java/keycloak/providers
       cp spi/target/keycloak-spi-trusted-device-*-SNAPSHOT.jar ${{targets.destdir}}/usr/share/java/keycloak/providers/keycloak-spi-trusted-device.jar
+- name: ${{package.name}}-compat
+    pipeline:
+      - runs: |
+          mkdir -p "${{targets.subpkgdir}}"/opt/keycloak/providers
+          ln -s /usr/share/java/keycloak/providers/keycloak-spi-trusted-device.jar "${{targets.subpkgdir}}"/opt/keycloak/providers/
+    dependencies:
+      runtime:
+        - wolfi-baselayout
