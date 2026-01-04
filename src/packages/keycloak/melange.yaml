@@ -28,11 +28,30 @@ environment:
       - wolfi-base
       - maven
       - npm
+      - node-24
   environment:
     LANG: en_US.UTF-8
     JAVA_HOME: /usr/lib/jvm/java-${{vars.java-version}}-openjdk
     REPRODUCIBLE: false
 pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/wouterh-dev/keycloak-spi-trusted-device
+      tag: v0.0.2
+      expected-commit: 4bd3603aaab4e183789a02bb11e098b4dc7faa73
+  - runs: |
+      mvn package -DskipTests
+      mkdir -p ${{targets.destdir}}/usr/share/java/keycloak/providers
+      cp spi/target/keycloak-spi-trusted-device-*-SNAPSHOT.jar ${{targets.destdir}}/usr/share/java/keycloak/providers/keycloak-spi-trusted-device.jar
+  - uses: git-checkout
+    with:
+      repository: https://github.com/d4rkfella/keycloak-custom-theme
+      tag: v0.0.1
+      expected-commit: 649c6dd9884153dd8a7e0978dee8c8d99d935410
+  - runs: |
+      npm install
+      npm run build-keycloak-theme
+      cp dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar ${{targets.destdir}}/usr/share/java/keycloak/providers/keycloak-theme.jar
   - uses: git-checkout
     with:
       repository: https://github.com/keycloak/keycloak
@@ -56,24 +75,6 @@ pipeline:
       for i in kc.sh kcadm.sh kcreg.sh; do
         ln -sf /usr/share/java/keycloak/bin/$i ${{targets.destdir}}/usr/bin/$i
       done
-  - uses: git-checkout
-    with:
-      repository: https://github.com/wouterh-dev/keycloak-spi-trusted-device
-      tag: v0.0.2
-      expected-commit: 4bd3603aaab4e183789a02bb11e098b4dc7faa73
-  - runs: |
-      mvn package -DskipTests
-      mkdir -p ${{targets.destdir}}/usr/share/java/keycloak/providers
-      cp spi/target/keycloak-spi-trusted-device-*-SNAPSHOT.jar ${{targets.destdir}}/usr/share/java/keycloak/providers/keycloak-spi-trusted-device.jar
-  - uses: git-checkout
-    with:
-      repository: https://github.com/d4rkfella/keycloak-custom-theme
-      tag: v0.0.1
-      expected-commit: 649c6dd9884153dd8a7e0978dee8c8d99d935410
-  - runs: |
-      npm install
-      npm run build-keycloak-theme
-      cp dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar ${{targets.destdir}}/usr/share/java/keycloak/providers/keycloak-theme.jar
   - runs: |
       export KC_HEALTH_ENABLED=true
       export KC_METRICS_ENABLED=true
