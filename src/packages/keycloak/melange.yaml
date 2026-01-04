@@ -22,13 +22,11 @@ environment:
     packages:
       - bash
       - build-base
-      - busybox
-      - ca-certificates-bundle
       - gcc-13-default
       - openjdk-${{vars.java-version}}-default-jdk
       - unzip
       - wolfi-base
-      - wolfi-baselayout
+      - maven
   environment:
     LANG: en_US.UTF-8
     JAVA_HOME: /usr/lib/jvm/java-${{vars.java-version}}-openjdk
