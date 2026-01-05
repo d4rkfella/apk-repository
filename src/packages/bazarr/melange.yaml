@@ -116,7 +116,7 @@ test:
         packages: ${{package.name}}
     - name: Run test script
       runs: |
-        EXPECTED_VERSION="${{vars.mangled-package-version}}" test/test.sh
+        EXPECTED_VERSION="${{package.version}}" test/test.sh
 update:
   enabled: true
   github:
