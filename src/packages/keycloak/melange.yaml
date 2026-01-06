@@ -1,7 +1,7 @@
 package:
   name: keycloak-darkfellanet
-  version: "26.4.7"
-  epoch: 4
+  version: "26.5.0"
+  epoch: 0
   description: Open Source Identity and Access Management For Modern Applications and Services
   copyright:
     - license: Apache-2.0
@@ -11,10 +11,6 @@ package:
       - merged-usrsbin
       - openjdk-${{vars.java-version}}-default-jvm
       - wolfi-baselayout
-  scriptlets:
-    post-install: |
-      #!/bin/sh
-      cd /usr/share/java/keycloak && /usr/share/java/keycloak/bin/kc.sh build
 vars:
   java-version: 21
 environment:
@@ -38,7 +34,7 @@ pipeline:
     with:
       repository: https://github.com/keycloak/keycloak
       tag: ${{package.version}}
-      expected-commit: 38c38721ad4c1303fa2a1bc24ccece4799a8a242
+      expected-commit: bb0c59793c0ce4d2ff4f9e1a2b51cca9f262309c
   - uses: maven/pombump
   - runs: |
       gcc napi-static-assert.c -o /tmp/preload.so -fPIC -shared -ldl
@@ -69,8 +65,8 @@ pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/d4rkfella/keycloak-custom-theme
-      tag: v0.0.1
-      expected-commit: 649c6dd9884153dd8a7e0978dee8c8d99d935410
+      tag: v0.1.0
+      expected-commit: b67e833e5266163e8d414cdb8a627dc3ac20ea93
   - runs: |
       npm install
       npm run build-keycloak-theme
