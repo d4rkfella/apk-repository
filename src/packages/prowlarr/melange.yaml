@@ -1,7 +1,7 @@
 package:
   name: prowlarr
-  version: "2.3.1.5238"
-  epoch: 1
+  version: "2.3.2.5245"
+  epoch: 0
   description: Prowlarr is an indexer manager/proxy built on the popular *arr .net/reactjs base stack to integrate with your various PVR apps. Prowlarr supports management of both Torrent Trackers and Usenet Indexers. It integrates seamlessly with Lidarr, Mylar3, Radarr, Readarr, and Sonarr offering complete management of your indexers with no per app Indexer setup required (we do it all).
   copyright:
     - license: GPL-3.0-only
@@ -22,7 +22,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: ed3b25b3d6ebf843d150b941e73995ff281318df
+      expected-commit: 0884ac92ff0aad347de0fef9ffc9b74dd79e7a7d
       repository: https://github.com/Prowlarr/Prowlarr
       tag: v${{package.version}}
   - name: Build
@@ -32,10 +32,10 @@ pipeline:
       elif [[ "${{build.arch}}" == "x86_64" ]]; then
         runtime_arch="x64"
       fi
-      
+
       export NODE_OPTIONS="--localstorage-file=/tmp/.localstorage"
       export BROWSERSLIST_IGNORE_OLD_DATA=true
-      
+
       yarn install --frozen-lockfile --network-timeout 120000
 
       jq '.sdk.version = "8.0.120"' /home/build/global.json > /home/build/global.json.tmp && mv /home/build/global.json.tmp /home/build/global.json
@@ -68,12 +68,12 @@ pipeline:
       echo "Preparing package"
 
       mkdir -p "$_destdir" "${{targets.destdir}}/usr/bin"
-      
+
       printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)\n" "develop" "${{package.version}}" > "$_destdir/package_info"
-      
+
       cp -r "$_output/UI" "$_artifacts"
       cp -r $_output/Prowlarr.Update/$_framework/$_runtime/publish $_artifacts/Prowlarr.Update
-      
+
       echo "Adding Prowlarr.Mono to UpdatePackage"
       cp $_artifacts/Prowlarr.Mono.* $_artifacts/Prowlarr.Update
       cp $_artifacts/Mono.Posix.NETStandard.* $_artifacts/Prowlarr.Update
@@ -82,7 +82,7 @@ pipeline:
       echo "Removing Service helpers"
       rm -f $_artifacts/ServiceUninstall.*
       rm -f $_artifacts/ServiceInstall.*
-  
+
       echo "Removing Prowlarr.Windows"
       rm $_artifacts/Prowlarr.Windows.*
 
