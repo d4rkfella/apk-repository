@@ -65,8 +65,8 @@ pipeline:
   - uses: git-checkout
     with:
       repository: https://github.com/d4rkfella/keycloak-custom-theme
-      tag: v0.1.0
-      expected-commit: b67e833e5266163e8d414cdb8a627dc3ac20ea93
+      tag: v0.2.0
+      expected-commit: b1f6d5c5780ca5190371506bdaa0e428c636cd96
   - runs: |
       npm install
       npm run build-keycloak-theme
