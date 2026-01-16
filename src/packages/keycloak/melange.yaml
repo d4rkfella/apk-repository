@@ -55,15 +55,6 @@ pipeline:
       done
   - uses: git-checkout
     with:
-      repository: https://github.com/wouterh-dev/keycloak-spi-trusted-device
-      tag: v0.0.2
-      expected-commit: 4bd3603aaab4e183789a02bb11e098b4dc7faa73
-  - runs: |
-      mvn package -DskipTests
-      mkdir -p ${{targets.destdir}}/usr/share/java/keycloak/providers
-      cp spi/target/keycloak-spi-trusted-device-*-SNAPSHOT.jar ${{targets.destdir}}/usr/share/java/keycloak/providers/keycloak-spi-trusted-device.jar
-  - uses: git-checkout
-    with:
       repository: https://github.com/d4rkfella/keycloak-custom-theme
       tag: v0.2.1
       expected-commit: 5cf6892b1747400e9b6572333351f34baf041a6a
