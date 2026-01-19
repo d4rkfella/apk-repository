@@ -1,6 +1,6 @@
 package:
   name: bazarr
-  version: "1.5.4"
+  version: "1.5.5_beta8"
   epoch: 0
   description: Bazarr is a companion application to Sonarr and Radarr. It manages and downloads subtitles based on your requirements. You define your preferences by TV show or movie and Bazarr takes care of everything for you.
   copyright:
@@ -9,6 +9,11 @@ package:
     runtime:
       - unrar
       - ffmpeg
+var-transforms:
+  - from: "${{package.version}}"
+    match: "_beta"
+    replace: "-beta."
+    to: mangled-package-version
 environment:
   environment:
     PYTHONHASHSEED: 0
@@ -23,9 +28,9 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 60190763fc7fdbcd4e24b46ee7d39dd9e0a2f168
+      expected-commit: 20edf259fca2baea59ddae191f7c3341f38d5fc8
       repository: https://github.com/morpheus65535/bazarr
-      tag: v${{package.version}}
+      tag: v${{vars.mangled-package-version}}
   - uses: patch
     with:
       patches: GHSA-h95x-26f3-88hr.patch
@@ -47,8 +52,8 @@ pipeline:
         "waitress-3.0.0.dist-info waitress==3.0.2" \
         "jinja2-3.1.5.dist-info jinja2==3.1.6" \
         "h11-0.14.0.dist-info h11==0.16.0" \
-        "urllib3-2.2.3.dist-info urllib3==2.6.0" \
-        "Flask_Cors-5.0.0.dist-info flask_cors==6.0.1" \
+        "urllib3-2.2.3.dist-info urllib3==2.6.3" \
+        "Flask_Cors-5.0.0.dist-info flask_cors==6.0.2" \
         "requests-2.32.3.dist-info requests==2.32.5"
       do
           OLD_DIST=$(printf '%s' "$entry" | cut -d' ' -f1)
@@ -100,7 +105,7 @@ pipeline:
 
       cp VERSION "${APPDIR}"
 
-      printf "UpdateMethod=docker\nBranch=master\nPackageVersion=${{package.version}}\nPackageAuthor=[d4rkfella](https://github.com/d4rkfella)" > ${{targets.destdir}}/usr/lib/bazarr/package_info
+      printf "UpdateMethod=docker\nBranch=development\nPackageVersion=${{package.version}}\nPackageAuthor=d4rkfella" > ${{targets.destdir}}/usr/lib/bazarr/package_info
 test:
   environment:
     contents:
@@ -116,9 +121,13 @@ test:
         packages: ${{package.name}}
     - name: Run test script
       runs: |
-        EXPECTED_VERSION="${{package.version}}" test/test.sh
+        EXPECTED_VERSION="${{vars.mangled-package-version}}" test/test.sh
 update:
   enabled: true
+  enable-prerelease-tags: true
+  version-transform:
+    - match: "-beta."
+      replace: "_beta"
   github:
     identifier: morpheus65535/bazarr
     strip-prefix: v
