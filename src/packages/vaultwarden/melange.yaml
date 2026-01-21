@@ -15,6 +15,7 @@ package:
 environment:
   environment:
     FEATURES: "postgresql"
+    REPRODUCIBLE: false
   contents:
     packages:
       - wolfi-base
@@ -39,6 +40,14 @@ pipeline:
       tag: ${{package.version}}
       expected-commit: 4352fffeec7915e45559b46dce18640a25f46801
       destination: vaultwarden
+  - name: build-vaultwarden
+    working-directory: /home/build/vaultwarden
+    runs: |
+      cargo auditable build \
+        --features ${FEATURES} \
+        --release \
+        --target ${{build.arch}}-unknown-linux-gnu \
+        --bin vaultwarden
   - uses: git-checkout
     with:
       repository: https://github.com/dani-garcia/bw_web_builds
