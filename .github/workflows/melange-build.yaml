@@ -1,4 +1,4 @@
-name: Melange Package Pipeline
+name: Melange Build
 
 on: 
   push:
@@ -17,7 +17,7 @@ permissions:
   attestations: write
 
 jobs:
-  changed-files:
+  setup-build-matrix:
     runs-on: ubuntu-24.04
     outputs:
       packages: ${{ steps.set-packages.outputs.packages }}
@@ -38,42 +38,24 @@ jobs:
           files: src/packages/**/melange.yaml
           matrix: true
 
-
-      - name: Setup matrix for manual run
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        id: set-matrix
-        run: |
-          PKG="src/packages/${{ github.event.inputs.package }}/melange.yaml"
-          echo "packages=[\"$PKG\"]" >> $GITHUB_OUTPUT
-
-      - name: Set packages output
+      - name: Set packages matrix output
         id: set-packages
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "packages=[\"src/packages/${{ github.event.inputs.package }}/melange.yaml\"]" >> "$GITHUB_OUTPUT"
           else
             FILES='${{ steps.changed-files.outputs.all_changed_files }}'
-            echo "DEBUG: Raw output from changed-files:"
-            echo "$FILES"
-            echo "DEBUG: Length: ${#FILES}"
-            echo "DEBUG: First char: ${FILES:0:1}"
-            echo "---"
-            
             if [ -z "$FILES" ]; then
-              echo "DEBUG: FILES is empty, setting packages=[]"
               echo "packages=[]" >> "$GITHUB_OUTPUT"
             else
-              echo "DEBUG: Setting packages to: $FILES"
               echo "packages=$FILES" >> "$GITHUB_OUTPUT"
             fi
-            
-            echo "DEBUG: Final packages value:"
             cat "$GITHUB_OUTPUT"
           fi
 
-  setup:
-    needs: changed-files
-    if: ${{ needs.changed-files.outputs.packages != '[]' }}
+  setup-build-enviroment:
+    needs: setup-build-matrix
+    if: ${{ needs.setup-build-matrix.outputs.packages != '[]' }}
     strategy:
       matrix:
         arch: [x86_64, aarch64]
@@ -83,22 +65,22 @@ jobs:
       arch: ${{ matrix.arch }}
 
   build:
-    needs: [changed-files,setup]
-    if: ${{ needs.changed-files.outputs.packages != '[]' }}
+    needs: [setup-build-matrix,setup-build-enviroment]
+    if: ${{ needs.setup-build-matrix.outputs.packages != '[]' }}
     strategy:
       matrix:
-        packages: ${{ fromJSON(needs.changed-files.outputs.packages) }}
+        packages: ${{ fromJSON(needs.setup-build-matrix.outputs.packages) }}
         arch: [x86_64, aarch64]
       max-parallel: 4
       fail-fast: false
     runs-on: ${{ matrix.arch == 'x86_64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
 
     steps:
-      - name: Retrieve Cache Key
+      - name: Set Cache Key
         id: cache
         run: echo "key=$(date -u +'%G-%V')" >> $GITHUB_OUTPUT
 
-      - name: Restore cached build dependancies
+      - name: Restore cached build tools
         uses: actions/cache/restore@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
         with:
           key: build-dependencies-${{ matrix.arch }}-${{ steps.cache.outputs.key }}
@@ -111,7 +93,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-      - name: Build and Push
+      - name: Build and Push to Artifactory
         uses: d4rkfella/actions/melange-build@main
         with:
           arch: ${{ matrix.arch }}

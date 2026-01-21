@@ -1,5 +1,5 @@
 
-name: Melange Build Setup
+name: Setup Melange Build Environment
 on:
   workflow_call:
     inputs:
@@ -11,11 +11,11 @@ jobs:
   setup:
     runs-on: ${{ inputs.arch == 'x86_64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
     steps:
-      - name: Create Weekly Cache Key
+      - name: Set Cache Key
         id: cache
         run: echo "key=$(date -u +'%G-%V')" >> $GITHUB_OUTPUT
 
-      - name: Check for cached dependencies
+      - name: Check cache
         id: cache-restore
         uses: actions/cache/restore@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
         with:
