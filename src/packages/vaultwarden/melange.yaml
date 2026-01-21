@@ -15,7 +15,6 @@ package:
 environment:
   environment:
     FEATURES: "postgresql"
-    CHECKOUT_TAGS: false
   contents:
     packages:
       - wolfi-base
