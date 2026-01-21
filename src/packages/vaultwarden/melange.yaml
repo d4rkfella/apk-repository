@@ -49,17 +49,19 @@ pipeline:
     working-directory: /home/build/bw_web_builds
     runs: |
       set -eux
-      export VAULT_VERSION=$(yq '.vault_version' /home/build/vaultwarden/docker/DockerSettings.yaml | tr -d '"')
-      echo ${VAULT_VERSION}
+      export BW_WEB_BUILDS_VERSION=$(yq '.vault_version' /home/build/vaultwarden/docker/DockerSettings.yaml | tr -d '"')
+      echo ${BW_WEB_BUILDS_VERSION}
       git fetch --tags
-      git checkout "${VAULT_VERSION}"
+      git checkout "${BW_WEB_BUILDS_VERSION}"
+      export VAULT_VERSION=$(grep '^ARG VAULT_VERSION=' Dockerfile | cut -d'=' -f2)
+      echo ${VAULT_VERSION}
       make checkout
       cd web-vault
       npm ci
       cd apps/web
       npm run dist:oss:selfhost
       cd build
-      printf '{"version":"%s"}\n' "${VAULT_VERSION}" > vw-version.json
+      printf '{"version":"%s"}\n' "$(git describe --tags --exact-match 2>/dev/null || git describe --tags)" > vw-version.json
   - name: prepare-package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
