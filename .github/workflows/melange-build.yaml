@@ -48,9 +48,8 @@ jobs:
       - name: Set packages output
         id: set-packages
         run: |
-          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
-            PKG="src/packages/${GITHUB_EVENT.inputs.package}/melange.yaml"
-            echo "packages=[\"$PKG\"]" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "packages=[\"src/packages/${{ github.event.inputs.package }}/melange.yaml\"]" >> "$GITHUB_OUTPUT"
           else
             FILES="${{ steps.changed-files.outputs.all_changed_files }}"
             if [ -z "$FILES" ]; then
