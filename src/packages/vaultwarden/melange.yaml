@@ -28,7 +28,7 @@ environment:
       - postgresql-dev
       - zlib-dev
       - bash
-      - make
+      - build-base
       - nodejs-22
       - npm
       - python-3.14
@@ -59,7 +59,7 @@ pipeline:
       cd apps/web
       npm run dist:oss:selfhost
       cd build
-      printf '{"version":"%s"}\n' "v${WEB_VAULT_VERSION}" > vw-version.json
+      printf '{"version":"%s"}\n' "${WEB_VAULT_VERSION}" > vw-version.json
   - name: prepare-package
     runs: |
       mkdir -p ${{targets.destdir}}/usr/bin
