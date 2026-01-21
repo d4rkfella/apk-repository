@@ -58,6 +58,7 @@ jobs:
             else
               echo "packages=$FILES" >> "$GITHUB_OUTPUT"
             fi
+          fi
 
   setup:
     needs: changed-files
