@@ -4,6 +4,12 @@ on:
   push:
     branches: ["main"]
     paths: ["src/packages/**/melange.yaml"]
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Package folder name (e.g. nginx, vaultwarden, etc)"
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -25,11 +31,19 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
 
       - name: Get Changed Files
+        if: ${{ github.event_name == 'push' }}
         id: changed-files
         uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891 # 47.0.1
         with:
           files: src/packages/**/melange.yaml
           matrix: true
+
+      - name: Setup matrix for manual run
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        id: set-matrix
+        run: |
+          PKG="src/packages/${{ github.event.inputs.package }}/melange.yaml"
+          echo "packages=[\"$PKG\"]" >> $GITHUB_OUTPUT
 
   setup:
     needs: changed-files
