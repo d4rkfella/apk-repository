@@ -36,8 +36,7 @@ jobs:
         uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891 # 47.0.1
         with:
           files: src/packages/**/melange.yaml
-          json: true
-          escape_json: false
+          matrix: true
 
 
       - name: Setup matrix for manual run
@@ -53,12 +52,23 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "packages=[\"src/packages/${{ github.event.inputs.package }}/melange.yaml\"]" >> "$GITHUB_OUTPUT"
           else
-            FILES="${{ steps.changed-files.outputs.all_changed_files }}"
-            if [ -z "$FILES" ] || [ "$FILES" = "[]" ]; then
+            FILES='${{ steps.changed-files.outputs.all_changed_files }}'
+            echo "DEBUG: Raw output from changed-files:"
+            echo "$FILES"
+            echo "DEBUG: Length: ${#FILES}"
+            echo "DEBUG: First char: ${FILES:0:1}"
+            echo "---"
+            
+            if [ -z "$FILES" ]; then
+              echo "DEBUG: FILES is empty, setting packages=[]"
               echo "packages=[]" >> "$GITHUB_OUTPUT"
             else
+              echo "DEBUG: Setting packages to: $FILES"
               echo "packages=$FILES" >> "$GITHUB_OUTPUT"
             fi
+            
+            echo "DEBUG: Final packages value:"
+            cat "$GITHUB_OUTPUT"
           fi
 
   setup:
