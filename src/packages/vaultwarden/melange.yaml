@@ -48,15 +48,13 @@ pipeline:
     working-directory: /home/build/bw_web_builds
     runs: |
       set -eux
-      export BW_WEB_BUILDS_VERSION=$(yq '.vault_version' /home/build/vaultwarden/docker/DockerSettings.yaml | tr -d '"')
-      echo ${BW_WEB_BUILDS_VERSION}
       git fetch --tags
-      git checkout "${BW_WEB_BUILDS_VERSION}"
-      export WEB_VAULT_COMMIT=$(grep '^ARG VAULT_VERSION=' Dockerfile | cut -d'=' -f2)
-      echo ${WEB_VAULT_COMMIT}
+      BW_WEB_BUILDS_VERSION=$(yq '.vault_version' /home/build/vaultwarden/docker/DockerSettings.yaml | tr -d '"') git checkout "${BW_WEB_BUILDS_VERSION}"
+      export VAULT_VERSION=$(grep '^ARG VAULT_VERSION=' Dockerfile | cut -d'=' -f2)
+      echo ${VAULT_VERSION}
       make checkout
       cd web-vault
-      WEB_VAULT_TAG=$(git describe --tags --exact-match 2>/dev/null || git describe --tags 2>/dev/null || echo "${WEB_VAULT_COMMIT}")
+      WEB_VAULT_TAG=$(git describe --tags --exact-match 2>/dev/null || git describe --tags 2>/dev/null || echo "${VAULT_VERSION}")
       echo "WEB_VAULT_TAG: ${WEB_VAULT_TAG}"
       npm ci
       cd apps/web
