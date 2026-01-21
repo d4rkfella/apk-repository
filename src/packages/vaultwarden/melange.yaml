@@ -49,7 +49,7 @@ pipeline:
     working-directory: /home/build/bw_web_builds
     runs: |
       set -eux
-      export WEB_VAULT_VERSION=$(yq '.vault_version' /home/build/vaultwarden/DockerSettings.yaml | tr -d '"')
+      export WEB_VAULT_VERSION=$(yq '.vault_version' /home/build/vaultwarden/docker/DockerSettings.yaml | tr -d '"')
       echo ${WEB_VAULT_VERSION}
       git fetch --tags
       git checkout "${WEB_VAULT_VERSION}"
