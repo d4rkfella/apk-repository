@@ -1,4 +1,4 @@
-name: Melange Build
+name: Melange Package Pipeline
 
 on: 
   push:
@@ -23,7 +23,7 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
-      
+
       - name: Get Changed Files
         id: changed-files
         uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891 # 47.0.1
@@ -58,7 +58,7 @@ jobs:
         id: cache
         run: echo "key=$(date -u +'%G-%V')" >> $GITHUB_OUTPUT
 
-      - name: Restore build dependancies
+      - name: Restore cached build dependancies
         uses: actions/cache/restore@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
         with:
           key: build-dependencies-${{ matrix.arch }}-${{ steps.cache.outputs.key }}
@@ -71,7 +71,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-      - name: Build Package
+      - name: Build and Push
         uses: d4rkfella/actions/melange-build@main
         with:
           arch: ${{ matrix.arch }}

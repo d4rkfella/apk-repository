@@ -1,5 +1,5 @@
-name: Setup Build Dependencies
 
+name: Melange Build Setup
 on:
   workflow_call:
     inputs:
@@ -65,7 +65,7 @@ jobs:
           cd ..
           rm -rf melange
 
-      - name: Save build dependencies to cache
+      - name: Save to cache
         if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
         with:
