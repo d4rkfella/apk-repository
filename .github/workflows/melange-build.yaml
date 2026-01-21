@@ -20,7 +20,7 @@ jobs:
   changed-files:
     runs-on: ubuntu-24.04
     outputs:
-      packages: ${{ steps.changed-files.outputs.all_changed_files }}   
+      packages: ${{ steps.set-packages.outputs.packages }}
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
@@ -45,6 +45,19 @@ jobs:
           PKG="src/packages/${{ github.event.inputs.package }}/melange.yaml"
           echo "packages=[\"$PKG\"]" >> $GITHUB_OUTPUT
 
+      - name: Set packages output
+        id: set-packages
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            echo "packages=${{ steps.set-matrix.outputs.packages }}" >> $GITHUB_OUTPUT
+          else
+            FILES="${{ steps.changed-files.outputs.all_changed_files }}"
+            if [ -z "$FILES" ]; then
+              echo "packages=[]" >> $GITHUB_OUTPUT
+            else
+              echo "packages=$FILES" >> $GITHUB_OUTPUT
+            fi
+
   setup:
     needs: changed-files
     if: ${{ needs.changed-files.outputs.packages != '[]' }}
@@ -55,7 +68,7 @@ jobs:
     uses: ./.github/workflows/melange-build-setup.yaml
     with:
       arch: ${{ matrix.arch }}
-  
+
   build:
     needs: [changed-files,setup]
     if: ${{ needs.changed-files.outputs.packages != '[]' }}
@@ -68,7 +81,7 @@ jobs:
     runs-on: ${{ matrix.arch == 'x86_64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
 
     steps:
-      - name: Retreive Cache Key
+      - name: Retrieve Cache Key
         id: cache
         run: echo "key=$(date -u +'%G-%V')" >> $GITHUB_OUTPUT
 
