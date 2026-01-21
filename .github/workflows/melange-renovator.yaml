@@ -21,12 +21,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
 
-      - name: Setup matrix
+      - name: Setup workflow matrix
         id: set-matrix
         run: |
           files=$(find . -name "melange.yaml" -print0 | xargs -0 -n1 | jq -R . | jq -cs '{path: .}')
           echo "matrix=$files" >> "$GITHUB_OUTPUT"
-      
+
       - name: Check cache
         id: cache-lookup
         uses: actions/cache/restore@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
@@ -34,13 +34,13 @@ jobs:
           key: melange-renovator-v2
           lookup-only: true
           path: ~/go/bin
-      
-      - name: Install melange-renovator
+
+      - name: Install renovator binary
         if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
         run: |
           go install github.com/d4rkfella/melange-renovator/v2@latest      
-      
-      - name: Cache melange-renovator
+
+      - name: Save to cache
         uses: actions/cache/save@v5
         if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
         with:
@@ -62,24 +62,22 @@ jobs:
         uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           egress-policy: audit
-      
-      - name: Checkout repository
+
+      - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
-      
-      - name: Restore melange-renovator
+
+      - name: Restore cached renovator binary
         uses: actions/cache/restore@v5
         with:
           path: ~/go/bin
           key: melange-renovator-v2
 
-      - name: Export Go binaries to PATH
-        run: echo "$HOME/go/bin" >> $GITHUB_PATH
-      
-      - name: Check for updates
+      - name: Run renovator
         id: check-updates
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "$HOME/go/bin" >> $GITHUB_PATH
           melange-renovator "${{ matrix.path }}"
 
       - name: Create Pull Request
