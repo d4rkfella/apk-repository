@@ -53,7 +53,7 @@ pipeline:
       echo ${WEB_VAULT_VERSION}
       git fetch --tags
       git checkout "${WEB_VAULT_VERSION}"
-      make git-checkout
+      make checkout
       cd web-vault
       npm ci
       cd apps/web
