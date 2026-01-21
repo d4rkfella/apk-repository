@@ -36,6 +36,13 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
+      repository: https://github.com/dani-garcia/vaultwarden
+      tag: ${{package.version}}
+      expected-commit: 4352fffeec7915e45559b46dce18640a25f46801
+      destination: vaultwarden
+
+  - uses: git-checkout
+    with:
       repository: https://github.com/dani-garcia/bw_web_builds
       destination: bw_web_builds
   - name: build-web-vault
