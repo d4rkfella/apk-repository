@@ -38,7 +38,7 @@ jobs:
       matrix:
         arch: [x86_64, aarch64]
       max-parallel: 2
-    uses: ./.github/workflows/setup-build-dependencies.yaml
+    uses: ./.github/workflows/melange-build-setup.yaml
     with:
       arch: ${{ matrix.arch }}
   
