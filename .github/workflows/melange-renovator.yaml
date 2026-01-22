@@ -71,13 +71,15 @@ jobs:
         with:
           path: ~/go/bin
           key: melange-renovator-v2
-
+      
+      - name: Export go bin folder to system PATH
+        run: echo "$HOME/go/bin" >> $GITHUB_PATH
+      
       - name: Run renovator
         id: check-updates
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "$HOME/go/bin" >> $GITHUB_PATH
           melange-renovator "${{ matrix.path }}"
 
       - name: Create Pull Request
