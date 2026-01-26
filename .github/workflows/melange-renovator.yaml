@@ -75,11 +75,11 @@ jobs:
       - name: Restore cached renovator binary
         uses: actions/cache/restore@v5
         with:
-          path: ./
+          path: ~/go/bin
           key: melange-renovator-${{ needs.setup.outputs.renovator-version }}
       
       - name: Export go bin folder to system PATH
-        run: echo "$HOME/go/bin" >> $GITHUB_PATH
+        run: cp ~/go/bin/melange-renovator ${{ github.workspace }}/melange-renovator
       
       - name: Run renovator
         id: check-updates
@@ -89,7 +89,7 @@ jobs:
         with:
           options: -v $HOME/go/bin/melange-renovator:/usr/local/bin/melange-renovator
           entrypoint: /bin/sh
-          args: -c "/github/workspace/melange-renovator '${{ matrix.path }}'"
+          args: -c "${{ github.workspace }}/melange-renovator '${{ matrix.path }}'"
       
       - name: Create Pull Request
         if: ${{ steps.check-updates.outputs.package_name != '' && steps.check-updates.outputs.package_version != '' }}
