@@ -25,34 +25,7 @@ jobs:
         run: |
           files=$(find . -name "melange.yaml" -print0 | xargs -0 -n1 | jq -R . | jq -cs '{path: .}')
           echo "matrix=$files" >> "$GITHUB_OUTPUT"
-      
-      - name: Get latest renovator version
-        id: get-version
-        run: |
-          VERSION=$(go list -m -f '{{.Version}}' github.com/d4rkfella/melange-renovator/v2@latest)
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Latest version: $VERSION"
-      
-      - name: Check cache
-        id: cache-lookup
-        uses: actions/cache/restore@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
-        with:
-          key: melange-renovator-${{ steps.get-version.outputs.version }}
-          lookup-only: true
-          path: ~/go/bin
-      
-      - name: Install renovator binary
-        if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
-        run: |
-          go install github.com/d4rkfella/melange-renovator/v2@latest      
-      
-      - name: Save to cache
-        uses: actions/cache/save@v5
-        if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
-        with:
-          path: ~/go/bin
-          key: melange-renovator-${{ steps.get-version.outputs.version }}
-          
+  
   update-packages:
     needs: [setup]
     runs-on: ubuntu-24.04
@@ -72,24 +45,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
       
-      - name: Restore cached renovator binary
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/go/bin
-          key: melange-renovator-${{ needs.setup.outputs.renovator-version }}
-      
-      - name: Export go bin folder to system PATH
-        run: cp ~/go/bin/melange-renovator ${{ github.workspace }}/melange-renovator
-      
       - name: Run renovator
         id: check-updates
-        uses: docker://debian:trixie
+        uses: docker://ghcr.io/d4rkfella/melange-renovator:2.2.11
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          options: -v $HOME/go/bin/melange-renovator:/usr/local/bin/melange-renovator
-          entrypoint: /bin/bash
-          args: -c "apt-get update && apt-get install -y ca-certificates chromium && /github/workspace/melange-renovator '${{ matrix.path }}'"
+          args: ${{ matrix.path }}
       
       - name: Create Pull Request
         if: ${{ steps.check-updates.outputs.package_name != '' && steps.check-updates.outputs.package_version != '' }}
