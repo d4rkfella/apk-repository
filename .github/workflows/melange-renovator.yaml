@@ -83,7 +83,7 @@ jobs:
       
       - name: Run renovator
         id: check-updates
-        uses: docker://zenika/alpine-chrome:latest
+        uses: docker://debian:trixie
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
