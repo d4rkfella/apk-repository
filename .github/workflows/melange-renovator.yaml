@@ -87,6 +87,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          options: >-
+            -v $HOME/go/bin/melange-renovator:/usr/local/bin/melange-renovator
           entrypoint: /bin/sh
           args: -c "melange-renovator '${{ matrix.path }}'"
       
