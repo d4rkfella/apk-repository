@@ -88,8 +88,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           options: -v $HOME/go/bin/melange-renovator:/usr/local/bin/melange-renovator
-          entrypoint: /bin/sh
-          args: -c "ls -la /github/workspace && /github/workspace/melange-renovator '${{ matrix.path }}'"
+          entrypoint: /bin/bash
+          args: -c "apt-get update && apt-get install -y ca-certificates chromium && /github/workspace/melange-renovator '${{ matrix.path }}'"
       
       - name: Create Pull Request
         if: ${{ steps.check-updates.outputs.package_name != '' && steps.check-updates.outputs.package_version != '' }}
