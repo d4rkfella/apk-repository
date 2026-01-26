@@ -83,10 +83,12 @@ jobs:
       
       - name: Run renovator
         id: check-updates
+        uses: docker://zenika/alpine-chrome:latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          melange-renovator "${{ matrix.path }}"
+        with:
+          entrypoint: /bin/sh
+          args: -c "melange-renovator '${{ matrix.path }}'"
       
       - name: Create Pull Request
         if: ${{ steps.check-updates.outputs.package_name != '' && steps.check-updates.outputs.package_version != '' }}
