@@ -1,10 +1,8 @@
 name: Melange Renovator
-
 on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
-
 jobs:
   setup:
     runs-on: ubuntu-24.04
@@ -12,40 +10,48 @@ jobs:
       contents: read
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+      renovator-version: ${{ steps.get-version.outputs.version }}
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           egress-policy: audit
-
+      
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
-
+      
       - name: Setup workflow matrix
         id: set-matrix
         run: |
           files=$(find . -name "melange.yaml" -print0 | xargs -0 -n1 | jq -R . | jq -cs '{path: .}')
           echo "matrix=$files" >> "$GITHUB_OUTPUT"
-
+      
+      - name: Get latest renovator version
+        id: get-version
+        run: |
+          VERSION=$(go list -m -f '{{.Version}}' github.com/d4rkfella/melange-renovator/v2@latest)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Latest version: $VERSION"
+      
       - name: Check cache
         id: cache-lookup
         uses: actions/cache/restore@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
         with:
-          key: melange-renovator
+          key: melange-renovator-${{ steps.get-version.outputs.version }}
           lookup-only: true
           path: ~/go/bin
-
+      
       - name: Install renovator binary
         if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
         run: |
           go install github.com/d4rkfella/melange-renovator/v2@latest      
-
+      
       - name: Save to cache
         uses: actions/cache/save@v5
         if: ${{ always() && steps.cache-lookup.outputs.cache-hit != 'true' }}
         with:
           path: ~/go/bin
-          key: melange-renovator
+          key: melange-renovator-${{ steps.get-version.outputs.version }}
           
   update-packages:
     needs: [setup]
@@ -62,15 +68,15 @@ jobs:
         uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           egress-policy: audit
-
+      
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
-
+      
       - name: Restore cached renovator binary
         uses: actions/cache/restore@v5
         with:
           path: ~/go/bin
-          key: melange-renovator
+          key: melange-renovator-${{ needs.setup.outputs.renovator-version }}
       
       - name: Export go bin folder to system PATH
         run: echo "$HOME/go/bin" >> $GITHUB_PATH
@@ -81,7 +87,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           melange-renovator "${{ matrix.path }}"
-
+      
       - name: Create Pull Request
         if: ${{ steps.check-updates.outputs.package_name != '' && steps.check-updates.outputs.package_version != '' }}
         uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
