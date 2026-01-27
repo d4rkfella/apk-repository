@@ -23,7 +23,7 @@ jobs:
       packages: ${{ steps.set-packages.outputs.packages }}
     steps:
       - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
+        uses: step-security/harden-runner@e3f713f2d8f53843e71c69a996d56f51aa9adfb9 # v2.14.1
         with:
           egress-policy: audit
 
@@ -81,7 +81,7 @@ jobs:
         run: echo "key=$(date -u +'%G-%V')" >> $GITHUB_OUTPUT
 
       - name: Restore cached build tools
-        uses: actions/cache/restore@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
+        uses: actions/cache/restore@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         with:
           key: build-dependencies-${{ matrix.arch }}-${{ steps.cache.outputs.key }}
           fail-on-cache-miss: true
