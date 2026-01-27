@@ -17,7 +17,7 @@ jobs:
 
       - name: Check cache
         id: cache-restore
-        uses: actions/cache/restore@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
+        uses: actions/cache/restore@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         with:
           key: build-dependencies-${{ inputs.arch }}-${{ steps.cache.outputs.key }}
           path: |
@@ -67,7 +67,7 @@ jobs:
 
       - name: Save to cache
         if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@a7833574556fa59680c1b7cb190c1735db73ebf0 # v5.0.0
+        uses: actions/cache/save@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         with:
           key: build-dependencies-${{ inputs.arch }}-${{ steps.cache.outputs.key }}
           path: |
