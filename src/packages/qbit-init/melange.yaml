@@ -1,7 +1,7 @@
 package:
   name: qbit-init
-  version: 0.2.0
-  epoch: 1
+  version: "0.2.1"
+  epoch: 0
   copyright:
     - license: MIT
 pipeline:
@@ -9,7 +9,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/qbit-init
       tag: v${{package.version}}
-      expected-commit: bc3e704e563e27bcd9e37c96fc0848709893f11e
+      expected-commit: db568657114d74586a48edc453cde0361d5a9567
   - uses: go/build
     with:
       packages: main.go
