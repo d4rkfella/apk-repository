@@ -1,5 +1,0 @@
-name: undisable-openssf-flags
-
-pipeline:
-  - runs: |
-      rm -f /etc/gcc_spec_file
