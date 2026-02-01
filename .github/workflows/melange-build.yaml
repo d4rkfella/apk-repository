@@ -92,8 +92,13 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          submodules: true
+
+      - name: Get pipelines from wolfi-dev/os
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/wolfi-dev/os.git /tmp/wolfi
+          cd /tmp/wolfi
+          git sparse-checkout set pipelines
+          cp -r pipelines $GITHUB_WORKSPACE/
 
       - name: Build and Push to Artifactory
         uses: d4rkfella/actions/melange-build@main
