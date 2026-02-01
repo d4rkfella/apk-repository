@@ -95,10 +95,13 @@ jobs:
 
       - name: Get pipelines from wolfi-dev/os
         run: |
-          git clone --depth 1 --filter=blob:none --sparse https://github.com/wolfi-dev/os.git /tmp/wolfi
-          cd /tmp/wolfi
-          git sparse-checkout set pipelines
-          cp -r pipelines $GITHUB_WORKSPACE/
+          git clone --depth 1 --filter=blob:none --no-checkout https://github.com/wolfi-dev/os.git
+          pushd os
+          git sparse-checkout set --no-cone pipelines
+          git checkout main
+          mv pipelines $GITHUB_WORKSPACE/
+          popd
+          rm -rf os
 
       - name: Build and Push to Artifactory
         uses: d4rkfella/actions/melange-build@main
