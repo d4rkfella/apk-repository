@@ -1,6 +1,6 @@
 package:
   name: qbit-download-hook
-  version: "1.0.1"
+  version: "1.0.2"
   epoch: 0
   copyright:
     - license: MIT
@@ -9,7 +9,7 @@ pipeline:
     with:
       repository: https://github.com/d4rkfella/qbit-download-hook
       tag: v${{package.version}}
-      expected-commit: 204149374c63c0e0ef25400d853c9f533d87dd22
+      expected-commit: a5046d270cc09ae1aae2e08c7fb048b5b0c2f428
   - uses: go/build
     with:
       packages: main.go
