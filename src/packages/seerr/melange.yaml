@@ -7,7 +7,7 @@ package:
     - license: MIT
   dependencies:
     runtime:
-      - nodejs-23
+      - nodejs-22
 environment:
   environment:
     REPRODUCIBLE: false
