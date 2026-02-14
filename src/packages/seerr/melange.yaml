@@ -30,8 +30,6 @@ pipeline:
       export NEXT_TELEMETRY_DISABLED=1
       export CYPRESS_INSTALL_BINARY=0
       export COMMIT_TAG=$(git rev-parse HEAD)
-      patch -Np1 -i "../seerr.patch"
-      sed -i 's/husky install//' package.json
       pnpm install --frozen-lockfile
       pnpm build
       pnpm prune --prod --ignore-scripts
