@@ -36,11 +36,7 @@ pipeline:
   - name: Delete linux-musl node-modules
     working-directory: /home/build/seerr
     runs: |
-      find node_modules -type d \
-        -name "*musl*" \
-        -print \
-        -exec rm -rf {} + \
-        -prune
+      find node_modules -name "*.musl.node" -type f -delete
   - name: Prepare package
     working-directory: /home/build/seerr
     runs: |
