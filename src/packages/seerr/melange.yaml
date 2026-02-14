@@ -14,7 +14,7 @@ environment:
   contents:
     packages:
       - wolfi-baselayout
-      - nodejs-23
+      - nodejs-22
       - pnpm
       - patch
 pipeline:
